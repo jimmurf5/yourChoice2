@@ -1,7 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:your_choice/screens/auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:your_choice/screens/admin_home.dart';
 
 //set theme data
 final theme = ThemeData(
@@ -29,7 +31,14 @@ class App extends StatelessWidget {
     return MaterialApp(
       title: 'FlutterChat',
       theme: theme,
-      home: const AuthScreen(),
+      home: StreamBuilder(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (ctx, snapshot) {
+          if(snapshot.hasData) {
+            return const AdminHome();
+          }
+          return const AuthScreen();
+        }),
     );
   }
 }

@@ -1,4 +1,4 @@
-import 'dart:nativewrappers/_internal/vm/lib/internal_patch.dart';
+
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -34,11 +34,9 @@ class _AuthScreenState extends State<AuthScreen> {
       if (_isLogin) {
         final userCredentials = await _firebase.signInWithEmailAndPassword(
             email: _enteredEmail, password: _enteredPassword);
-        print(userCredentials);
       } else {
         final userCredentials = await _firebase.createUserWithEmailAndPassword(
             email: _enteredEmail, password: _enteredPassword);
-        print(userCredentials);
       }
     } on FirebaseAuthException catch (error) {
       if (error.code == "email-already-in-use") {
