@@ -1,18 +1,40 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:your_choice/screens/add_user.dart';
 
-class AdminHome extends StatelessWidget {
+class AdminHome extends StatefulWidget {
   const AdminHome({super.key});
 
+  @override
+  State<AdminHome> createState() => _AdminHomeState();
+}
+
+class _AdminHomeState extends State<AdminHome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Admin Home'),
+        actions: [
+          IconButton(
+              onPressed: () {
+                FirebaseAuth.instance.signOut();
+              },
+              icon: Icon(Icons.exit_to_app,
+                color: Theme.of(context).colorScheme.primary,),
+          ),
+        ],
       ),
-      body: const Center(
-        child: Text('Logged in'),
+      body: Center(
+        child: ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AddUser()),
+              );
+            },
+            child: Text('Add Users')),
       ),
     );
   }
-
 }
