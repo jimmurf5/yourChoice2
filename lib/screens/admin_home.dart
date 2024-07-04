@@ -26,14 +26,16 @@ class _AdminHomeState extends State<AdminHome> {
         ],
       ),
       body: Center(
-        child: ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const AddUser()),
-              );
-            },
-            child: Text('Add Users')),
+        child: ElevatedButton.icon(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const AddUser()),
+            );
+          },
+          icon: const Icon(Icons.add),
+          label: const Text("Add Users"),
+        ),
       ),
     );
   }
