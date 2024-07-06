@@ -42,13 +42,20 @@ class _AdminHomeState extends State<AdminHome> {
               label: const Text("Add Users"),
             ),
             const SizedBox(height: 20),
+            const Text(
+              'Current Users',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20),
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
                     .collection('users')
                     .where('createdBy', isEqualTo: FirebaseAuth.instance.currentUser?.uid)
                     .snapshots(),
+
                 builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const CircularProgressIndicator();
                   }
@@ -72,7 +79,16 @@ class _AdminHomeState extends State<AdminHome> {
                             FirebaseFirestore.instance
                                 .collection('users')
                                 .doc(user.id)
-                                .delete();
+                                .delete()
+                                .then((_) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('User deleted successfully')),
+                              );
+                            }).catchError((error) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Failed to delete user')),
+                              );
+                            });
                           },
                           icon: const Icon(Icons.delete),
                         ),

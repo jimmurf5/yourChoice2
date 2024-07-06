@@ -1,6 +1,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class AddUser extends StatefulWidget {
   const AddUser({super.key});
@@ -28,10 +29,19 @@ class _AddUserState extends State<AddUser> {
 
     // Save data to Firestore
     try {
+      //get the uid
+      final FirebaseAuth auth = FirebaseAuth.instance;
+      if(auth.currentUser == null) {
+        return;
+      }
+      final myUid = auth.currentUser!.uid;
+
+
       await FirebaseFirestore.instance.collection('users').add({
         'forename': _enteredForename,
         'surname': _enteredSurname,
         'createdAt': Timestamp.now(), // Adding a timestamp
+        'createdBy': myUid,  // Adding the createdBy field
       });
 
       // Show a success message or navigate to another screen
