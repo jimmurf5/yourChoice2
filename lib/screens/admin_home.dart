@@ -11,11 +11,40 @@ class AdminHome extends StatefulWidget {
 }
 
 class _AdminHomeState extends State<AdminHome> {
+  String userEmail = '';
+
+  @override
+  void initState() {
+    super.initState();
+    // Fetch the current user's email on widget initialization
+    fetchUserEmail();
+  }
+
+  void fetchUserEmail() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      setState(() {
+        userEmail = user.email ?? 'No Email'; // Handling null case
+        print(userEmail);
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Admin Home'),
+        title: Column(
+          children: [
+            const Text('Admin Home'),
+            Text(
+              userEmail,
+              style: const TextStyle(
+                fontSize: 12.0,
+              ),
+            ),
+          ],
+        ),
         actions: [
           IconButton(
             onPressed: () {
@@ -51,11 +80,10 @@ class _AdminHomeState extends State<AdminHome> {
               child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
                     .collection('users')
-                    .where('createdBy', isEqualTo: FirebaseAuth.instance.currentUser?.uid)
+                    .where('createdBy',
+                        isEqualTo: FirebaseAuth.instance.currentUser?.uid)
                     .snapshots(),
-
                 builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const CircularProgressIndicator();
                   }
@@ -73,7 +101,8 @@ class _AdminHomeState extends State<AdminHome> {
                     itemBuilder: (context, index) {
                       DocumentSnapshot user = users[index];
                       return ListTile(
-                        title: Text(user['forename'] + ' ' + user['surname']),
+                        title: Text('${user['forename']} ${user['surname']}')
+                        ,
                         trailing: IconButton(
                           onPressed: () {
                             FirebaseFirestore.instance
@@ -82,11 +111,13 @@ class _AdminHomeState extends State<AdminHome> {
                                 .delete()
                                 .then((_) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('User deleted successfully')),
+                                const SnackBar(
+                                    content: Text('User deleted successfully')),
                               );
                             }).catchError((error) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Failed to delete user')),
+                                const SnackBar(
+                                    content: Text('Failed to delete user')),
                               );
                             });
                           },
