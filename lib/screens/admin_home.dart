@@ -101,8 +101,22 @@ class _AdminHomeState extends State<AdminHome> {
                     itemBuilder: (context, index) {
                       DocumentSnapshot user = users[index];
                       return ListTile(
-                        title: Text('${user['forename']} ${user['surname']}')
-                        ,
+                        title:
+                        Text('${user['forename']} ${user['surname']}'
+                        ),
+                        subtitle: Column(
+                          children: [
+                        TextButton(
+                        onPressed: () {},
+                        style: TextButton.styleFrom(
+                          primary: Colors.white, // Text color
+                          backgroundColor: Colors.blue, // Button background color
+                        ),
+                        child: const Text('Select'),
+
+                        ),
+                          ],
+                        ),
                         trailing: IconButton(
                           onPressed: () {
                             FirebaseFirestore.instance
