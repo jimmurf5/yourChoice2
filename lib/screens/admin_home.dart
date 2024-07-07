@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:your_choice/screens/add_user.dart';
+import 'package:your_choice/screens/customise_ux.dart';
 
 class AdminHome extends StatefulWidget {
   const AdminHome({super.key});
@@ -25,7 +26,6 @@ class _AdminHomeState extends State<AdminHome> {
     if (user != null) {
       setState(() {
         userEmail = user.email ?? 'No Email'; // Handling null case
-        print(userEmail);
       });
     }
   }
@@ -52,7 +52,7 @@ class _AdminHomeState extends State<AdminHome> {
             },
             icon: Icon(
               Icons.exit_to_app,
-              color: Theme.of(context).colorScheme.primary,
+              color: Theme.of(context).colorScheme.inversePrimary,
             ),
           ),
         ],
@@ -100,43 +100,50 @@ class _AdminHomeState extends State<AdminHome> {
                     itemCount: users.length,
                     itemBuilder: (context, index) {
                       DocumentSnapshot user = users[index];
-                      return ListTile(
-                        title:
-                        Text('${user['forename']} ${user['surname']}'
-                        ),
-                        subtitle: Column(
-                          children: [
-                        TextButton(
-                        onPressed: () {},
-                        style: TextButton.styleFrom(
-                          primary: Colors.white, // Text color
-                          backgroundColor: Colors.blue, // Button background color
-                        ),
-                        child: const Text('Select'),
-
-                        ),
-                          ],
-                        ),
-                        trailing: IconButton(
-                          onPressed: () {
-                            FirebaseFirestore.instance
-                                .collection('users')
-                                .doc(user.id)
-                                .delete()
-                                .then((_) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text('User deleted successfully')),
-                              );
-                            }).catchError((error) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text('Failed to delete user')),
-                              );
-                            });
-                          },
-                          icon: const Icon(Icons.delete),
-                        ),
+                      return Padding(padding: const EdgeInsets.symmetric(vertical: 4.0),
+                       child: ListTile(
+                         tileColor: Theme.of(context).highlightColor, // Background color for the tile
+                         title:
+                         Text('${user['forename']} ${user['surname']}'
+                         ),
+                         subtitle: Column(
+                           children: [
+                             TextButton(
+                               onPressed: () {
+                                 Navigator.push(
+                                     context,
+                                     MaterialPageRoute(builder: (context) => const CustomiseUx() ),
+                                 );
+                               },
+                               style: TextButton.styleFrom(
+                                 foregroundColor: Colors.white, // Text color
+                                 backgroundColor: Colors.blue, // Button background color
+                               ),
+                               child: const Text('Select'),
+                             ),
+                           ],
+                         ),
+                         trailing: IconButton(
+                           onPressed: () {
+                             FirebaseFirestore.instance
+                                 .collection('users')
+                                 .doc(user.id)
+                                 .delete()
+                                 .then((_) {
+                               ScaffoldMessenger.of(context).showSnackBar(
+                                 const SnackBar(
+                                     content: Text('User deleted successfully')),
+                               );
+                             }).catchError((error) {
+                               ScaffoldMessenger.of(context).showSnackBar(
+                                 const SnackBar(
+                                     content: Text('Failed to delete user')),
+                               );
+                             });
+                           },
+                           icon: const Icon(Icons.delete),
+                         ),
+                       ),
                       );
                     },
                   );

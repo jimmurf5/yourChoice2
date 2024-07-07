@@ -69,7 +69,7 @@ class _AddUserState extends State<AddUser> {
       appBar: AppBar(
         title: const Text('Add User'),
       ),
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: Center(
         child: SingleChildScrollView(
           child: Padding(
@@ -118,6 +118,10 @@ class _AddUserState extends State<AddUser> {
                         onPressed: _submit,
                         icon: const Icon(Icons.add),
                         label: const Text("Add User"),
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.white, // Text color
+                          backgroundColor: Colors.blue, // Button background color
+                        ),
                       ),
                     ],
                   ),
