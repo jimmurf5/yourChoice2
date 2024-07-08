@@ -100,50 +100,60 @@ class _AdminHomeState extends State<AdminHome> {
                     itemCount: profiles.length,
                     itemBuilder: (context, index) {
                       DocumentSnapshot profile = profiles[index];
-                      return Padding(padding: const EdgeInsets.symmetric(vertical: 4.0),
-                       child: ListTile(
-                         tileColor: Theme.of(context).highlightColor, // Background color for the tile
-                         title:
-                         Text('${profile['forename']} ${profile['surname']}'
-                         ),
-                         subtitle: Column(
-                           children: [
-                             TextButton(
-                               onPressed: () {
-                                 Navigator.push(
-                                     context,
-                                     MaterialPageRoute(builder: (context) => const CustomiseProfile() ),
-                                 );
-                               },
-                               style: TextButton.styleFrom(
-                                 foregroundColor: Colors.white, // Text color
-                                 backgroundColor: Colors.blue, // Button background color
-                               ),
-                               child: const Text('Select'),
-                             ),
-                           ],
-                         ),
-                         trailing: IconButton(
-                           onPressed: () {
-                             FirebaseFirestore.instance
-                                 .collection('profiles')
-                                 .doc(profile.id)
-                                 .delete()
-                                 .then((_) {
-                               ScaffoldMessenger.of(context).showSnackBar(
-                                 const SnackBar(
-                                     content: Text('Profile deleted successfully')),
-                               );
-                             }).catchError((error) {
-                               ScaffoldMessenger.of(context).showSnackBar(
-                                 const SnackBar(
-                                     content: Text('Failed to delete profile')),
-                               );
-                             });
-                           },
-                           icon: const Icon(Icons.delete),
-                         ),
-                       ),
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4.0),
+                        child: ListTile(
+                          tileColor: Theme.of(context)
+                              .highlightColor, // Background color for the tile
+                          title: Text(
+                              '${profile['forename']} ${profile['surname']}'),
+                          subtitle: Column(
+                            children: [
+                              TextButton(
+                                onPressed: () {
+                                  //navigate to CustomiseProfile while passing the profileId of the selected profile
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => CustomiseProfile(
+                                          profileId: profile.id,
+                                          profileName: '${profile['forename']} ${profile['surname']}',
+                                      ),
+                                    ),
+                                  );
+                                },
+                                style: TextButton.styleFrom(
+                                  foregroundColor: Colors.white, // Text color
+                                  backgroundColor:
+                                      Colors.blue, // Button background color
+                                ),
+                                child: const Text('Select'),
+                              ),
+                            ],
+                          ),
+                          trailing: IconButton(
+                            onPressed: () {
+                              FirebaseFirestore.instance
+                                  .collection('profiles')
+                                  .doc(profile.id)
+                                  .delete()
+                                  .then((_) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content:
+                                          Text('Profile deleted successfully')),
+                                );
+                              }).catchError((error) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content:
+                                          Text('Failed to delete profile')),
+                                );
+                              });
+                            },
+                            icon: const Icon(Icons.delete),
+                          ),
+                        ),
                       );
                     },
                   );
