@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:your_choice/screens/add_user.dart';
-import 'package:your_choice/screens/customise_ux.dart';
+import 'package:your_choice/screens/add_profile.dart';
+import 'package:your_choice/screens/customise_profile.dart';
 
 class AdminHome extends StatefulWidget {
   const AdminHome({super.key});
@@ -64,22 +64,22 @@ class _AdminHomeState extends State<AdminHome> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const AddUser()),
+                  MaterialPageRoute(builder: (context) => const AddProfile()),
                 );
               },
               icon: const Icon(Icons.add),
-              label: const Text("Add Users"),
+              label: const Text("Add Profile"),
             ),
             const SizedBox(height: 20),
             const Text(
-              'Current Users',
+              'Current Profiles',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
-                    .collection('users')
+                    .collection('profiles')
                     .where('createdBy',
                         isEqualTo: FirebaseAuth.instance.currentUser?.uid)
                     .snapshots(),
@@ -91,20 +91,20 @@ class _AdminHomeState extends State<AdminHome> {
                     return const Text('Something went wrong');
                   }
                   if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                    return const Text('No users found');
+                    return const Text('No profiles found');
                   }
 
-                  final users = snapshot.data!.docs;
+                  final profiles = snapshot.data!.docs;
 
                   return ListView.builder(
-                    itemCount: users.length,
+                    itemCount: profiles.length,
                     itemBuilder: (context, index) {
-                      DocumentSnapshot user = users[index];
+                      DocumentSnapshot profile = profiles[index];
                       return Padding(padding: const EdgeInsets.symmetric(vertical: 4.0),
                        child: ListTile(
                          tileColor: Theme.of(context).highlightColor, // Background color for the tile
                          title:
-                         Text('${user['forename']} ${user['surname']}'
+                         Text('${profile['forename']} ${profile['surname']}'
                          ),
                          subtitle: Column(
                            children: [
@@ -112,7 +112,7 @@ class _AdminHomeState extends State<AdminHome> {
                                onPressed: () {
                                  Navigator.push(
                                      context,
-                                     MaterialPageRoute(builder: (context) => const CustomiseUx() ),
+                                     MaterialPageRoute(builder: (context) => const CustomiseProfile() ),
                                  );
                                },
                                style: TextButton.styleFrom(
@@ -126,18 +126,18 @@ class _AdminHomeState extends State<AdminHome> {
                          trailing: IconButton(
                            onPressed: () {
                              FirebaseFirestore.instance
-                                 .collection('users')
-                                 .doc(user.id)
+                                 .collection('profiles')
+                                 .doc(profile.id)
                                  .delete()
                                  .then((_) {
                                ScaffoldMessenger.of(context).showSnackBar(
                                  const SnackBar(
-                                     content: Text('User deleted successfully')),
+                                     content: Text('Profile deleted successfully')),
                                );
                              }).catchError((error) {
                                ScaffoldMessenger.of(context).showSnackBar(
                                  const SnackBar(
-                                     content: Text('Failed to delete user')),
+                                     content: Text('Failed to delete profile')),
                                );
                              });
                            },

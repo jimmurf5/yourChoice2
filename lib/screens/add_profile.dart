@@ -3,16 +3,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class AddUser extends StatefulWidget {
-  const AddUser({super.key});
+class AddProfile extends StatefulWidget {
+  const AddProfile({super.key});
 
   @override
-  State<AddUser> createState() {
-    return _AddUserState();
+  State<AddProfile> createState() {
+    return _AddProfileState();
   }
 }
 
-class _AddUserState extends State<AddUser> {
+class _AddProfileState extends State<AddProfile> {
   final _form = GlobalKey<FormState>();
 
   var _enteredForename = '';
@@ -37,7 +37,7 @@ class _AddUserState extends State<AddUser> {
       final myUid = auth.currentUser!.uid;
 
 
-      await FirebaseFirestore.instance.collection('users').add({
+      await FirebaseFirestore.instance.collection('profiles').add({
         'forename': _enteredForename,
         'surname': _enteredSurname,
         'createdAt': Timestamp.now(), // Adding a timestamp
@@ -46,7 +46,7 @@ class _AddUserState extends State<AddUser> {
 
       // Show a success message or navigate to another screen
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('User added successfully!')),
+        const SnackBar(content: Text('Profile added successfully!')),
       );
 
       // clear the form fields after successful submission
@@ -58,7 +58,7 @@ class _AddUserState extends State<AddUser> {
     } catch (e) {
       // Handle any errors
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to add user: $e')),
+        SnackBar(content: Text('Failed to add profile: $e')),
       );
     }
   }
@@ -67,7 +67,7 @@ class _AddUserState extends State<AddUser> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add User'),
+        title: const Text('Add Profile'),
       ),
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: Center(
@@ -117,7 +117,7 @@ class _AddUserState extends State<AddUser> {
                       ElevatedButton.icon(
                         onPressed: _submit,
                         icon: const Icon(Icons.add),
-                        label: const Text("Add User"),
+                        label: const Text("Add Profile"),
                         style: TextButton.styleFrom(
                           foregroundColor: Colors.white, // Text color
                           backgroundColor: Colors.blue, // Button background color
