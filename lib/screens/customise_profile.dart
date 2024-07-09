@@ -23,29 +23,50 @@ class CustomiseProfile extends StatelessWidget {
             ),
           ],
         ),
+        actions: [
+          IconButton(
+              onPressed: () {
+                // code to allow colour to be adjusted
+              },
+              icon: const Icon(Icons.palette_outlined)
+          ),
+        ],
       ),
       body: Center(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ElevatedButton.icon(onPressed: () {
-              // code here to go to tree page and pass profileId
-            },
-              icon: const Icon(FontAwesomeIcons.tree),
-              label: const Text("Create Tree"),
+            SizedBox(
+              width: 300, // set the desired width for the buttons
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  // code here to go to tree page and pass profileId
+                },
+                icon: const Icon(FontAwesomeIcons.tree),
+                label: const Text("Create Tree"),
+              ),
             ),
-            const SizedBox(height: 20),
-            ElevatedButton.icon(onPressed: () {
-              // code here to go to tree page and pass profileId
-            },
-              icon: const Icon(FontAwesomeIcons.plus),
-              label: const Text("Manage Cards"),
+            const SizedBox(height: 40),
+            SizedBox(
+              width: 300, // set the desired width for the buttons
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  // code here to go to manage cards and pass profileId
+                },
+                icon: const Icon(FontAwesomeIcons.plus),
+                label: const Text("Manage Cards"),
+              ),
             ),
-            const SizedBox(height: 20),
-            ElevatedButton.icon(onPressed: () {
-              // code here to go to tree page and pass profileId
-            },
-              icon: const Icon(FontAwesomeIcons.toggleOn),
-              label: const Text("User Mode"),
+            const SizedBox(height: 40),
+            SizedBox(
+              width: 300, // set the desired width for the buttons
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  // code here to go to profile and pass profileId
+                },
+                icon: const Icon(FontAwesomeIcons.toggleOn),
+                label: const Text("Profile Mode"),
+              ),
             ),
           ],
         ),
