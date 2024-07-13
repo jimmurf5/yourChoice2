@@ -116,8 +116,9 @@ class _AdminHomeState extends State<AdminHome> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => CustomiseProfile(
-                                          profileId: profile.id,
-                                          profileName: '${profile['forename']} ${profile['surname']}',
+                                        profileId: profile.id,
+                                        profileName:
+                                            '${profile['forename']} ${profile['surname']}',
                                       ),
                                     ),
                                   );

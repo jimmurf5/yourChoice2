@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -31,22 +30,30 @@ class _AddProfileState extends State<AddProfile> {
     try {
       //get the uid
       final FirebaseAuth auth = FirebaseAuth.instance;
-      if(auth.currentUser == null) {
+      if (auth.currentUser == null) {
         return;
       }
       final myUid = auth.currentUser!.uid;
 
-
-      await FirebaseFirestore.instance.collection('profiles').add({
+      //add the profile to firestore and get the doc ref
+      DocumentReference profileRef =
+          await FirebaseFirestore.instance.collection('profiles').add({
         'forename': _enteredForename,
         'surname': _enteredSurname,
         'createdAt': Timestamp.now(), // Adding a timestamp
-        'createdBy': myUid,  // Adding the createdBy field
+        'createdBy': myUid, // Adding the createdBy field
       });
+
+      //get the profile id from the document reference
+      String profileId = profileRef.id;
+
+      // Call your method to duplicate seeded data for the new profile
+      //FirestoreService firestoreService = FirestoreService();
+      //await firestoreService.duplicateSeededDataForNewProfile(profileId);
 
       // Show a success message or navigate to another screen
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Profile added successfully!')),
+         const SnackBar(content: Text('Profile added successfully!')),
       );
 
       // clear the form fields after successful submission
@@ -54,7 +61,6 @@ class _AddProfileState extends State<AddProfile> {
 
       // Pop back to the previous screen
       Navigator.of(context).pop();
-
     } catch (e) {
       // Handle any errors
       ScaffoldMessenger.of(context).showSnackBar(
@@ -84,7 +90,8 @@ class _AddProfileState extends State<AddProfile> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       TextFormField(
-                        decoration: const InputDecoration(labelText: 'Forename'),
+                        decoration:
+                            const InputDecoration(labelText: 'Forename'),
                         keyboardType: TextInputType.name,
                         autocorrect: false,
                         textCapitalization: TextCapitalization.none,
@@ -120,7 +127,8 @@ class _AddProfileState extends State<AddProfile> {
                         label: const Text("Add Profile"),
                         style: TextButton.styleFrom(
                           foregroundColor: Colors.white, // Text color
-                          backgroundColor: Colors.blue, // Button background color
+                          backgroundColor:
+                              Colors.blue, // Button background color
                         ),
                       ),
                     ],
