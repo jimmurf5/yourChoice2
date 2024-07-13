@@ -20,7 +20,7 @@ class MessageCard {
     };
   }
 
-  // Static method to create MessageCard object from a Map
+  //  method to create MessageCard object from a Map
   static MessageCard fromMap(Map<String, dynamic> map) {
     return MessageCard(
       title: map['title'],

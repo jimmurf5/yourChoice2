@@ -28,7 +28,7 @@ void main() async {
 
   if (shouldSeedData) {
     final FirestoreService firestoreService = FirestoreService();
-    await firestoreService.addTemplateMessageCards(availMessageCards);
+    await firestoreService.seedData(availMessageCards, availableCategories);
   }
 
   runApp(const App());
