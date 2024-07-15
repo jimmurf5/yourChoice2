@@ -1,14 +1,15 @@
 
-
 class MessageCard {
   final String title;
   final String imageUrl;
   final int categoryId;
 
+
+  //constructor generates a new id or uses the one provided
   const MessageCard({
     required this.title,
     required this.imageUrl,
-    required this.categoryId
+    required this.categoryId,
   });
 
   // Method to convert MessageCard object to a Map
