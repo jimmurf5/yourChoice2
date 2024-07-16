@@ -1,16 +1,21 @@
+import 'package:uuid/uuid.dart';
+
+const uuid = Uuid();
 
 class MessageCard {
   final String title;
   final String imageUrl;
   final int categoryId;
+  final String messageCardId;
 
 
   //constructor generates a new id or uses the one provided
-  const MessageCard({
+  MessageCard({
+    String? messageCardId,
     required this.title,
     required this.imageUrl,
     required this.categoryId,
-  });
+  }): messageCardId = messageCardId ?? uuid.v4();
 
   // Method to convert MessageCard object to a Map
   Map<String, dynamic> toMap() {
@@ -18,6 +23,7 @@ class MessageCard {
       'title': title,
       'imageUrl': imageUrl,
       'categoryId': categoryId,
+      'messageCardId' : messageCardId,
     };
   }
 
@@ -27,6 +33,7 @@ class MessageCard {
       title: map['title'],
       imageUrl: map['imageUrl'],
       categoryId: map['categoryId'],
+      messageCardId: map['messageCardId'],
     );
   }
 

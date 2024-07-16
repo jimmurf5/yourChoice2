@@ -41,11 +41,13 @@ class FirestoreService {
     //fetch all templates
     QuerySnapshot templatesSnapshot = await templatesCollection.get();
 
-    // Duplicate each template and add to the profile's messageCards subcollection
+    // Duplicate each template and add to the profile's messageCards sub- collection
     for (QueryDocumentSnapshot<Object?> templateDoc in templatesSnapshot.docs) {
       Map<String, dynamic> templateData = templateDoc.data() as Map<String, dynamic>;
 
-      await profilesMessageCardsCollection.add(templateData);
+      MessageCard messageCard = MessageCard.fromMap(templateData);  //create messageCard object from the map, preserving the messageCardId
+
+      await profilesMessageCardsCollection.add(messageCard.toMap());
     }
     print('Seeded data has been duplicated for the new profile.');
   }
