@@ -133,22 +133,41 @@ class _AdminHomeState extends State<AdminHome> {
                             ],
                           ),
                           trailing: IconButton(
-                            onPressed: () {
-                              FirebaseFirestore.instance
+                            onPressed: () async {
+                              //store profile details for recall if desired
+                              final deletedProfile = profile.data() as Map<String, dynamic>;
+                              final profileId = profile.id;
+
+                              //delete profile
+                              await FirebaseFirestore.instance
                                   .collection('profiles')
                                   .doc(profile.id)
                                   .delete()
                                   .then((_) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
+                                   SnackBar(
+                                      duration:
+                                          const Duration(seconds: 10),
                                       content:
-                                          Text('Profile deleted successfully')),
+                                          const Text('Profile deleted successfully'),
+                                    action: SnackBarAction(
+                                        label: 'UNDO',
+                                        onPressed: ()  {
+                                          // Restore the deleted profile
+                                          FirebaseFirestore.instance
+                                              .collection('profiles')
+                                              .doc(profileId)
+                                              .set(deletedProfile);
+                                        }
+                                    ),
+                                  ),
                                 );
                               }).catchError((error) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                       content:
-                                          Text('Failed to delete profile')),
+                                          Text('Failed to delete profile')
+                                  ),
                                 );
                               });
                             },
