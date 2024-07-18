@@ -112,6 +112,26 @@ class _CommunicationHubState extends State<CommunicationHub> {
               )
           ),
           //horizontally scrolling row for the categories
+          Container(
+            height: 50.0,
+            child: StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance.collection('categories').snapshots(),
+              builder: (context, snapshot){
+                if(!snapshot.hasData){
+                  //check to make sure snapshot has data and is not null
+                  return const Center(child: CircularProgressIndicator());
+                }
+                final categories = snapshot.data!.docs;
+                return ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: categories.length,
+                    itemBuilder: (context, index){
+                      final category = categories[index]
+                    }
+                );
+              },
+            ),
+          )
         ],
       ),
     );
