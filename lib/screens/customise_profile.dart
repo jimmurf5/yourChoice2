@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:your_choice/screens/communication_hub.dart';
 
 class CustomiseProfile extends StatelessWidget {
   final String profileId;
   final String profileName;
 
-  const CustomiseProfile({super.key, required this.profileId, required this.profileName});
+  const CustomiseProfile(
+      {super.key, required this.profileId, required this.profileName});
 
   @override
   Widget build(BuildContext context) {
@@ -28,8 +30,7 @@ class CustomiseProfile extends StatelessWidget {
               onPressed: () {
                 // code to allow colour to be adjusted
               },
-              icon: const Icon(Icons.palette_outlined)
-          ),
+              icon: const Icon(Icons.palette_outlined)),
         ],
       ),
       body: Center(
@@ -37,7 +38,7 @@ class CustomiseProfile extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SizedBox(
-              width: 300, // set the desired width for the buttons
+              width: 300, //width for the buttons
               child: ElevatedButton.icon(
                 onPressed: () {
                   // code here to go to tree page and pass profileId
@@ -48,7 +49,7 @@ class CustomiseProfile extends StatelessWidget {
             ),
             const SizedBox(height: 40),
             SizedBox(
-              width: 300, // set the desired width for the buttons
+              width: 300, // width for the buttons
               child: ElevatedButton.icon(
                 onPressed: () {
                   // code here to go to manage cards and pass profileId
@@ -59,10 +60,17 @@ class CustomiseProfile extends StatelessWidget {
             ),
             const SizedBox(height: 40),
             SizedBox(
-              width: 300, // set the desired width for the buttons
+              width: 300, //  width for the buttons
               child: ElevatedButton.icon(
                 onPressed: () {
-                  // code here to go to profile and pass profileId
+                  //navigate to communication hub on pressed
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          CommunicationHub(profileId: profileId),
+                    )
+                  );
                 },
                 icon: const Icon(FontAwesomeIcons.toggleOn),
                 label: const Text("Profile Mode"),

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:your_choice/models/message_card.dart';
 import 'package:your_choice/widgets/category_item.dart';
@@ -10,6 +11,7 @@ import '../models/category.dart';
 class CommunicationHub extends StatefulWidget {
   final String profileId;
 
+
   const CommunicationHub({super.key, required this.profileId});
 
   @override
@@ -18,11 +20,39 @@ class CommunicationHub extends StatefulWidget {
   }
 }
 
+
 class _CommunicationHubState extends State<CommunicationHub> {
+  FlutterTts flutterTts = FlutterTts();  //initialise flutter tts
   //default the selected category to category 3
   int selectedCategory = 3;
   //a list to hold the cards that are selected by a profile user's clicks
   List<MessageCard> selectedCards = [];
+
+  @override
+  void initState() {
+    super.initState();
+    initializeTts();
+  }
+
+  void initializeTts(){
+    flutterTts = FlutterTts();
+    flutterTts.setLanguage("en-UK");
+    flutterTts.setSpeechRate(0.5);
+    flutterTts.setVolume(1.0);
+    flutterTts.setPitch(1.0);
+
+    flutterTts.setStartHandler(() {
+      print("TTS Started");
+    });
+
+    flutterTts.setCompletionHandler(() {
+      print("TTS Completed");
+    });
+
+    flutterTts.setErrorHandler((msg) {
+      print("TTS Error: $msg");
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +65,7 @@ class _CommunicationHubState extends State<CommunicationHub> {
         children: [
           //this is a panel to display clicked message cards
           Container(
-            height: 120,
+            height: 150,
             color: Theme.of(context).colorScheme.onSecondary,
             child: Center(
               child: Row(
@@ -77,15 +107,20 @@ class _CommunicationHubState extends State<CommunicationHub> {
                 stream: FirebaseFirestore.instance
                 .collection('profiles')
                 .doc(widget.profileId)
-                    .collection('message_cards')
+                    .collection('messageCards')
                     .where('categoryId', isEqualTo: selectedCategory)
                     .snapshots(),
                 builder: (context, snapshot) {
+                  // Check for any errors
+                  if (snapshot.hasError) {
+                    print("Error fetching data: ${snapshot.error}");
+                    return Center(child: Text('Error fetching data: ${snapshot.error}'));
+                  }
                   if(!snapshot.hasData){
                     return const Center(child: CircularProgressIndicator());
                   }
-                  final cardDeck = snapshot.data!.docs.map(
-                      (doc){
+                  final cardDeck = snapshot.data!.docs.map((doc){
+                        print("MessageCard Data: ${doc.data()}");
                         return MessageCard.fromMap(doc.data() as Map<String, dynamic>);
                       }
                   ).toList();
@@ -106,6 +141,8 @@ class _CommunicationHubState extends State<CommunicationHub> {
                                 selectedCards.add(card);
                               }
                             });
+                            //read out the title of the messageCard on tap
+                            flutterTts.speak(card.title);
                           },
                           child: MessageCardItem(messageCard: card),
                         );
@@ -116,7 +153,7 @@ class _CommunicationHubState extends State<CommunicationHub> {
           ),
           //horizontally scrolling row for the categories
           SizedBox(
-            height: 100.0,
+            height: 120.0,
             child: StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance.collection('categories').snapshots(),
               builder: (context, snapshot){
@@ -133,13 +170,16 @@ class _CommunicationHubState extends State<CommunicationHub> {
                     itemBuilder: (context, index){
                       final category = categories[index];
                       return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 5.0),
                         child: GestureDetector(
                           //set the category on tap of any of the scrollable categories
                           onTap: () {
                             setState(() {
+                              print("Selected Category ID: ${category.categoryId}");
                               selectedCategory = category.categoryId;
                             });
+                            //read out the category of the messageCard on tap
+                            flutterTts.speak(category.title);
                           },
                           child: CategoryItem(category: category), //use category item widget to display categories
                         ),

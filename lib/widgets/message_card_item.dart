@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:your_choice/models/message_card.dart';
 
 class MessageCardItem extends StatelessWidget {
@@ -16,11 +17,15 @@ class MessageCardItem extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.network(
+            SvgPicture.network(
               messageCard.imageUrl,
               height: 80,
               width: 80,
               fit: BoxFit.cover,
+              placeholderBuilder: (BuildContext context) => Container(
+                padding: const EdgeInsets.all(30.0),
+                child: const CircularProgressIndicator(),
+              ),
             ),
             const SizedBox(height: 8),
             Text(
@@ -30,7 +35,7 @@ class MessageCardItem extends StatelessWidget {
               style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white
+                  color: Colors.black
               ),
             )
           ],
