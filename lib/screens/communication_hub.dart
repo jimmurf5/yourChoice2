@@ -2,7 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:your_choice/models/message_card.dart';
+import 'package:your_choice/widgets/category_item.dart';
 import 'package:your_choice/widgets/message_card_item.dart';
+
+import '../models/category.dart';
 
 class CommunicationHub extends StatefulWidget {
   final String profileId;
@@ -89,7 +92,7 @@ class _CommunicationHubState extends State<CommunicationHub> {
                   return GridView.builder(
                       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 3,
-                        mainAxisExtent: 4.0,
+                        mainAxisSpacing: 4.0,
                         crossAxisSpacing: 4.0,
                         childAspectRatio: 0.75,
                       ),
@@ -112,8 +115,8 @@ class _CommunicationHubState extends State<CommunicationHub> {
               )
           ),
           //horizontally scrolling row for the categories
-          Container(
-            height: 50.0,
+          SizedBox(
+            height: 100.0,
             child: StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance.collection('categories').snapshots(),
               builder: (context, snapshot){
@@ -121,12 +124,26 @@ class _CommunicationHubState extends State<CommunicationHub> {
                   //check to make sure snapshot has data and is not null
                   return const Center(child: CircularProgressIndicator());
                 }
-                final categories = snapshot.data!.docs;
+                final categories = snapshot.data!.docs.map((doc){
+                  return Category.fromMap(doc.data() as Map<String, dynamic>);
+                }).toList();
                 return ListView.builder(
                     scrollDirection: Axis.horizontal,
                     itemCount: categories.length,
                     itemBuilder: (context, index){
-                      final category = categories[index]
+                      final category = categories[index];
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: GestureDetector(
+                          //set the category on tap of any of the scrollable categories
+                          onTap: () {
+                            setState(() {
+                              selectedCategory = category.categoryId;
+                            });
+                          },
+                          child: CategoryItem(category: category), //use category item widget to display categories
+                        ),
+                      );
                     }
                 );
               },
