@@ -7,6 +7,7 @@ class MessageCard {
   final String imageUrl;
   final int categoryId;
   final String messageCardId;
+  int selectionCount;
 
 
   //constructor generates a new id or uses the one provided
@@ -15,6 +16,7 @@ class MessageCard {
     required this.title,
     required this.imageUrl,
     required this.categoryId,
+    this.selectionCount = 0   // initialise the selection count to zero
   }): messageCardId = messageCardId ?? uuid.v4();
 
   // Method to convert MessageCard object to a Map
@@ -24,6 +26,7 @@ class MessageCard {
       'imageUrl': imageUrl,
       'categoryId': categoryId,
       'messageCardId' : messageCardId,
+      'selectionCount' : selectionCount,
     };
   }
 
@@ -34,6 +37,7 @@ class MessageCard {
       imageUrl: map['imageUrl'],
       categoryId: map['categoryId'],
       messageCardId: map['messageCardId'],
+      selectionCount: map['selectionCount'] ?? 0,
     );
   }
 
