@@ -80,21 +80,29 @@ class _CommunicationHubState extends State<CommunicationHub> {
               ),
             ),
           ),
-          // row with play button and trash can to read the selected cards and clear them respectively
+          // row with play button and trash can to read the selected cards
+          // and clear them respectively
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               IconButton(
-                onPressed: () {
-                  //code to read the message cards in the above container
+                //on pressed tts to read out the maximum of three items
+                // held in the selected cards list
+                //shown in the display panel
+                onPressed: () async {
+                  for (var card in selectedCards) {
+                    await flutterTts.speak(card.title);
+                    await flutterTts.awaitSpeakCompletion(true);
+                  }
                 },
                 icon: const Icon(FontAwesomeIcons.play),
               ),
               IconButton(
-                onPressed: () {
+                onPressed: () async {
                   setState(() {
                     selectedCards.clear();
                   });
+                    await flutterTts.speak('Clear!');
                 },
                 icon: const Icon(FontAwesomeIcons.trashCan),
               ),
@@ -135,14 +143,14 @@ class _CommunicationHubState extends State<CommunicationHub> {
                       itemBuilder: (context, index) {
                         final card = cardDeck[index];
                         return GestureDetector(
-                          onTap: () {
+                          onTap: () async {
                             setState(() {
                               if (selectedCards.length < 3){
                                 selectedCards.add(card);
                               }
                             });
                             //read out the title of the messageCard on tap
-                            flutterTts.speak(card.title);
+                            await flutterTts.speak(card.title);
                           },
                           child: MessageCardItem(messageCard: card),
                         );
@@ -173,13 +181,13 @@ class _CommunicationHubState extends State<CommunicationHub> {
                         padding: const EdgeInsets.symmetric(horizontal: 5.0),
                         child: GestureDetector(
                           //set the category on tap of any of the scrollable categories
-                          onTap: () {
+                          onTap: () async {
                             setState(() {
                               print("Selected Category ID: ${category.categoryId}");
                               selectedCategory = category.categoryId;
                             });
                             //read out the category of the messageCard on tap
-                            flutterTts.speak(category.title);
+                            await flutterTts.speak(category.title);
                           },
                           child: CategoryItem(category: category), //use category item widget to display categories
                         ),
