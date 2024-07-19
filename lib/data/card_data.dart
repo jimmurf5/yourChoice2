@@ -272,7 +272,7 @@ final availMessageCards = [
   ),
   MessageCard(
       title: 'I don\'t understand',
-      imageUrl: 'https://openmoji.org/data/color/svg/1F45E.svg',
+      imageUrl: 'https://openmoji.org/data/color/svg/1F615.svg',
       categoryId: 8
   ),
   MessageCard(
@@ -311,12 +311,12 @@ final availMessageCards = [
       categoryId: 9
   ),
   MessageCard(
-      title: 'What time is it?',
+      title: 'What\'s the time',
       imageUrl: 'https://openmoji.org/data/color/svg/1F570.svg',
       categoryId: 9
   ),
   MessageCard(
-      title: 'I need the bathroom',
+      title: 'Bathroom',
       imageUrl: 'https://openmoji.org/data/color/svg/1F6BB.svg',
       categoryId: 9
   ),
