@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:your_choice/screens/communication_hub.dart';
+import 'package:your_choice/screens/manage_cards.dart';
 
 class CustomiseProfile extends StatelessWidget {
   final String profileId;
@@ -52,7 +53,14 @@ class CustomiseProfile extends StatelessWidget {
               width: 300, // width for the buttons
               child: ElevatedButton.icon(
                 onPressed: () {
-                  // code here to go to manage cards and pass profileId
+                  //navigate to manage cards on pressed
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              ManageCards(profileId: profileId),
+                      ),
+                  );
                 },
                 icon: const Icon(FontAwesomeIcons.plus),
                 label: const Text("Manage Cards"),
