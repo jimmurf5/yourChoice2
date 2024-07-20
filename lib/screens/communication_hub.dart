@@ -59,6 +59,7 @@ class _CommunicationHubState extends State<CommunicationHub> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Communication Hub'),
+        backgroundColor: Theme.of(context).colorScheme.primary,
         //remove the default arrow provided by flutter in the app bar
         automaticallyImplyLeading: false,
         leading: //button to navigate profile to saved decision trees
@@ -66,7 +67,9 @@ class _CommunicationHubState extends State<CommunicationHub> {
                 onPressed: () {
                   //logic to show decision tress
                 },
-                icon: const Icon(FontAwesomeIcons.tree)),
+                icon: const Icon(FontAwesomeIcons.tree),
+              color: Theme.of(context).colorScheme.inversePrimary,
+            ),
         actions: <Widget>[
           //only allow profile to leave the comm hub screen on a long press
           //call on long press widget
@@ -105,6 +108,17 @@ class _CommunicationHubState extends State<CommunicationHub> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 IconButton(
+                  onPressed: () async {
+                    setState(() {
+                      selectedCards.clear();
+                    });
+                    await flutterTts.speak('Clear!');
+                  },
+                  icon: const Icon(FontAwesomeIcons.trashCan),
+                  iconSize:25,
+                  color: Theme.of(context).colorScheme.inversePrimary,
+                ),
+                IconButton(
                   //on pressed tts to read out the maximum of three items
                   // held in the selected cards list
                   //shown in the display panel
@@ -115,15 +129,9 @@ class _CommunicationHubState extends State<CommunicationHub> {
                     }
                   },
                   icon: const Icon(FontAwesomeIcons.play),
-                ),
-                IconButton(
-                  onPressed: () async {
-                    setState(() {
-                      selectedCards.clear();
-                    });
-                    await flutterTts.speak('Clear!');
-                  },
-                  icon: const Icon(FontAwesomeIcons.trashCan),
+                  iconSize:45,
+                  alignment: Alignment.center,
+                  color: Theme.of(context).colorScheme.inversePrimary,
                 ),
               ],
             ),
@@ -226,7 +234,7 @@ class _CommunicationHubState extends State<CommunicationHub> {
                     )),
           //horizontally scrolling row for the categories
           Container(
-            color: Theme.of(context).colorScheme.onSecondaryContainer,
+            color: Theme.of(context).colorScheme.onSecondary,
             child: SizedBox(
               height: 120.0,
               child: StreamBuilder<QuerySnapshot>(

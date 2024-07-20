@@ -34,6 +34,7 @@ class _AdminHomeState extends State<AdminHome> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.primary,
         title: Column(
           children: [
             const Text('Admin Home'),
@@ -60,6 +61,7 @@ class _AdminHomeState extends State<AdminHome> {
       body: Center(
         child: Column(
           children: [
+            const SizedBox(height: 20),
             ElevatedButton.icon(
               onPressed: () {
                 Navigator.push(
@@ -126,7 +128,7 @@ class _AdminHomeState extends State<AdminHome> {
                                 style: TextButton.styleFrom(
                                   foregroundColor: Colors.white, // Text color
                                   backgroundColor:
-                                      Colors.blue, // Button background color
+                                      Theme.of(context).colorScheme.inversePrimary, // Button background color
                                 ),
                                 child: const Text('Select'),
                               ),

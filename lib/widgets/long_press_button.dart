@@ -37,6 +37,7 @@ class LongPressButtonState extends State<LongPressButton> {
       child: IconButton(
         onPressed: () {},
         icon: const Icon(FontAwesomeIcons.bars),
+        color: Theme.of(context).colorScheme.inversePrimary,
       ),
     );
   }
