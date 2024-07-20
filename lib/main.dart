@@ -40,7 +40,7 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'FlutterChat',
+      debugShowCheckedModeBanner: false, // Remove the debug banner
       theme: theme,
       home: StreamBuilder(
           stream: FirebaseAuth.instance.authStateChanges(),

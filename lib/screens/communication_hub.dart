@@ -4,6 +4,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:your_choice/models/message_card.dart';
 import 'package:your_choice/widgets/category_item.dart';
+import 'package:your_choice/widgets/long_press_button.dart';
 import 'package:your_choice/widgets/message_card_item.dart';
 import 'package:your_choice/services/message_card_service.dart';
 import '../models/category.dart';
@@ -58,6 +59,23 @@ class _CommunicationHubState extends State<CommunicationHub> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Communication Hub'),
+        //remove the default arrow provided by flutter in the app bar
+        automaticallyImplyLeading: false,
+        leading: //button to navigate profile to saved decision trees
+            IconButton(
+                onPressed: () {
+                  //logic to show decision tress
+                },
+                icon: const Icon(FontAwesomeIcons.tree)),
+        actions: <Widget>[
+          //only allow profile to leave the comm hub screen on a long press
+          //call on long press widget
+          //current long press set at 8 seconds
+          LongPressButton(
+            onLongPressCompleted: Navigator.of(context)
+                .pop, //pop back to admin home on successful long press
+          ),
+        ],
       ),
       backgroundColor: Theme.of(context).colorScheme.primary,
       body: Column(

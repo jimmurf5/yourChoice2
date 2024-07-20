@@ -23,7 +23,7 @@ class MessageCardItem extends StatelessWidget {
               width: 80,
               fit: BoxFit.cover,
               placeholderBuilder: (BuildContext context) => Container(
-                padding: const EdgeInsets.all(30.0),
+                padding: const EdgeInsets.all(20.0),
                 child: const CircularProgressIndicator(),
               ),
             ),
