@@ -37,6 +37,7 @@ class ImageUploadService {
       // Save the image URL and other details to Firestore
       // by creating a message card without using the messageCard
       // constructor from the messageCard class
+      //set count to zero and category to 2 (original)
       await _firestore
           .collection('profiles')
           .doc(profileId)
@@ -45,7 +46,7 @@ class ImageUploadService {
         'title': title,
         'selectionCount': 0,
         'messageCardId': uniqueImageId,
-        'categoryId': 1,
+        'categoryId': 2,
         'imageUrl': imageUrl
       });
       print('Data saved to Firestore under profileId: $profileId');

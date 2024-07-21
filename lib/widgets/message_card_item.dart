@@ -17,7 +17,10 @@ class MessageCardItem extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SvgPicture.network(
+            //a ternary operate to handle possibility of imageUrl
+            //being svg or jpg
+            (messageCard.imageUrl.endsWith('svg'))
+            ? SvgPicture.network(
               messageCard.imageUrl,
               height: 80,
               width: 80,
@@ -26,6 +29,23 @@ class MessageCardItem extends StatelessWidget {
                 padding: const EdgeInsets.all(20.0),
                 child: const CircularProgressIndicator(),
               ),
+            )
+            : Image.network(
+              messageCard.imageUrl,
+              height: 80,
+              width: 80,
+              fit: BoxFit.cover,
+              loadingBuilder: (BuildContext context, Widget child,
+                  ImageChunkEvent? loadingProgress) {
+                if (loadingProgress == null) {
+                  return child;
+                } else {
+                  return Container(
+                    padding: const EdgeInsets.all(20.0),
+                    child: const CircularProgressIndicator(),
+                  );
+                }
+              },
             ),
             const SizedBox(height: 8),
             Text(
