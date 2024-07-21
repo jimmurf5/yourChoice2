@@ -38,7 +38,7 @@ class ImageUploadService {
       // by creating a message card without using the messageCard
       // constructor from the messageCard class
       await _firestore
-          .collection('profile')
+          .collection('profiles')
           .doc(profileId)
           .collection('messageCards')
           .add({

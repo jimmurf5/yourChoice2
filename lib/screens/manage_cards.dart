@@ -102,7 +102,7 @@ class _ManageCardsState extends State<ManageCards> {
               decoration: const InputDecoration(labelText: 'Card Title'),
               controller: _titleController,
               style: TextStyle(
-                color: Theme.of(context).colorScheme.onInverseSurface,
+                color: Theme.of(context).colorScheme.secondary,
               ),
             ),
             const SizedBox(height: 20),
