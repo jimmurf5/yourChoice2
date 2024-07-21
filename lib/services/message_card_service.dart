@@ -8,6 +8,8 @@ class MessageCardService {
 
   MessageCardService({required this.profileId});
 
+  ///method to retrieve and increment the selection count from
+  ///firestore of a selected MessageCard
   Future<void> selectCard(MessageCard card) async {
     CollectionReference cardCollection = _firestore
         .collection('profiles')
@@ -65,7 +67,7 @@ class MessageCardService {
     await updateHistoryCategory();
   }
 
-  //return the top 12 selected messageCards
+  ///return the top 12 selected messageCards
   Future<List<MessageCard>> updateHistoryCategory() async {
     print("Updating history category with top 12 selected message cards.");
     //query the db for the top 12 selected message cards

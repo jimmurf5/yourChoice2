@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:your_choice/services/image_upload_service.dart';
 import 'package:your_choice/widgets/image_input.dart';
+import 'dart:io';
 
 class ManageCards extends StatefulWidget {
   final String profileId;
@@ -15,6 +17,66 @@ class ManageCards extends StatefulWidget {
 
 class _ManageCardsState extends State<ManageCards> {
   final _titleController = TextEditingController();
+  File? _takenImage;
+  // Create an instance of the ImageUploadService to handle image uploads
+  // and saving data to Firestore
+  final ImageUploadService _imageUploadService = ImageUploadService();
+
+  Future<void> _uploadImage() async {
+    print('Upload Image method called');
+
+    // Make sure that image and title are provided
+    if (_takenImage == null || _titleController.text.isEmpty) {
+      print('Image or title is missing');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Title and Image are required.'),
+        ),
+      );
+      return;
+    }
+
+    // Make sure the title is not too long
+    if (_titleController.text.length > 10) {
+      print('Title is too long');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Title must be 10 characters or less'),
+        ),
+      );
+      return;
+    }
+
+    try {
+      print('Attempting to upload image and save data');
+      await _imageUploadService.upLoadImageAndSaveData(
+        _takenImage!,
+        _titleController.text,
+        widget.profileId,
+      );
+
+      print('Image and data saved successfully');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Image and message saved successfully!'),
+        ),
+      );
+
+      // Clear the state after saving
+      setState(() {
+        _takenImage = null;
+        _titleController.clear();
+      });
+      print('State cleared');
+    } catch (error) {
+      print('Error occurred: $error');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to save image and message!'),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +92,7 @@ class _ManageCardsState extends State<ManageCards> {
             const SizedBox(height: 20),
             ElevatedButton.icon(
               onPressed: () {
-                //go to make custom card, add code here
+                // Go to make custom card, add code here
               },
               label: const Text('Curate Cards'),
               icon: const Icon(FontAwesomeIcons.usersGear),
@@ -44,11 +106,20 @@ class _ManageCardsState extends State<ManageCards> {
               ),
             ),
             const SizedBox(height: 20),
-            const ImageInput(),
+            ImageInput(
+              onPickedImage: (pickedImage) {
+                print('Image picked: ${pickedImage.path}');
+                setState(() {
+                  _takenImage = pickedImage;
+                });
+              },
+            ),
             const SizedBox(height: 20),
             ElevatedButton.icon(
+              // Send image to file store and store the storage ref
               onPressed: () {
-                //save the pic
+                print('Create Card button pressed');
+                _uploadImage();
               },
               icon: const Icon(FontAwesomeIcons.plus),
               label: const Text('Create Card'),

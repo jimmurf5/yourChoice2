@@ -2,9 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:your_choice/models/message_card.dart';
 import 'package:your_choice/models/category.dart';
 
+
 class FirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
+  ///method to seed messageCards to the db in firestore
   Future<void> addTemplateMessageCards(List<MessageCard> templates) async {
     CollectionReference templatesCollection = _db.collection('templates');
 
@@ -15,6 +17,7 @@ class FirestoreService {
     print('Templates have been added successfully.');
   }
 
+  ///method seed categories to the db in firestore
   Future<void>addCategories(List<Category> categories) async {
     CollectionReference categoriesCollection = _db.collection('categories');
 
@@ -25,6 +28,7 @@ class FirestoreService {
     print('Categories have been added successfully');
   }
 
+  ///method to call the above two methods
   Future<void> seedData(List<MessageCard> templates, List<Category> categories) async {
     await addTemplateMessageCards(templates);
     await addCategories(categories);
