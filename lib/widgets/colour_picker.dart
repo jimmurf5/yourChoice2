@@ -17,6 +17,18 @@ class ColourPicker extends ConsumerStatefulWidget {
 class _ColourPickerState extends ConsumerState<ColourPicker> {
   Color _currentColour = Colors.blue; // Default colour
 
+  //limit the available colours
+  List<Color> availColours = [
+    Colors.red,
+    Colors.deepPurple,
+    Colors.blue,
+    Colors.yellow,
+    Colors.greenAccent,
+    Colors.deepOrangeAccent,
+    Colors.pink,
+    Colors.green
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -33,6 +45,7 @@ class _ColourPickerState extends ConsumerState<ColourPicker> {
         children: [
           BlockPicker(
             pickerColor: _currentColour,
+            availableColors: availColours,
             onColorChanged: (colour) {
               setState(() {
                 _currentColour = colour;
