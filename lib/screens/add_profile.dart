@@ -42,7 +42,7 @@ class _AddProfileState extends State<AddProfile> {
           await FirebaseFirestore.instance.collection('profiles').add({
         'forename': _enteredForename,
         'surname': _enteredSurname,
-        'createdAt': Timestamp.now(), // Adding a timestamp
+        'colour':Theme.of(context).colorScheme.primary.value, // store color initially as the users seed colour
         'createdBy': myUid, // Adding the createdBy field
       });
 

@@ -22,6 +22,14 @@ class _ManageCardsState extends State<ManageCards> {
   // and saving data to Firestore
   final ImageUploadService _imageUploadService = ImageUploadService();
 
+  // The dispose method is called automatically when the widget
+  // is removed from the widget tree
+  @override
+  void dispose() {
+    _titleController.dispose(); // Clean up the controller when the widget is disposed
+    super.dispose();
+  }
+
   Future<void> _uploadImage() async {
     print('Upload Image method called');
 

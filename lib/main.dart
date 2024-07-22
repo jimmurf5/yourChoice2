@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:your_choice/screens/auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:your_choice/screens/splash_screen.dart';
@@ -31,7 +32,7 @@ void main() async {
     await firestoreService.seedData(availMessageCards, availableCategories);
   }
 
-  runApp(const App());
+  runApp(const ProviderScope(child: App())); //Wrap app with provider scope
 }
 
 class App extends StatelessWidget {

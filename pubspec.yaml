@@ -45,6 +45,8 @@ dependencies:
   flutter_tts: ^4.0.2
   image_picker: ^1.1.2
   firebase_storage: ^12.1.1
+  flutter_colorpicker: ^1.1.0
+  state_notifier: ^1.0.0
 
 dev_dependencies:
   flutter_test:

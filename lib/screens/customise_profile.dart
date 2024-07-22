@@ -1,26 +1,48 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:your_choice/providers/profile_colours_notifier.dart';
 import 'package:your_choice/screens/communication_hub.dart';
 import 'package:your_choice/screens/manage_cards.dart';
+import 'package:your_choice/widgets/colour_picker.dart';
 
-class CustomiseProfile extends StatelessWidget {
+class CustomiseProfile extends ConsumerStatefulWidget {
   final String profileId;
   final String profileName;
 
   const CustomiseProfile(
-      {super.key, required this.profileId, required this.profileName});
+      {super.key,
+        required this.profileId,
+        required this.profileName
+      });
+
+  @override
+  ConsumerState<CustomiseProfile> createState() => _CustomiseProfileState();
+}
+
+class _CustomiseProfileState extends ConsumerState<CustomiseProfile> {
+  ///method to open the modal bottom sheet
+  void _openChangeColourOverlay() {
+    showModalBottomSheet(
+      context: context,
+      builder: (ctx) => ColourPicker(profileId: widget.profileId),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    //watch the colour provider for the specific profile
+    final colour = ref.watch(profileColoursProvider(widget.profileId)) ?? Colors.blue;
+
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.primary,
+        backgroundColor: colour,  //use the colour from the provider
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const Text('Customise Profile'),
             Text(
-              'Profile name: $profileName',
+              'Profile name: ${widget.profileName}',
               style: const TextStyle(
                 fontSize: 12.0,
               ),
@@ -29,9 +51,7 @@ class CustomiseProfile extends StatelessWidget {
         ),
         actions: [
           IconButton(
-              onPressed: () {
-                // code to allow colour to be adjusted
-              },
+              onPressed: _openChangeColourOverlay,
               icon: const Icon(Icons.palette_outlined)),
         ],
       ),
@@ -56,11 +76,11 @@ class CustomiseProfile extends StatelessWidget {
                 onPressed: () {
                   //navigate to manage cards on pressed
                   Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              ManageCards(profileId: profileId),
-                      ),
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          ManageCards(profileId: widget.profileId),
+                    ),
                   );
                 },
                 icon: const Icon(FontAwesomeIcons.plus),
@@ -74,12 +94,11 @@ class CustomiseProfile extends StatelessWidget {
                 onPressed: () {
                   //navigate to communication hub on pressed
                   Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          CommunicationHub(profileId: profileId),
-                    )
-                  );
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            CommunicationHub(profileId: widget.profileId),
+                      ));
                 },
                 icon: const Icon(FontAwesomeIcons.toggleOn),
                 label: const Text("Profile Mode"),
