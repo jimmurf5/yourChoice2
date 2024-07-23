@@ -271,7 +271,7 @@ final availMessageCards = [
       categoryId: 8
   ),
   MessageCard(
-      title: 'I don\'t understand',
+      title: 'Confused',
       imageUrl: 'https://openmoji.org/data/color/svg/1F615.svg',
       categoryId: 8
   ),
@@ -311,7 +311,7 @@ final availMessageCards = [
       categoryId: 9
   ),
   MessageCard(
-      title: 'What\'s the time',
+      title: 'What time',
       imageUrl: 'https://openmoji.org/data/color/svg/1F570.svg',
       categoryId: 9
   ),
