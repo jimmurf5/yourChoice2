@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:your_choice/screens/choose_photo.dart';
 import 'package:your_choice/services/image_upload_service.dart';
 import 'package:your_choice/widgets/image_input.dart';
 import 'dart:io';
+
+//define an enum to represent the source of the image
+enum ImageSourceOption { camera, gallery }
 
 class ManageCards extends StatefulWidget {
   final String profileId;
@@ -86,6 +91,25 @@ class _ManageCardsState extends State<ManageCards> {
     }
   }
 
+  // Unified method to pick an image from camera or gallery
+  //takes an enum as a parameter
+  Future<void> _pickImage(ImageSourceOption option) async {
+    final picker = ImagePicker();
+    //returns a image source of type camera or gallery
+    // depending on imageSourceOption input to the method
+    final pickedImage = await picker.pickImage(
+      source: option == ImageSourceOption.camera
+          ? ImageSource.camera : ImageSource.gallery,
+      maxWidth: 600,
+    );
+
+    if (pickedImage != null) {
+      setState(() {
+        _takenImage = File(pickedImage.path);
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -97,7 +121,7 @@ class _ManageCardsState extends State<ManageCards> {
         padding: const EdgeInsets.all(12),
         child: Column(
           children: [
-            const SizedBox(height: 20),
+            const SizedBox(height: 30),
             ElevatedButton.icon(
               onPressed: () {
                 // Go to make custom card, add code here
@@ -105,7 +129,7 @@ class _ManageCardsState extends State<ManageCards> {
               label: const Text('Curate Cards'),
               icon: const Icon(FontAwesomeIcons.usersGear),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 70),
             TextField(
               decoration: const InputDecoration(labelText: 'Card Title'),
               controller: _titleController,
@@ -113,7 +137,7 @@ class _ManageCardsState extends State<ManageCards> {
                 color: Theme.of(context).colorScheme.secondary,
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 50),
             ImageInput(
               onPickedImage: (pickedImage) {
                 print('Image picked: ${pickedImage.path}');
@@ -122,7 +146,7 @@ class _ManageCardsState extends State<ManageCards> {
                 });
               },
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 50),
             ElevatedButton.icon(
               // Send image to file store and store the storage ref
               onPressed: () {

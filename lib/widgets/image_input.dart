@@ -18,44 +18,55 @@ class ImageInput extends StatefulWidget {
 
 class _ImageInputState extends State<ImageInput> {
   //declare variable of type file to hold the taken image
-  File? _takenImage;
+  File? _pickedImage;
 
-  void _takePicture() async {
+  void _pickImage(ImageSource source) async {
     //create a new image picker object by instantiating the image picker class
     final imagePicker = ImagePicker();
     //call the pick image method
     final pickedImage =
-        await imagePicker.pickImage(source: ImageSource.camera, maxWidth: 600);
+        await imagePicker.pickImage(source: source, maxWidth: 600);
 
     if (pickedImage == null) {
       return;
     }
 
-    //convert return Xfile to file and assign to taken image if not null
+    //convert return Xfile to file and assign to picked image if not null
     //and set state to update the UI
     setState(() {
-      _takenImage = File(pickedImage.path);
+      _pickedImage = File(pickedImage.path);
     });
 
-    //execute on picked image and pass file containing taken image
-    widget.onPickedImage(_takenImage!);
+    //execute on picked image and pass file containing picked image
+    widget.onPickedImage(_pickedImage!);
   }
 
   @override
   Widget build(BuildContext context) {
-    //render button conditionally, if taken image not null, preview the image
-    Widget content = TextButton.icon(
-      icon: const Icon(Icons.camera),
-      onPressed: _takePicture,
-      label: const Text('Take Picture'),
+    //render buttons for camera and gallery selection
+    Widget content = Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        TextButton.icon(
+          icon: const Icon(Icons.camera),
+          onPressed: () => _pickImage(ImageSource.camera), // <-- Use _pickImage with ImageSource.camera
+          label: const Text('Take Picture'),
+        ),
+        const SizedBox(height: 45),
+        TextButton.icon(
+          icon: const Icon(Icons.photo_library),
+          onPressed: () => _pickImage(ImageSource.gallery), // <-- Use _pickImage with ImageSource.gallery
+          label: const Text('Choose from Gallery'),
+        ),
+      ],
     );
 
     //wrap in gesture detector to allow image to be tapped and retaken
-    if (_takenImage != null) {
+    if (_pickedImage != null) {
       content = GestureDetector(
-        onTap: _takePicture,
+        onTap: () => _pickImage(ImageSource.camera),
         child: Image.file(
-          _takenImage!,
+          _pickedImage!,
           fit: BoxFit.cover,
           width: double.infinity,
           height: double.infinity,
