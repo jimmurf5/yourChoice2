@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../notifiers/theme_notifier.dart';
 import '../providers/profile_colours_notifier.dart';
 
 class ColourPicker extends ConsumerStatefulWidget {
@@ -51,7 +52,9 @@ class _ColourPickerState extends ConsumerState<ColourPicker> {
                 _currentColour = colour;
               });
               ref.read(profileColoursProvider(widget.profileId).notifier).updateProfileColour(colour);
-            },
+              //update the global theme
+              ref.read(themeNotifierProvider.notifier).updateSeedColour(colour);
+              },
           ),
           ElevatedButton(
             onPressed: () {

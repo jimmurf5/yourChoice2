@@ -8,15 +8,15 @@ import 'package:your_choice/services/firestore_service.dart';
 import 'firebase_options.dart';
 import 'package:your_choice/screens/admin_home.dart';
 import 'package:your_choice/data/card_data.dart';
+import 'package:your_choice/notifiers/theme_notifier.dart';
 
 //set theme data
-final theme = ThemeData(
+/*final theme = ThemeData(
   colorScheme: ColorScheme.fromSeed(
     seedColor: const Color.fromARGB(255, 63, 17, 177),
   ),
   useMaterial3: true,
-  // textTheme: GoogleFonts.robotoTextTheme(),
-);
+);*/
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,11 +35,20 @@ void main() async {
   runApp(const ProviderScope(child: App())); //Wrap app with provider scope
 }
 
-class App extends StatelessWidget {
+class App extends ConsumerWidget {
   const App({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    //watch the theme notifier provider for changes in colour
+    final seedColour = ref.watch(themeNotifierProvider);
+
+    final theme = ThemeData(
+      colorScheme: ColorScheme.fromSeed(
+          seedColor: seedColour
+      ),
+      useMaterial3: true,
+    );
     return MaterialApp(
       debugShowCheckedModeBanner: false, // Remove the debug banner
       theme: theme,

@@ -6,7 +6,7 @@ import 'package:your_choice/screens/communication_hub.dart';
 import 'package:your_choice/screens/manage_cards.dart';
 import 'package:your_choice/widgets/colour_picker.dart';
 
-class CustomiseProfile extends ConsumerStatefulWidget {
+class CustomiseProfile extends StatefulWidget {
   final String profileId;
   final String profileName;
 
@@ -17,10 +17,10 @@ class CustomiseProfile extends ConsumerStatefulWidget {
       });
 
   @override
-  ConsumerState<CustomiseProfile> createState() => _CustomiseProfileState();
+  State<CustomiseProfile> createState() => _CustomiseProfileState();
 }
 
-class _CustomiseProfileState extends ConsumerState<CustomiseProfile> {
+class _CustomiseProfileState extends State<CustomiseProfile> {
   ///method to open the modal bottom sheet
   void _openChangeColourOverlay() {
     showModalBottomSheet(
@@ -31,12 +31,9 @@ class _CustomiseProfileState extends ConsumerState<CustomiseProfile> {
 
   @override
   Widget build(BuildContext context) {
-    //watch the colour provider for the specific profile
-    final colour = ref.watch(profileColoursProvider(widget.profileId)) ?? Colors.blue;
-
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: colour,  //use the colour from the provider
+        backgroundColor: Theme.of(context).colorScheme.primary,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
