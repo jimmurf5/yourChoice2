@@ -1,17 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:your_choice/providers/profile_colour_manager.dart';
 import 'package:your_choice/screens/add_profile.dart';
 import 'package:your_choice/screens/customise_profile.dart';
 
-class AdminHome extends StatefulWidget {
+class AdminHome extends ConsumerStatefulWidget {
   const AdminHome({super.key});
 
   @override
-  State<AdminHome> createState() => _AdminHomeState();
+  ConsumerState<AdminHome> createState() => _AdminHomeState();
 }
 
-class _AdminHomeState extends State<AdminHome> {
+class _AdminHomeState extends ConsumerState<AdminHome> {
   String userEmail = '';
 
   @override
@@ -112,7 +114,8 @@ class _AdminHomeState extends State<AdminHome> {
                           subtitle: Column(
                             children: [
                               TextButton(
-                                onPressed: () {
+                                onPressed: () async {
+                                  await ref.read(profileColourManagerProvider).selectProfileColour(profile.id);
                                   //navigate to CustomiseProfile while passing the profileId of the selected profile
                                   Navigator.push(
                                     context,
