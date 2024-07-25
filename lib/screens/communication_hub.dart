@@ -8,6 +8,7 @@ import 'package:your_choice/widgets/long_press_button.dart';
 import 'package:your_choice/widgets/message_card_item.dart';
 import 'package:your_choice/services/message_card_service.dart';
 import '../models/category.dart';
+import '../widgets/message_card_grid.dart';
 
 class CommunicationHub extends StatefulWidget {
   final String profileId;
@@ -51,6 +52,14 @@ class _CommunicationHubState extends State<CommunicationHub> {
 
     flutterTts.setErrorHandler((msg) {
       print("TTS Error: $msg");
+    });
+  }
+
+  void _onCardSelected(MessageCard card) {
+    setState(() {
+      if(selectedCards.length<3) {
+        selectedCards.add(card);
+      }
     });
   }
 
@@ -138,100 +147,16 @@ class _CommunicationHubState extends State<CommunicationHub> {
           ),
           //vertically scrolling column with message cards
           Expanded(
-              //ternary to deal with category being = 1 (history)
-              child: selectedCategory == 1
-                  ? FutureBuilder<List<MessageCard>>(
-                      future: messageCardService.updateHistoryCategory(),
-                      builder: (context, snapshot) {
-                        if (snapshot.hasError) {
-                          return Center(
-                              child: Text('Error: ${snapshot.error}'));
-                        }
-                        if (!snapshot.hasData) {
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        }
-                        final cardDeck = snapshot.data!;
-                        return GridView.builder(
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 3,
-                            mainAxisSpacing: 4.0,
-                            crossAxisSpacing: 4.0,
-                            childAspectRatio: 0.75,
-                          ),
-                          itemCount: cardDeck.length,
-                          itemBuilder: (context, index) {
-                            final card = cardDeck[index];
-                            return GestureDetector(
-                              onTap: () async {
-                                setState(() {
-                                  if (selectedCards.length < 3) {
-                                    selectedCards.add(card);
-                                  }
-                                });
-                                await flutterTts.speak(card.title);
-                                await messageCardService.selectCard(card);
-                              },
-                              child: MessageCardItem(messageCard: card),
-                            );
-                          },
-                        );
-                      },
-                    )
-                  : StreamBuilder<QuerySnapshot>(
-                      //get the message Card data from firebase only for our selected profile matching the chosen category
-                      stream: FirebaseFirestore.instance
-                          .collection('profiles')
-                          .doc(widget.profileId)
-                          .collection('messageCards')
-                          .where('categoryId', isEqualTo: selectedCategory)
-                          .snapshots(),
-                      builder: (context, snapshot) {
-                        // Check for any errors
-                        if (snapshot.hasError) {
-                          print("Error fetching data: ${snapshot.error}");
-                          return Center(
-                              child: Text(
-                                  'Error fetching data: ${snapshot.error}'));
-                        }
-                        if (!snapshot.hasData) {
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        }
-                        final cardDeck = snapshot.data!.docs.map((doc) {
-                          print("MessageCard Data: ${doc.data()}");
-                          return MessageCard.fromMap(
-                              doc.data() as Map<String, dynamic>);
-                        }).toList();
-                        return GridView.builder(
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 3,
-                              mainAxisSpacing: 4.0,
-                              crossAxisSpacing: 4.0,
-                              childAspectRatio: 0.75,
-                            ),
-                            itemCount: cardDeck.length,
-                            itemBuilder: (context, index) {
-                              final card = cardDeck[index];
-                              return GestureDetector(
-                                onTap: () async {
-                                  setState(() {
-                                    if (selectedCards.length < 3) {
-                                      selectedCards.add(card);
-                                    }
-                                  });
-                                  //read out the title of the messageCard on tap
-                                  await flutterTts.speak(card.title);
-                                  //call method to record click hx for history category
-                                  await messageCardService.selectCard(card);
-                                },
-                                child: MessageCardItem(messageCard: card),
-                              );
-                            });
-                      },
-                    ),
+              //call the messageCardGrid to shoe message cards
+              child: MessageCardGrid(
+                  selectedCategory: selectedCategory,
+                  profileId: widget.profileId,
+                  flutterTts: flutterTts,
+                  messageCardService: messageCardService,
+                  onCardSelected: _onCardSelected,
+                  isProfileMode: true,
+                  selectedCards: selectedCards
+              )
           ),
           //horizontally scrolling row for the categories
           Container(
