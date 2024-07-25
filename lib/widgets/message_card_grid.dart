@@ -88,16 +88,11 @@ class MessageCardGrid extends StatelessWidget {
         final card = cardDeck[index];
         return GestureDetector(
           onTap: () async {
-            // Always perform the card selection action
-            onCardSelected(card);
             // Always speak the card title
             await flutterTts.speak(card.title);
             //only enter this block if in profile mode
             if (isProfileMode) {
-              // Only allow adding up to 3 cards to the selected cards list
-              if (selectedCards.length < 3) {
-                selectedCards.add(card);
-              }
+              onCardSelected(card);
               //call messageCardService.select card to update selection count for card
               await messageCardService.selectCard(card);
             }
