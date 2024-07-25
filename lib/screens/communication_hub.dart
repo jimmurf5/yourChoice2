@@ -147,7 +147,8 @@ class _CommunicationHubState extends State<CommunicationHub> {
           ),
           //vertically scrolling column with message cards
           Expanded(
-              //call the messageCardGrid to shoe message cards
+              //call the messageCardGrid to show message cards
+              //and return gridview.builder
               child: MessageCardGrid(
                   selectedCategory: selectedCategory,
                   profileId: widget.profileId,

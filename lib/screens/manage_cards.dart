@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:your_choice/screens/choose_photo.dart';
 import 'package:your_choice/services/image_upload_service.dart';
 import 'package:your_choice/widgets/image_input.dart';
 import 'dart:io';

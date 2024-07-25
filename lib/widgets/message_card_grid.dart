@@ -6,6 +6,13 @@ import 'package:your_choice/services/message_card_service.dart';
 import '../models/message_card.dart';
 import 'message_card_item.dart';
 
+/// A widget that displays a grid of message cards based on the selected category.
+/// And the profileId provided
+/// It supports both future-based and stream-based data sources to handle different
+/// categories (e.g., history category vs. other categories).
+/// When in profile mode, it performs text-to-speech (TTS) for the card titles and
+/// updates the selection count for each card through the `messageCardService`.
+///
 class MessageCardGrid extends StatelessWidget {
   final int selectedCategory;
   final String profileId;
