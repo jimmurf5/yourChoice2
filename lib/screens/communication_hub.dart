@@ -231,7 +231,8 @@ class _CommunicationHubState extends State<CommunicationHub> {
                               );
                             });
                       },
-                    )),
+                    ),
+          ),
           //horizontally scrolling row for the categories
           Container(
             color: Theme.of(context).colorScheme.onSecondary,
