@@ -43,10 +43,10 @@ class _CurateCardsState extends State<CurateCards> {
     flutterTts.setPitch(1.0);
   }
 
-  //method to set the state, to update the UI when card selected
-  //only if the condition in the if block is met
-  //in curate cards only allow one card to be added to the panel
-  // ie if selectedCards is empty
+  ///method to set the state, to update the UI when card selected
+  ///only if the condition in the if block is met
+  ///in curate cards only allow one card to be added to the panel
+  /// ie if selectedCards is empty
   void _onCardSelected(MessageCard card) {
     setState(() {
       if (selectedCards.isEmpty) {
@@ -55,11 +55,30 @@ class _CurateCardsState extends State<CurateCards> {
     });
   }
 
-  //method to, set the state to update the UI when category selected
+  ///method to, set the state to update the UI when category selected
   void _onCategorySelected(int categoryId) {
     setState(() {
       selectedCategory = categoryId;
     });
+  }
+
+  ///returns a widget card that displays text instructions
+  ///take a string parameter- the instruction to be displayed
+  Widget _instructionCard(String text) {
+    return Card(
+      color: Theme.of(context).colorScheme.primary,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Text(
+          text,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+            color: Theme.of(context).colorScheme.onPrimary,
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -90,12 +109,20 @@ class _CurateCardsState extends State<CurateCards> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 //iterate through the list of selected messageCards and display in this row
-                children: selectedCards.map((singleCard) {
-                  return Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: MessageCardItem(messageCard: singleCard),
-                  );
-                }).toList(),
+                children: [
+                  if (selectedCards.isNotEmpty)
+                    _instructionCard('TRASH\nCAN\nDELETES\nCARD'),
+                  const SizedBox(width: 10,),
+                  ...selectedCards.map((singleCard) {
+                    return Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: MessageCardItem(messageCard: singleCard),
+                    );
+                  }),
+                  const SizedBox(width: 10,),
+                  if (selectedCards.isNotEmpty)
+                  _instructionCard('X\nCLEARS\nTHE\nPANEL'),
+                ],
               ),
             ),
           ),
