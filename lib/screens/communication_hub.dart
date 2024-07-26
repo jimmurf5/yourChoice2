@@ -8,6 +8,7 @@ import 'package:your_choice/widgets/long_press_button.dart';
 import 'package:your_choice/widgets/message_card_item.dart';
 import 'package:your_choice/services/message_card_service.dart';
 import '../models/category.dart';
+import '../widgets/category_row.dart';
 import '../widgets/message_card_grid.dart';
 
 class CommunicationHub extends StatefulWidget {
@@ -166,52 +167,13 @@ class _CommunicationHubState extends State<CommunicationHub> {
                   onCardSelected: _onCardSelected,
                   isProfileMode: true,
                   selectedCards: selectedCards
-              )
+              ),
           ),
           //horizontally scrolling row for the categories
-          Container(
-            color: Theme.of(context).colorScheme.onSecondary,
-            child: SizedBox(
-              height: 120.0,
-              child: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection('categories')
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
-                    //check to make sure snapshot has data and is not null
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  final categories = snapshot.data!.docs.map((doc) {
-                    return Category.fromMap(doc.data() as Map<String, dynamic>);
-                  }).toList();
-                  return ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: categories.length,
-                      itemBuilder: (context, index) {
-                        final category = categories[index];
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                          child: GestureDetector(
-                            //set the category on tap of any of the scrollable categories
-                            onTap: () async {
-                              setState(() {
-                                print(
-                                    "Selected Category ID: ${category.categoryId}");
-                                selectedCategory = category.categoryId;
-                              });
-                              //read out the category of the messageCard on tap
-                              await flutterTts.speak(category.title);
-                            },
-                            child: CategoryItem(
-                                category:
-                                    category), //use category item widget to display categories
-                          ),
-                        );
-                      });
-                },
-              ),
-            ),
+          //returned on calling CategoryRow
+          CategoryRow(
+              flutterTts: flutterTts,
+              onCategorySelected: _onCategorySelected
           ),
         ],
       ),
