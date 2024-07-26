@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:your_choice/services/message_card_delete_service.dart';
 
 import '../models/message_card.dart';
 import '../services/message_card_service.dart';
@@ -26,6 +27,8 @@ class _CurateCardsState extends State<CurateCards> {
       []; //declare a list to hold selected messageCards
   late MessageCardService
       messageCardService; //declare the service which manages card history
+  //initialise the deletion service
+  final MessageCardDeleteService deleteService = MessageCardDeleteService();
 
   @override
   void initState() {
@@ -81,6 +84,57 @@ class _CurateCardsState extends State<CurateCards> {
     );
   }
 
+  //method to show confirmation dialogue before deletion
+  Future<void> _confirmDeleteDialogue(BuildContext context) async {
+    //show the dialogue and store user response as a bool
+    final shouldDelete = await showDialog<bool>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Delete Card'),
+            content: const Text('This item will be permanently\ndeleted'
+                ' from memory and\nwill no longer be available for\n'
+                'selection or retrievable.'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(false); //return false
+                },
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(true); //return true
+                },
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.red,
+                ),
+                child: const Text('Delete'),
+              ),
+            ],
+          );
+        });
+    //only enter this block if user has confirmed deletion
+    if (shouldDelete == true) {
+      //get the one message card from the list and store its Id
+      MessageCard cardForDelete = selectedCards.first;
+      String cardId = cardForDelete.messageCardId;
+      //call the deletion service
+      deleteService.deleteMessageCard(
+          widget.profileId,
+          cardId);
+      //clear the selected card and set the state
+      setState(() {
+        selectedCards.clear();
+      });
+      //feedback for the user
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Card deleted successfully'),
+          ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -112,16 +166,20 @@ class _CurateCardsState extends State<CurateCards> {
                 children: [
                   if (selectedCards.isNotEmpty)
                     _instructionCard('TRASH\nCAN\nDELETES\nCARD'),
-                  const SizedBox(width: 10,),
+                  const SizedBox(
+                    width: 10,
+                  ),
                   ...selectedCards.map((singleCard) {
                     return Padding(
                       padding: const EdgeInsets.all(8),
                       child: MessageCardItem(messageCard: singleCard),
                     );
                   }),
-                  const SizedBox(width: 10,),
+                  const SizedBox(
+                    width: 10,
+                  ),
                   if (selectedCards.isNotEmpty)
-                  _instructionCard('X\nCLEARS\nTHE\nPANEL'),
+                    _instructionCard('X\nCLEARS\nTHE\nPANEL'),
                 ],
               ),
             ),
@@ -150,8 +208,8 @@ class _CurateCardsState extends State<CurateCards> {
                   //shown in the display panel
                   onPressed: () async {
                     for (var card in selectedCards) {
-                      await flutterTts.speak(card.title);
-                      await flutterTts.awaitSpeakCompletion(true);
+                      //show confirmation dialogue before deleting
+                      await _confirmDeleteDialogue(context);
                     }
                     //call method to delete the card but first warn the user that card will be delete
                   },
