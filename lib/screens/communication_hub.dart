@@ -24,8 +24,8 @@ class CommunicationHub extends StatefulWidget {
 class _CommunicationHubState extends State<CommunicationHub> {
   FlutterTts flutterTts = FlutterTts(); //initialize flutter tts
   int selectedCategory = 3; //default the selected category to category 3
-  List<MessageCard> selectedCards = [];
-  late MessageCardService messageCardService;
+  List<MessageCard> selectedCards = []; //declare a list to hold selected messageCards
+  late MessageCardService messageCardService; //declare the service which manages card history
 
   @override
   void initState() {
@@ -33,7 +33,7 @@ class _CommunicationHubState extends State<CommunicationHub> {
     // Initialize the service
     messageCardService = MessageCardService(profileId: widget.profileId);
     print('messageCardService initialized with profileId: ${widget.profileId}');
-    initializeTts();
+    initializeTts(); //initialise tts
   }
 
   void initializeTts() {
@@ -55,11 +55,20 @@ class _CommunicationHubState extends State<CommunicationHub> {
     });
   }
 
+  //method to set the state, to update the UI when card selected
+  //only if the condition in the if block is met
   void _onCardSelected(MessageCard card) {
     setState(() {
       if(selectedCards.length<3) {
         selectedCards.add(card);
       }
+    });
+  }
+
+  //method to, set the state to update the UI when category selected
+  void _onCategorySelected(int categoryId) {
+    setState(() {
+      selectedCategory = categoryId;
     });
   }
 
