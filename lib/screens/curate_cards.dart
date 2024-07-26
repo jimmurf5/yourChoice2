@@ -169,12 +169,11 @@ class _CurateCardsState extends State<CurateCards> {
                   const SizedBox(
                     width: 10,
                   ),
-                  ...selectedCards.map((singleCard) {
-                    return Padding(
+                  if (selectedCards.isNotEmpty)
+                    Padding(
                       padding: const EdgeInsets.all(8),
-                      child: MessageCardItem(messageCard: singleCard),
-                    );
-                  }),
+                      child: MessageCardItem(messageCard: selectedCards.first),
+                    ),
                   const SizedBox(
                     width: 10,
                   ),
@@ -207,11 +206,10 @@ class _CurateCardsState extends State<CurateCards> {
                   // held in the selected cards list
                   //shown in the display panel
                   onPressed: () async {
-                    for (var card in selectedCards) {
+                    if (selectedCards.isNotEmpty) {
                       //show confirmation dialogue before deleting
                       await _confirmDeleteDialogue(context);
                     }
-                    //call method to delete the card but first warn the user that card will be delete
                   },
                   icon: const Icon(FontAwesomeIcons.trash),
                   iconSize: 45,
