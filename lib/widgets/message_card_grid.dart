@@ -98,9 +98,12 @@ class MessageCardGrid extends StatelessWidget {
             // Always speak the card title
             await flutterTts.speak(card.title);
             //only enter this block if in profile mode
+            //always allow onCardSelected to be called and let the calling
+            //method handle the follow on logic
+            onCardSelected(card);
             if (isProfileMode) {
-              onCardSelected(card);
-              //call messageCardService.select card to update selection count for card
+              //call messageCardService.selectCard/ only is profile mode
+              // to update selection count for card
               await messageCardService.selectCard(card);
             }
           },

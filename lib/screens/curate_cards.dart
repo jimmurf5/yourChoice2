@@ -1,32 +1,31 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:your_choice/models/message_card.dart';
-import 'package:your_choice/widgets/category_item.dart';
-import 'package:your_choice/widgets/long_press_button.dart';
-import 'package:your_choice/widgets/message_card_item.dart';
-import 'package:your_choice/services/message_card_service.dart';
-import '../models/category.dart';
+
+import '../models/message_card.dart';
+import '../services/message_card_service.dart';
 import '../widgets/category_row.dart';
 import '../widgets/message_card_grid.dart';
+import '../widgets/message_card_item.dart';
 
-class CommunicationHub extends StatefulWidget {
+class CurateCards extends StatefulWidget {
   final String profileId;
 
-  const CommunicationHub({super.key, required this.profileId});
+  const CurateCards({super.key, required this.profileId});
 
   @override
-  State<CommunicationHub> createState() {
-    return _CommunicationHubState();
+  State<CurateCards> createState() {
+    return _CurateCardsState();
   }
 }
 
-class _CommunicationHubState extends State<CommunicationHub> {
+class _CurateCardsState extends State<CurateCards> {
   FlutterTts flutterTts = FlutterTts(); //initialize flutter tts
   int selectedCategory = 3; //default the selected category to category 3
-  List<MessageCard> selectedCards = []; //declare a list to hold selected messageCards
-  late MessageCardService messageCardService; //declare the service which manages card history
+  List<MessageCard> selectedCards =
+      []; //declare a list to hold selected messageCards
+  late MessageCardService
+      messageCardService; //declare the service which manages card history
 
   @override
   void initState() {
@@ -46,9 +45,11 @@ class _CommunicationHubState extends State<CommunicationHub> {
 
   //method to set the state, to update the UI when card selected
   //only if the condition in the if block is met
+  //in curate cards only allow one card to be added to the panel
+  // ie if selectedCards is empty
   void _onCardSelected(MessageCard card) {
     setState(() {
-      if(selectedCards.length<3) {
+      if (selectedCards.isEmpty) {
         selectedCards.add(card);
       }
     });
@@ -65,25 +66,16 @@ class _CommunicationHubState extends State<CommunicationHub> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Communication Hub'),
+        title: const Text('Curate Cards'),
         backgroundColor: Theme.of(context).colorScheme.primary,
-        //remove the default arrow provided by flutter in the app bar
-        automaticallyImplyLeading: false,
-        leading: //button to navigate profile to saved decision trees
-            IconButton(
-                onPressed: () {
-                  //logic to show decision tress
-                },
-                icon: const Icon(FontAwesomeIcons.tree),
-              color: Theme.of(context).colorScheme.inversePrimary,
-            ),
-        actions: <Widget>[
-          //only allow profile to leave the comm hub screen on a long press
-          //call on long press widget
-          //current long press set at 8 seconds
-          LongPressButton(
-            onLongPressCompleted: Navigator.of(context)
-                .pop, //pop back to admin home on successful long press
+        actions: [
+          //button to navigate profile to saved decision trees
+          IconButton(
+            onPressed: () {
+              //logic to show decision tress
+            },
+            icon: const Icon(FontAwesomeIcons.tree),
+            color: Theme.of(context).colorScheme.inversePrimary,
           ),
         ],
       ),
@@ -121,12 +113,12 @@ class _CommunicationHubState extends State<CommunicationHub> {
                     });
                     await flutterTts.speak('Clear!');
                   },
-                  icon: const Icon(FontAwesomeIcons.trashCan),
-                  iconSize:25,
+                  icon: const Icon(FontAwesomeIcons.x),
+                  iconSize: 25,
                   color: Theme.of(context).colorScheme.inversePrimary,
                 ),
                 IconButton(
-                  //on pressed tts to read out the maximum of three items
+                  //on pressed tts to read out the message card
                   // held in the selected cards list
                   //shown in the display panel
                   onPressed: () async {
@@ -134,9 +126,10 @@ class _CommunicationHubState extends State<CommunicationHub> {
                       await flutterTts.speak(card.title);
                       await flutterTts.awaitSpeakCompletion(true);
                     }
+                    //call method to delete the card but first warn the user that card will be delete
                   },
-                  icon: const Icon(FontAwesomeIcons.play),
-                  iconSize:45,
+                  icon: const Icon(FontAwesomeIcons.trash),
+                  iconSize: 45,
                   alignment: Alignment.center,
                   color: Theme.of(context).colorScheme.inversePrimary,
                 ),
@@ -145,24 +138,21 @@ class _CommunicationHubState extends State<CommunicationHub> {
           ),
           //vertically scrolling column with message cards
           Expanded(
-              //call the messageCardGrid to show message cards
-              //and return gridview.builder
-              child: MessageCardGrid(
-                  selectedCategory: selectedCategory,
-                  profileId: widget.profileId,
-                  flutterTts: flutterTts,
-                  messageCardService: messageCardService,
-                  onCardSelected: _onCardSelected,
-                  isProfileMode: true,
-                  selectedCards: selectedCards
-              ),
+            //call the messageCardGrid to show message cards
+            //and return gridview.builder
+            child: MessageCardGrid(
+                selectedCategory: selectedCategory,
+                profileId: widget.profileId,
+                flutterTts: flutterTts,
+                messageCardService: messageCardService,
+                onCardSelected: _onCardSelected,
+                isProfileMode: false,
+                selectedCards: selectedCards),
           ),
           //horizontally scrolling row for the categories
           //returned on calling CategoryRow
           CategoryRow(
-              flutterTts: flutterTts,
-              onCategorySelected: _onCategorySelected
-          ),
+              flutterTts: flutterTts, onCategorySelected: _onCategorySelected),
         ],
       ),
     );

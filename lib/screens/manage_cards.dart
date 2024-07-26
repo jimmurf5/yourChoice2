@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:your_choice/screens/curate_cards.dart';
 import 'package:your_choice/services/image_upload_service.dart';
 import 'package:your_choice/widgets/image_input.dart';
 import 'dart:io';
@@ -30,7 +31,8 @@ class _ManageCardsState extends State<ManageCards> {
   // is removed from the widget tree
   @override
   void dispose() {
-    _titleController.dispose(); // Clean up the controller when the widget is disposed
+    _titleController
+        .dispose(); // Clean up the controller when the widget is disposed
     super.dispose();
   }
 
@@ -98,7 +100,8 @@ class _ManageCardsState extends State<ManageCards> {
     // depending on imageSourceOption input to the method
     final pickedImage = await picker.pickImage(
       source: option == ImageSourceOption.camera
-          ? ImageSource.camera : ImageSource.gallery,
+          ? ImageSource.camera
+          : ImageSource.gallery,
       maxWidth: 600,
     );
 
@@ -123,7 +126,14 @@ class _ManageCardsState extends State<ManageCards> {
             const SizedBox(height: 30),
             ElevatedButton.icon(
               onPressed: () {
-                // Go to make custom card, add code here
+                //navigate to curateCards on pressed
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        CurateCards(profileId: widget.profileId),
+                  ),
+                );
               },
               label: const Text('Curate Cards'),
               icon: const Icon(FontAwesomeIcons.usersGear),
