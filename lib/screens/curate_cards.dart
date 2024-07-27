@@ -58,7 +58,7 @@ class _CurateCardsState extends State<CurateCards> {
     });
   }
 
-  ///method to, set the state to update the UI when category selected
+  //method to, set the state to update the UI when category selected
   void _onCategorySelected(int categoryId) {
     setState(() {
       selectedCategory = categoryId;
@@ -119,6 +119,7 @@ class _CurateCardsState extends State<CurateCards> {
       //get the one message card from the list and store its Id
       MessageCard cardForDelete = selectedCards.first;
       String cardId = cardForDelete.messageCardId;
+      print('curate cards- card id for deletion: $cardId');
       //call the deletion service
       deleteService.deleteMessageCard(
           widget.profileId,

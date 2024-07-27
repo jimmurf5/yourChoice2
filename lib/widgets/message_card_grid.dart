@@ -64,7 +64,7 @@ class MessageCardGrid extends StatelessWidget {
             builder: (context, snapshot) {
               // Check for any errors
               if (snapshot.hasError) {
-                print("Error fetching data: ${snapshot.error}");
+                //print("Error fetching data: ${snapshot.error}");
                 return Center(
                     child: Text('Error fetching data: ${snapshot.error}'));
               }
@@ -72,7 +72,7 @@ class MessageCardGrid extends StatelessWidget {
                 return const Center(child: CircularProgressIndicator());
               }
               final cardDeck = snapshot.data!.docs.map((doc) {
-                print("MessageCard Data: ${doc.data()}");
+                //print("MessageCard Data: ${doc.data()}");
                 return MessageCard.fromMap(doc.data() as Map<String, dynamic>);
               }).toList();
               //build the grid view using the deck of cards return by firestore
@@ -102,7 +102,7 @@ class MessageCardGrid extends StatelessWidget {
             //method handle the follow on logic
             onCardSelected(card);
             if (isProfileMode) {
-              //call messageCardService.selectCard/ only is profile mode
+              //call messageCardService.selectCard only in profile mode
               // to update selection count for card
               await messageCardService.selectCard(card);
             }
