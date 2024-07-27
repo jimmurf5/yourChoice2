@@ -116,14 +116,19 @@ class _CurateCardsState extends State<CurateCards> {
         });
     //only enter this block if user has confirmed deletion
     if (shouldDelete == true) {
-      //get the one message card from the list and store its Id
+      //get the one message card from the list and store its Id, category & url
       MessageCard cardForDelete = selectedCards.first;
-      String cardId = cardForDelete.messageCardId;
-      print('curate cards- card id for deletion: $cardId');
+      String messageCardId = cardForDelete.messageCardId;
+      int categoryId = cardForDelete.categoryId;
+      String imageUrl = cardForDelete.imageUrl;
+      print('curate cards- card id for deletion: $messageCardId');
       //call the deletion service
       deleteService.deleteMessageCard(
           widget.profileId,
-          cardId);
+          messageCardId,
+          categoryId,
+          imageUrl
+      );
       //clear the selected card and set the state
       setState(() {
         selectedCards.clear();
