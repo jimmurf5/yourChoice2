@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:your_choice/models/message_card.dart';
+import 'package:your_choice/widgets/choose_message_card.dart';
 
 class QuestionAnswerSection extends StatefulWidget {
   final String questionLabel;
@@ -8,8 +8,8 @@ class QuestionAnswerSection extends StatefulWidget {
 
   const QuestionAnswerSection({
     super.key,
+    required this.questionController,
     required this.questionLabel,
-    required this.questionController
   });
 
   @override
@@ -17,16 +17,11 @@ class QuestionAnswerSection extends StatefulWidget {
 }
 
 class _QuestionAnswerSectionState extends State<QuestionAnswerSection> {
-  //declare variable to hold message cards, they can be null in case of
-  //no answer yet being selected
-  MessageCard? selectedAnswer1;
-  MessageCard? selectedAnswer2;
-
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        //a row for the question
+        // A row for the question
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -36,55 +31,33 @@ class _QuestionAnswerSectionState extends State<QuestionAnswerSection> {
             ),
             const SizedBox(width: 10),
             Expanded(
-                child: TextField(
-                  controller: widget.questionController,
-                  decoration: InputDecoration(
-                    labelText: widget.questionLabel,
-                    fillColor: Theme.of(context).colorScheme.inversePrimary,
-                    filled: true,
-                  ),
+              child: TextField(
+                controller: widget.questionController,
+                decoration: InputDecoration(
+                  labelText: widget.questionLabel,
+                  fillColor: Theme.of(context).colorScheme.inversePrimary,
+                  filled: true,
                 ),
+              ),
             ),
           ],
         ),
-        //a row for the answer
+        const SizedBox(height: 10),
+        // A row for the answers
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              decoration: BoxDecoration(
-                border: Border.all(
-                  width: 1,
-                  color: Theme.of(context).colorScheme.inversePrimary
-                )
-              ),
-              height: 80,
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  //take the user to menu to choose messageCard
-                },
-                label: const Text('Answer 1'),
-                icon: const Icon(FontAwesomeIcons.comment),
-              ),
+            Expanded(
+              child: ChooseMessageCard(textInButton: 'Answer 1'),
             ),
-            Container(
-              decoration: BoxDecoration(
-                  border: Border.all(
-                      width: 1,
-                      color: Theme.of(context).colorScheme.inversePrimary
-                  )
-              ),
-              height: 80,
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  //take the user to menu to choose messageCard
-                },
-                label: const Text('Answer 2'),
-                icon: const Icon(FontAwesomeIcons.comment),
-              ),
+            SizedBox(width: 10),
+            Expanded(
+              child: ChooseMessageCard(textInButton: 'Answer 2'),
             ),
           ],
         ),
+        const SizedBox(height: 10),
+        Divider(thickness: .5, color: Theme.of(context).colorScheme.secondary,),
       ],
     );
   }

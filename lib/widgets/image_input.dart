@@ -62,6 +62,7 @@ class _ImageInputState extends State<ImageInput> {
     );
 
     //wrap in gesture detector to allow image to be tapped and retaken
+    //display the taken image if picked image not null
     if (_pickedImage != null) {
       content = GestureDetector(
         onTap: () => _pickImage(ImageSource.camera),

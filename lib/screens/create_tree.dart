@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:your_choice/widgets/question_answer_section.dart';
 
 class CreateTree extends StatefulWidget {
   final String profileId;
@@ -48,7 +49,11 @@ class _CreateTreeState extends State<CreateTree> {
                   fillColor: Theme.of(context).colorScheme.inversePrimary,
                   filled: true,
                 ),
-              )
+              ),
+              const SizedBox(height: 20),
+              QuestionAnswerSection(questionController: question1Controller, questionLabel: 'Questions 1'),
+              QuestionAnswerSection(questionController: question2Controller, questionLabel: 'Questions 2'),
+              QuestionAnswerSection(questionController: question3Controller, questionLabel: 'Questions 3'),
             ],
           ),
         ),
