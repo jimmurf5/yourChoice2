@@ -4,15 +4,22 @@ import 'package:your_choice/models/message_card.dart';
 import 'package:your_choice/screens/select_card.dart';
 import 'package:your_choice/widgets/message_card_item.dart';
 
-
+/// A widget that allows the user to select a message card.
+/// If no card is selected, it displays a button to select a card.
+/// If a card is selected, it displays the selected card and allows re-selection.
+/// The widget returns a container that either shows the button to select a card
+/// or the selected message card.
 class ChooseMessageCard extends StatefulWidget {
   final String textInButton;
   final String profileId;
+  //call back function to pass the messageCard selected back to parent
+  final void Function(MessageCard) onMessageCardSelected;
 
   const ChooseMessageCard({
     super.key,
     required this.textInButton,
-    required this.profileId
+    required this.profileId,
+    required this.onMessageCardSelected
   });
 
   @override
