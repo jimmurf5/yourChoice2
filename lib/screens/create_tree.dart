@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:your_choice/widgets/question_answer_section.dart';
 
 class CreateTree extends StatefulWidget {
@@ -39,7 +40,7 @@ class _CreateTreeState extends State<CreateTree> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(10.0),
           child: Column(
             children: [
               TextField(
@@ -51,9 +52,16 @@ class _CreateTreeState extends State<CreateTree> {
                 ),
               ),
               const SizedBox(height: 20),
-              QuestionAnswerSection(questionController: question1Controller, questionLabel: 'Questions 1'),
-              QuestionAnswerSection(questionController: question2Controller, questionLabel: 'Questions 2'),
-              QuestionAnswerSection(questionController: question3Controller, questionLabel: 'Questions 3'),
+              QuestionAnswerSection(questionController: question1Controller, questionLabel: 'Questions 1', profileId: widget.profileId),
+              QuestionAnswerSection(questionController: question2Controller, questionLabel: 'Questions 2', profileId: widget.profileId),
+              QuestionAnswerSection(questionController: question3Controller, questionLabel: 'Questions 3', profileId: widget.profileId),
+              ElevatedButton.icon(
+                onPressed: () {
+                  //save the tree to db
+                },
+                icon:const Icon(FontAwesomeIcons.tree),
+                label: const Text('Create Tree'),
+              )
             ],
           ),
         ),

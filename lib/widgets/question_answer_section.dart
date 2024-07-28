@@ -5,11 +5,13 @@ import 'package:your_choice/widgets/choose_message_card.dart';
 class QuestionAnswerSection extends StatefulWidget {
   final String questionLabel;
   final TextEditingController questionController;
+  final String profileId;
 
   const QuestionAnswerSection({
     super.key,
     required this.questionController,
     required this.questionLabel,
+    required this.profileId,
   });
 
   @override
@@ -42,22 +44,31 @@ class _QuestionAnswerSectionState extends State<QuestionAnswerSection> {
             ),
           ],
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 8),
         // A row for the answers
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Expanded(
-              child: ChooseMessageCard(textInButton: 'Answer 1'),
+              child: SizedBox(
+                height: 127,
+                child: ChooseMessageCard(textInButton: 'Answer 1', profileId: widget.profileId),
+              ),
             ),
-            SizedBox(width: 10),
+            const SizedBox(width: 7),
             Expanded(
-              child: ChooseMessageCard(textInButton: 'Answer 2'),
+              child: SizedBox(
+                height: 127,
+                child: ChooseMessageCard(textInButton: 'Answer 2', profileId: widget.profileId),
+              ),
             ),
           ],
         ),
-        const SizedBox(height: 10),
-        Divider(thickness: .5, color: Theme.of(context).colorScheme.secondary,),
+        const SizedBox(height: 7),
+        Divider(
+          thickness: 2,
+          color: Theme.of(context).colorScheme.secondary,
+        ),
       ],
     );
   }

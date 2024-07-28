@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:your_choice/models/message_card.dart';
+import 'package:your_choice/screens/select_card.dart';
 import 'package:your_choice/widgets/message_card_item.dart';
 
 
 class ChooseMessageCard extends StatefulWidget {
   final String textInButton;
+  final String profileId;
 
-  const ChooseMessageCard({super.key, required this.textInButton});
+  const ChooseMessageCard({
+    super.key,
+    required this.textInButton,
+    required this.profileId
+  });
 
   @override
   State<ChooseMessageCard> createState() {
@@ -19,16 +25,16 @@ class _ChooseMessageCardState extends State<ChooseMessageCard> {
   //declare a message card to hold messageCard if one is selected
   MessageCard? messageCard;
 
-  // Simulate a function to select a message card
-  // (this should navigate to your message card selection screen)
+  // a function to select a message card
+  // navigate to select card
   void _selectMessageCard() async {
-    // Simulate selecting a message card
-    MessageCard selectedCard = MessageCard(
-      messageCardId: '1',
-      title: 'Selected Card',
-      imageUrl: 'https://openmoji.org/data/color/svg/1F44E.svg',
-      selectionCount: 1,
-      categoryId: 8,
+    // assign selected card to card return by selectCard
+    final selectedCard = await Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) =>
+      SelectCard(profileId: widget.profileId),
+      ),
     );
 
     // Update the state with the selected message card
@@ -45,6 +51,7 @@ class _ChooseMessageCardState extends State<ChooseMessageCard> {
       children: [
         ElevatedButton.icon(
           onPressed: () {
+            _selectMessageCard();
             //take the user to menu to choose messageCard
           },
           label: Text(widget.textInButton),

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:your_choice/services/message_card_delete_service.dart';
 
 import '../models/message_card.dart';
 import '../services/message_card_service.dart';
@@ -10,26 +9,24 @@ import '../widgets/instruction_card.dart';
 import '../widgets/message_card_grid.dart';
 import '../widgets/message_card_item.dart';
 
-class CurateCards extends StatefulWidget {
+class SelectCard extends StatefulWidget {
   final String profileId;
 
-  const CurateCards({super.key, required this.profileId});
+  const SelectCard({super.key, required this.profileId});
 
   @override
-  State<CurateCards> createState() {
-    return _CurateCardsState();
+  State<SelectCard> createState() {
+    return _SelectCardState();
   }
 }
 
-class _CurateCardsState extends State<CurateCards> {
+class _SelectCardState extends State<SelectCard> {
   FlutterTts flutterTts = FlutterTts(); //initialize flutter tts
   int selectedCategory = 3; //default the selected category to category 3
   List<MessageCard> selectedCards =
-      []; //declare a list to hold selected messageCards
+  []; //declare a list to hold selected messageCards
   late MessageCardService
-      messageCardService; //declare the service which manages card history
-  //initialise the deletion service
-  final MessageCardDeleteService deleteService = MessageCardDeleteService();
+  messageCardService; //declare the service which manages card history
 
   @override
   void initState() {
@@ -49,7 +46,7 @@ class _CurateCardsState extends State<CurateCards> {
 
   ///method to set the state, to update the UI when card selected
   ///only if the condition in the if block is met
-  ///in curate cards only allow one card to be added to the panel
+  ///in select cards only allow one card to be added to the panel
   /// ie if selectedCards is empty
   void _onCardSelected(MessageCard card) {
     setState(() {
@@ -66,79 +63,12 @@ class _CurateCardsState extends State<CurateCards> {
     });
   }
 
-  //method to show confirmation dialogue before deletion
-  Future<void> _confirmDeleteDialogue(BuildContext context) async {
-    //show the dialogue and store user response as a bool
-    final shouldDelete = await showDialog<bool>(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Delete Card'),
-            content: const Text('This item will be permanently\ndeleted'
-                ' from memory and\nwill no longer be available for\n'
-                'selection or retrievable.'),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop(false); //return false
-                },
-                child: const Text('Cancel'),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop(true); //return true
-                },
-                style: TextButton.styleFrom(
-                  foregroundColor: Colors.red,
-                ),
-                child: const Text('Delete'),
-              ),
-            ],
-          );
-        });
-    //only enter this block if user has confirmed deletion
-    if (shouldDelete == true) {
-      //get the one message card from the list and store its Id, category & url
-      MessageCard cardForDelete = selectedCards.first;
-      String messageCardId = cardForDelete.messageCardId;
-      int categoryId = cardForDelete.categoryId;
-      String imageUrl = cardForDelete.imageUrl;
-      print('curate cards- card id for deletion: $messageCardId');
-      //call the deletion service
-      deleteService.deleteMessageCard(
-          widget.profileId,
-          messageCardId,
-          categoryId,
-          imageUrl
-      );
-      //clear the selected card and set the state
-      setState(() {
-        selectedCards.clear();
-      });
-      //feedback for the user
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Card deleted successfully'),
-          ),
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Curate Cards'),
+        title: const Text('Select Card'),
         backgroundColor: Theme.of(context).colorScheme.primary,
-        actions: [
-          //button to navigate profile to saved decision trees
-          IconButton(
-            onPressed: () {
-              //logic to show decision tress
-            },
-            icon: const Icon(FontAwesomeIcons.tree),
-            color: Theme.of(context).colorScheme.inversePrimary,
-          ),
-        ],
       ),
       backgroundColor: Theme.of(context).colorScheme.primary,
       body: Column(
@@ -153,7 +83,7 @@ class _CurateCardsState extends State<CurateCards> {
                 //iterate through the list of selected messageCards and display in this row
                 children: [
                   if (selectedCards.isNotEmpty)
-                    const InstructionCard('TRASH\nCAN\nDELETES\nCARD'),
+                    const InstructionCard('PLUS\nSELECTS\nTHE\nCARD'),
                   const SizedBox(
                     width: 10,
                   ),
@@ -195,11 +125,12 @@ class _CurateCardsState extends State<CurateCards> {
                   //shown in the display panel
                   onPressed: () async {
                     if (selectedCards.isNotEmpty) {
-                      //show confirmation dialogue before deleting
-                      await _confirmDeleteDialogue(context);
+                      //pop back to create tree if card selected
+                      //return the card to create tree
+                      Navigator.of(context).pop(selectedCards.first);
                     }
                   },
-                  icon: const Icon(FontAwesomeIcons.trash),
+                  icon: const Icon(FontAwesomeIcons.plus),
                   iconSize: 45,
                   alignment: Alignment.center,
                   color: Theme.of(context).colorScheme.inversePrimary,
