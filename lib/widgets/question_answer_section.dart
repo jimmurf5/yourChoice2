@@ -11,8 +11,15 @@ class QuestionAnswerSection extends StatefulWidget {
   final String questionLabel;
   final TextEditingController questionController;
   final String profileId;
-  //callback functions to pass the selected MessageCard back to the parent widget
+  /// Callback function to pass the selected MessageCard back to the parent widget
+  /// Takes a MessageCard and an integer identifier as parameters.
   final void Function(MessageCard, int) onAnswerSelected;
+  /// Unique identifier for each answer, used to distinguish between
+  /// different answers when the callback is triggered.
+  final int answer1Id;
+  /// Unique identifier for each answer, used to distinguish between
+  /// different answers when the callback is triggered.
+  final int answer2Id;
 
   const QuestionAnswerSection({
     super.key,
@@ -20,6 +27,8 @@ class QuestionAnswerSection extends StatefulWidget {
     required this.questionLabel,
     required this.profileId,
     required this.onAnswerSelected,
+    required this.answer1Id,
+    required this.answer2Id,
   });
 
   @override
@@ -64,8 +73,12 @@ class _QuestionAnswerSectionState extends State<QuestionAnswerSection> {
                 child: ChooseMessageCard(
                   textInButton: 'Answer 1',
                   profileId: widget.profileId,
-                  onMessageCardSelected: (MessageCard) {
-                    widget.onAnswerSelected(MessageCard, 1);
+                    /* Callback triggered when a MessageCard is selected
+                  Calls the onAnswerSelected callback with the chosen
+                  MessageCard and the identifier for the 1st answer*/
+                  onMessageCardSelected: (chosenCard) {
+                    print('Answer 1 selected: ${chosenCard.messageCardId}');
+                    widget.onAnswerSelected(chosenCard, widget.answer1Id);
                   }
                 ),
               ),
@@ -78,8 +91,12 @@ class _QuestionAnswerSectionState extends State<QuestionAnswerSection> {
                 child: ChooseMessageCard(
                   textInButton: 'Answer 2',
                   profileId: widget.profileId,
-                    onMessageCardSelected: (MessageCard) {
-                      widget.onAnswerSelected(MessageCard, 2);
+                    /* Callback triggered when a MessageCard is selected
+                    Calls the onAnswerSelected callback with the chosen
+                    MessageCard and the identifier for the 2nd answer*/
+                    onMessageCardSelected: (chosenCard) {
+                      print('Answer 2 selected: ${chosenCard.messageCardId}');
+                      widget.onAnswerSelected(chosenCard, widget.answer2Id);
                     }
                 ),
               ),

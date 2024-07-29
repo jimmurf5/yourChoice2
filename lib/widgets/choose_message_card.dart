@@ -12,7 +12,7 @@ import 'package:your_choice/widgets/message_card_item.dart';
 class ChooseMessageCard extends StatefulWidget {
   final String textInButton;
   final String profileId;
-  //call back function to pass the messageCard selected back to parent
+  //callback function to pass the messageCard selected back to parent widget
   final void Function(MessageCard) onMessageCardSelected;
 
   const ChooseMessageCard({
@@ -47,6 +47,9 @@ class _ChooseMessageCardState extends State<ChooseMessageCard> {
     // Update the state with the selected message card
     setState(() {
       messageCard = selectedCard;
+      if (messageCard != null) {
+        widget.onMessageCardSelected(messageCard!);
+      }
     });
   }
 
