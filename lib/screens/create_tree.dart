@@ -13,9 +13,7 @@ import '../services/tree_service.dart';
 class CreateTree extends StatefulWidget {
   final String profileId;
 
-  const CreateTree({
-    super.key, required this.profileId
-  });
+  const CreateTree({super.key, required this.profileId});
 
   @override
   State<CreateTree> createState() {
@@ -42,6 +40,10 @@ class _CreateTreeState extends State<CreateTree> {
   MessageCard? answer5;
   MessageCard? answer6;
 
+  bool oneIsProvided = false;
+  bool twoIsProvided = false;
+  bool threeIsProvided = false;
+
   //dispose of controllers
   @override
   void dispose() {
@@ -55,9 +57,9 @@ class _CreateTreeState extends State<CreateTree> {
   /*function to handle the selected answer, assigns the 'messageCard' chosen
   to a variable of type 'MessageCard' using a switch statement and the input
   'answerId' as a key, then sets the state*/
-  void _handleAnswerSelected(MessageCard messageCard, int answerId){
+  void _handleAnswerSelected(MessageCard messageCard, int answerId) {
     setState(() {
-      switch(answerId){
+      switch (answerId) {
         case 1:
           answer1 = messageCard;
           break;
@@ -78,14 +80,6 @@ class _CreateTreeState extends State<CreateTree> {
           break;
       }
     });
-    // Add debug prints
-    // Debugging: Print the state of all answers
-    print('Answer 1: ${answer1?.messageCardId}');
-    print('Answer 2: ${answer2?.messageCardId}');
-    print('Answer 3: ${answer3?.messageCardId}');
-    print('Answer 4: ${answer4?.messageCardId}');
-    print('Answer 5: ${answer5?.messageCardId}');
-    print('Answer 6: ${answer6?.messageCardId}');
   }
 
   /*validate the tree all- all trees must have at least a title and one
@@ -96,51 +90,61 @@ class _CreateTreeState extends State<CreateTree> {
     print('q2: ${question2Controller.text}');
     print('q3: ${question3Controller.text}');
 
-    if(answer1 == null){
+    if (answer1 == null) {
       print('answer1 is null');
     }
-    if(answer2 == null){
+    if (answer2 == null) {
       print('answer2 is null');
     }
-    if(answer3 == null){
+    if (answer3 == null) {
       print('answer3 is null');
     }
-    if(answer4 == null){
+    if (answer4 == null) {
       print('answer4 is null');
     }
-    if(answer5 == null){
+    if (answer5 == null) {
       print('answer5 is null');
     }
-    if(answer6 == null){
+    if (answer6 == null) {
       print('answer6 is null');
     }
 
-    //make sure the decision tree has a title
-    if(treeTitleController.text.trim().isEmpty) {
+    //make sure the decision tree has a title/ return false if not
+    if (treeTitleController.text.trim().isEmpty) {
       return false;
     }
 
+    //set valid to false initially
     bool valid = false;
 
     /*ensure at least one question is provide and that all provide questions
-    *have 2 MessageCard potential answers, returns true if passes validation*/
-    if(question1Controller.text.trim().isNotEmpty
-        && answer1 != null && answer2 !=null) {
+    *have 2 MessageCard potential answers, sets valid to true
+    * if passes validation, set is provided flag to true if questions valid*/
+    if (question1Controller.text.trim().isNotEmpty &&
+        answer1 != null &&
+        answer2 != null) {
       valid = true;
+      oneIsProvided = true;
     }
 
     /*ensure at least one question is provide and that all provide questions
-    *have 2 MessageCard potential answers, returns true if passes validation*/
-    if(question2Controller.text.trim().isNotEmpty
-        && answer3 != null && answer4 !=null) {
+    *have 2 MessageCard potential answers, sets valid to true
+    * if passes validation, set is provided flag to true if questions valid*/
+    if (question2Controller.text.trim().isNotEmpty &&
+        answer3 != null &&
+        answer4 != null) {
       valid = true;
+      twoIsProvided = true;
     }
 
     /*ensure at least one question is provide and that all provide questions
-    *have 2 MessageCard potential answers, returns true if passes validation*/
-    if(question3Controller.text.trim().isNotEmpty
-        && answer5 != null && answer6 !=null) {
+    *have 2 MessageCard potential answers, sets valid to true
+    * if passes validation, set is provided flag to true if questions valid*/
+    if (question3Controller.text.trim().isNotEmpty &&
+        answer5 != null &&
+        answer6 != null) {
       valid = true;
+      threeIsProvided = true;
     }
 
     return valid;
@@ -149,12 +153,15 @@ class _CreateTreeState extends State<CreateTree> {
   //method to save tree to FireBase
   void _saveTree() async {
     //first call _validateTree to make sure required data provided
-    if(_validateTree()){
-      try{
-        //prepare the tree data
-
-        List<Map<String, dynamic>> questions = [
-          {
+    if (_validateTree()) {
+      try {
+        //declare an empty map
+        List<Map<String, dynamic>> tree = [];
+        String infoString = '';
+        /*only add the data that is provided, dictated by the IsProvided
+        * bool variables*/
+        if (oneIsProvided) {
+          tree.add({
             'question': question1Controller.text,
             'answers': [
               {
@@ -164,8 +171,13 @@ class _CreateTreeState extends State<CreateTree> {
                 'messageCardId': answer2?.messageCardId ?? '',
               },
             ]
-          },
-          {
+          });
+        } else {
+          infoString += ' Incomplete data for Q1, Q not saved.';
+        }
+
+        if (twoIsProvided) {
+          tree.add({
             'question': question2Controller.text,
             'answers': [
               {
@@ -175,8 +187,13 @@ class _CreateTreeState extends State<CreateTree> {
                 'messageCardId': answer4?.messageCardId ?? '',
               },
             ]
-          },
-          {
+          });
+        } else {
+          infoString += ' Incomplete data for Q2, Q not saved.';
+        }
+
+        if (threeIsProvided) {
+          tree.add({
             'question': question3Controller.text,
             'answers': [
               {
@@ -186,16 +203,20 @@ class _CreateTreeState extends State<CreateTree> {
                 'messageCardId': answer6?.messageCardId ?? '',
               },
             ]
-          }
-        ];
+          });
+        } else {
+          infoString += ' Incomplete data for Q3, Q not saved.';
+        }
 
         //save the tree data using the service
-        await _treeService.saveTree(widget.profileId, treeTitleController.text, questions);
+        await _treeService.saveTree(
+            widget.profileId, treeTitleController.text, tree);
 
         //show success message
         ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Decision Tree saved successfully!'),
-            )
+          SnackBar(
+            content: Text('Decision Tree saved successfully!$infoString'),
+          ),
         );
 
         //clear fields after saving
@@ -210,20 +231,27 @@ class _CreateTreeState extends State<CreateTree> {
           answer4 == null;
           answer5 == null;
           answer6 == null;
+          oneIsProvided == false;
+          twoIsProvided == false;
+          threeIsProvided == false;
         });
+
       } catch (ex) {
         //show error message in snack bar if operation failed
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save the Decision Tree: $ex'),
+          SnackBar(
+            content: Text('Failed to save the Decision Tree: $ex'),
           ),
         );
       }
-    }else{
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please ensure that a title and at least one question with two answers are provided!'),),
+        const SnackBar(
+          content: Text(
+              'Please ensure that a title and at least one question with two answers are provided!'),
+        ),
       );
     }
-
   }
 
   @override
@@ -245,23 +273,24 @@ class _CreateTreeState extends State<CreateTree> {
                   fillColor: Theme.of(context).colorScheme.inversePrimary,
                   filled: true,
                 ),
-                onChanged: (_) => setState(() {}),  //rebuild to validate
+                onChanged: (_) => setState(() {}), //rebuild to validate
               ),
               const SizedBox(height: 20),
               //call the question answer widget to present text questions
               //and messageCard answers
               QuestionAnswerSection(
-                  questionController: question1Controller,
-                  questionLabel: 'Questions 1',
-                  profileId: widget.profileId,
-                  /*get the messageCard selected from the callback function
+                questionController: question1Controller,
+                questionLabel: 'Questions 1',
+                profileId: widget.profileId,
+                /*get the messageCard selected from the callback function
                   pass the MessageCard to handleAnswerSelected along with
                   the answerNumb to allow the card to be assigned to a var
                   for storage*/
-                  onAnswerSelected: (messageCard, answerNumb) {
-                    print('in the questions answer section: messageCard- $messageCard answer numb- $answerNumb');
-                    _handleAnswerSelected(messageCard, answerNumb);
-                  },
+                onAnswerSelected: (messageCard, answerNumb) {
+                  print(
+                      'in the questions answer section: messageCard- $messageCard answer numb- $answerNumb');
+                  _handleAnswerSelected(messageCard, answerNumb);
+                },
                 answer1Id: 1,
                 answer2Id: 2,
               ),
@@ -290,8 +319,10 @@ class _CreateTreeState extends State<CreateTree> {
                 answer2Id: 6,
               ),
               ElevatedButton.icon(
-                onPressed: _saveTree, //disable the button if input not valid
-                icon:const Icon(FontAwesomeIcons.tree),
+                onPressed: _validateTree() //ternary on ValidateTree- returns a bool
+                    ? _saveTree //or pass to saveTree
+                    : null, //disable the button if input not valid
+                icon: const Icon(FontAwesomeIcons.tree),
                 label: const Text('Create Tree'),
               )
             ],
@@ -300,5 +331,4 @@ class _CreateTreeState extends State<CreateTree> {
       ),
     );
   }
-
 }
