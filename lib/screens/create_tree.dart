@@ -165,14 +165,15 @@ class _CreateTreeState extends State<CreateTree> {
             'question': question1Controller.text,
             'answers': [
               {
-                'messageCardId': answer1?.messageCardId ?? '',
+                'messageCardId': answer1!.messageCardId,
               },
               {
-                'messageCardId': answer2?.messageCardId ?? '',
+                'messageCardId': answer2!.messageCardId,
               },
             ]
           });
         } else {
+          //provide feedback into to the user
           infoString += ' Incomplete data for Q1, Q not saved.';
         }
 
@@ -181,14 +182,15 @@ class _CreateTreeState extends State<CreateTree> {
             'question': question2Controller.text,
             'answers': [
               {
-                'messageCardId': answer3?.messageCardId ?? '',
+                'messageCardId': answer3!.messageCardId,
               },
               {
-                'messageCardId': answer4?.messageCardId ?? '',
+                'messageCardId': answer4!.messageCardId,
               },
             ]
           });
         } else {
+          //provide feedback into to the user
           infoString += ' Incomplete data for Q2, Q not saved.';
         }
 
@@ -197,14 +199,15 @@ class _CreateTreeState extends State<CreateTree> {
             'question': question3Controller.text,
             'answers': [
               {
-                'messageCardId': answer5?.messageCardId ?? '',
+                'messageCardId': answer5!.messageCardId,
               },
               {
-                'messageCardId': answer6?.messageCardId ?? '',
+                'messageCardId': answer6!.messageCardId,
               },
             ]
           });
         } else {
+          //provide feedback into to the user
           infoString += ' Incomplete data for Q3, Q not saved.';
         }
 

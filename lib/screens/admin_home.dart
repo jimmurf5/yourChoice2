@@ -115,8 +115,13 @@ class _AdminHomeState extends ConsumerState<AdminHome> {
                             children: [
                               TextButton(
                                 onPressed: () async {
-                                  await ref.read(profileColourManagerProvider).selectProfileColour(profile.id);
-                                  //navigate to CustomiseProfile while passing the profileId of the selected profile
+                                  /* Reads the profileColourManagerProvider to
+                                  // select a profile color for the given
+                                  profile ID*/
+                                  await ref.read(profileColourManagerProvider)
+                                      .selectProfileColour(profile.id);
+                                  /*navigate to CustomiseProfile while
+                                  passing the profileId of the selected profile*/
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -129,9 +134,10 @@ class _AdminHomeState extends ConsumerState<AdminHome> {
                                   );
                                 },
                                 style: TextButton.styleFrom(
-                                  foregroundColor: Colors.white, // Text color
-                                  backgroundColor:
-                                      Theme.of(context).colorScheme.inversePrimary, // Button background color
+                                  foregroundColor: Theme.of(context)
+                                      .colorScheme.onTertiaryContainer, // Text color
+                                  backgroundColor: Theme.of(context)
+                                          .colorScheme.inversePrimary, // Button background color
                                 ),
                                 child: const Text('Select'),
                               ),
