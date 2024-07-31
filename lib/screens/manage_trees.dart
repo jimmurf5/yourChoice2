@@ -1,22 +1,23 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:your_choice/screens/display_tree.dart';
 import 'create_tree.dart';
 
 
-class ViewTrees extends StatefulWidget {
+class ManageTrees extends StatefulWidget {
   final String profileId;
 
-  const ViewTrees({super.key, required this.profileId});
+  const ManageTrees({super.key, required this.profileId});
 
   @override
-  State<ViewTrees> createState() {
-    return _ViewTrees();
+  State<ManageTrees> createState() {
+    return _ManageTrees();
   }
 }
 
 //a method to return the decision trees from firebase for a profileId
-class _ViewTrees extends State<ViewTrees> {
+class _ManageTrees extends State<ManageTrees> {
   //create an instance of firestore for use in class
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -77,6 +78,7 @@ class _ViewTrees extends State<ViewTrees> {
                       return ListView.builder(
                           itemCount: trees.length,
                           itemBuilder: (context, index) {
+                            //store each individual snapshot in a var
                             DocumentSnapshot tree = trees[index];
                             return Padding(
                                 padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -89,7 +91,15 @@ class _ViewTrees extends State<ViewTrees> {
                                   children: [
                                     TextButton(
                                       onPressed: () async {
-                                        /*navigate to the tree selected*/
+                                        /*Navigate to displayTree and send the
+                                        treeSnapshot selected */
+                                        Navigator.push(
+                                            context, 
+                                          MaterialPageRoute(
+                                              builder: (context) => 
+                                              DisplayTree(treeSnapshot: tree)
+                                          )
+                                        );
                                       },
                                       style: TextButton.styleFrom(
                                         foregroundColor: Theme.of(context)

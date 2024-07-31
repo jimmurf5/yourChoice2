@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:your_choice/screens/communication_hub.dart';
 import 'package:your_choice/screens/manage_cards.dart';
-import 'package:your_choice/screens/view_trees.dart';
+import 'package:your_choice/screens/manage_trees.dart';
 import 'package:your_choice/widgets/colour_picker.dart';
 
 class CustomiseProfile extends StatefulWidget {
@@ -63,7 +63,7 @@ class _CustomiseProfileState extends State<CustomiseProfile> {
                     context,
                     MaterialPageRoute(
                         builder: (context) =>
-                          ViewTrees(profileId: widget.profileId),
+                          ManageTrees(profileId: widget.profileId),
                     )
                   );
                 },

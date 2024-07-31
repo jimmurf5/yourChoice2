@@ -1,13 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:your_choice/models/message_card.dart';
-import 'package:your_choice/widgets/category_item.dart';
 import 'package:your_choice/widgets/long_press_button.dart';
 import 'package:your_choice/widgets/message_card_item.dart';
 import 'package:your_choice/services/message_card_service.dart';
-import '../models/category.dart';
 import '../widgets/category_row.dart';
 import '../widgets/message_card_grid.dart';
 
