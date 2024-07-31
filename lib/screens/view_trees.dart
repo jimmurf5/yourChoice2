@@ -1,5 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'create_tree.dart';
+
 
 class ViewTrees extends StatefulWidget {
   final String profileId;
@@ -31,11 +34,31 @@ class _ViewTrees extends State<ViewTrees> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
-        title: const Text('View Trees'),
+        title: const Text('Manage Trees'),
       ),
       body: Center(
         child: Column(
           children: [
+            const SizedBox(height: 20),
+            ElevatedButton.icon(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        CreateTree(profileId: widget.profileId),
+                  ),
+                );
+              },
+              icon: const Icon(FontAwesomeIcons.tree),
+              label: const Text("Create Tree"),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'Current Decision Trees',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20),
             Expanded(
                 child: StreamBuilder<QuerySnapshot>(
                     stream: _fetchTrees(),

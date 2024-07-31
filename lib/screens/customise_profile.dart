@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:your_choice/providers/profile_colours_notifier.dart';
 import 'package:your_choice/screens/communication_hub.dart';
-import 'package:your_choice/screens/create_tree.dart';
 import 'package:your_choice/screens/manage_cards.dart';
+import 'package:your_choice/screens/view_trees.dart';
 import 'package:your_choice/widgets/colour_picker.dart';
 
 class CustomiseProfile extends StatefulWidget {
@@ -65,12 +63,12 @@ class _CustomiseProfileState extends State<CustomiseProfile> {
                     context,
                     MaterialPageRoute(
                         builder: (context) =>
-                          CreateTree(profileId: widget.profileId),
+                          ViewTrees(profileId: widget.profileId),
                     )
                   );
                 },
                 icon: const Icon(FontAwesomeIcons.tree),
-                label: const Text("Create Tree"),
+                label: const Text("Manages Trees"),
               ),
             ),
             const SizedBox(height: 40),
