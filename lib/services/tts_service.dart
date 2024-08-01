@@ -1,4 +1,4 @@
-import 'package:flutter_tts/flutter_tts.dart';
+/*import 'package:flutter_tts/flutter_tts.dart';
 
 /// A service class to handle Text-to-Speech (TTS) configuration.
 class TTSService {
@@ -17,4 +17,4 @@ class TTSService {
     flutterTts.setPitch(1.0);
   }
 
-}
+}*/

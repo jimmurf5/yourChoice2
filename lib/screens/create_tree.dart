@@ -238,6 +238,8 @@ class _CreateTreeState extends State<CreateTree> {
           twoIsProvided == false;
           threeIsProvided == false;
         });
+        //return to manage trees on successful adding tree
+        Navigator.of(context).pop();
 
       } catch (ex) {
         //show error message in snack bar if operation failed

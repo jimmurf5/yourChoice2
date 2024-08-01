@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:your_choice/services/tts_service.dart';
 
 class DisplayTree extends StatelessWidget {
   final DocumentSnapshot treeSnapshot;
@@ -14,7 +13,7 @@ class DisplayTree extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Create an instance of TTSService to use for text-to-speech functionality
-    final TTSService ttsService = TTSService();
+    //final TTSService ttsService = TTSService();
     var treeData = treeSnapshot.data() as Map<String, dynamic>;
     var treeTitle = '${treeData['treeTitle']}'; //store the tree title
 
@@ -25,7 +24,7 @@ class DisplayTree extends StatelessWidget {
         actions: [
           IconButton(
               onPressed: () async {
-                await ttsService.flutterTts.speak(treeTitle);
+                //await ttsService.flutterTts.speak(treeTitle);
               },
               icon: const Icon(FontAwesomeIcons.comment),
           )
