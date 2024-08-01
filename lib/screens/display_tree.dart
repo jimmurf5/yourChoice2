@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:your_choice/services/tts_service.dart';
 import 'package:your_choice/widgets/message_card_item.dart';
 import '../models/message_card.dart';
 
@@ -10,8 +11,9 @@ import '../models/message_card.dart';
 class DisplayTree extends StatelessWidget {
   final DocumentSnapshot treeSnapshot;
   final String profileId;
+  final TTSService ttsService = TTSService(); // Instantiate TTSService
 
-  const DisplayTree({
+  DisplayTree({
     super.key,
     required this.treeSnapshot,
     required this.profileId,
@@ -30,7 +32,7 @@ class DisplayTree extends StatelessWidget {
         actions: [
           IconButton(
             onPressed: () async {
-              //await ttsService.flutterTts.speak(treeTitle);
+              await ttsService.flutterTts.speak(treeTitle);
             },
             icon: const Icon(FontAwesomeIcons.comment),
           )
@@ -101,7 +103,7 @@ class DisplayTree extends StatelessWidget {
         children: [
           ElevatedButton.icon(
             onPressed: () {
-              // Implement TTS functionality
+              ttsService.flutterTts.speak(questionText);
             },
             icon: const Icon(FontAwesomeIcons.comment),
             label: Text(questionText, style: const TextStyle(fontSize: 18)),
@@ -132,8 +134,15 @@ class DisplayTree extends StatelessWidget {
                     return const Text('Message card not found');
                   }
 
+                  //convert to a message card
                   var messageCard = MessageCard.fromMap(snapshot.data!.data() as Map<String, dynamic>);
-                  return MessageCardItem(messageCard: messageCard);
+                  //return messageCard wrapped in a gesture detector to speak title
+                  return GestureDetector(
+                    onTap: () async {
+                      await ttsService.flutterTts.speak(messageCard.title);
+                    },
+                      child: MessageCardItem(messageCard: messageCard),
+                  );
                 },
               );
             },
