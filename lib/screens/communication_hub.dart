@@ -7,6 +7,7 @@ import 'package:your_choice/widgets/message_card_item.dart';
 import 'package:your_choice/services/message_card_service.dart';
 import '../widgets/category_row.dart';
 import '../widgets/message_card_grid.dart';
+import 'manage_trees.dart';
 
 class CommunicationHub extends StatefulWidget {
   final String profileId;
@@ -69,7 +70,18 @@ class _CommunicationHubState extends State<CommunicationHub> {
         leading: //button to navigate profile to saved decision trees
             IconButton(
                 onPressed: () {
-                  //logic to show decision tress
+                  Navigator.push(
+                      context,
+                      /*Navigate to manage trees and pass false for the bool as
+                    * we are currently in profile mode*/
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            ManageTrees(
+                              profileId: widget.profileId,
+                              isUserMode: false,
+                            ),
+                      )
+                  );
                 },
                 icon: const Icon(FontAwesomeIcons.tree),
               color: Theme.of(context).colorScheme.inversePrimary,

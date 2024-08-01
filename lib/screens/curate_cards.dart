@@ -129,16 +129,6 @@ class _CurateCardsState extends State<CurateCards> {
       appBar: AppBar(
         title: const Text('Curate Cards'),
         backgroundColor: Theme.of(context).colorScheme.primary,
-        actions: [
-          //button to navigate profile to saved decision trees
-          IconButton(
-            onPressed: () {
-              //logic to show decision tress
-            },
-            icon: const Icon(FontAwesomeIcons.tree),
-            color: Theme.of(context).colorScheme.inversePrimary,
-          ),
-        ],
       ),
       backgroundColor: Theme.of(context).colorScheme.primary,
       body: Column(

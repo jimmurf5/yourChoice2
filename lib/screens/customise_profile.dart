@@ -61,9 +61,14 @@ class _CustomiseProfileState extends State<CustomiseProfile> {
                 onPressed: () {
                   Navigator.push(
                     context,
+                    /*Navigate to manage trees and pass true for the bool as
+                    * we are currently in user mode*/
                     MaterialPageRoute(
                         builder: (context) =>
-                          ManageTrees(profileId: widget.profileId),
+                          ManageTrees(
+                            profileId: widget.profileId,
+                            isUserMode: true,
+                          ),
                     )
                   );
                 },
