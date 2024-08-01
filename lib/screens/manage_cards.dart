@@ -82,6 +82,9 @@ class _ManageCardsState extends State<ManageCards> {
         _titleController.clear();
       });
       print('State cleared');
+
+      Navigator.of(context).pop();
+
     } catch (error) {
       print('Error occurred: $error');
       ScaffoldMessenger.of(context).showSnackBar(

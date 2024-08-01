@@ -62,4 +62,14 @@ class MessageCardDeleteService {
       print('Failed to delete the image $imageUrl');
     }
   }
+
+  _findMessageCardById(String profileId, String messageCardId) async {
+    QuerySnapshot querySnapshot = await _firestore
+        .collection('profiles')
+        .doc(profileId)
+        .collection('messageCards')
+        .where('messageCardId', isEqualTo: messageCardId)
+        .limit(1)
+        .get();
+  }
 }

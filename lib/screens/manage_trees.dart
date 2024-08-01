@@ -97,8 +97,10 @@ class _ManageTrees extends State<ManageTrees> {
                                             context, 
                                           MaterialPageRoute(
                                               builder: (context) => 
-                                              DisplayTree(treeSnapshot: tree)
-                                          )
+                                              DisplayTree(treeSnapshot: tree,
+                                                profileId: widget.profileId,
+                                              ),
+                                          ),
                                         );
                                       },
                                       style: TextButton.styleFrom(
