@@ -4,6 +4,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:your_choice/widgets/message_card_item.dart';
 import '../models/message_card.dart';
 
+/// A widget that displays a tree of questions and their answers using data
+/// from Firestore.
+/// Each question can have 2 answers, displayed as MessageCards in a grid layout.
 class DisplayTree extends StatelessWidget {
   final DocumentSnapshot treeSnapshot;
   final String profileId;
@@ -18,9 +21,7 @@ class DisplayTree extends StatelessWidget {
   Widget build(BuildContext context) {
     var treeData = treeSnapshot.data() as Map<String, dynamic>;
     var treeTitle = '${treeData['treeTitle']}'; // Store the tree title
-
-    var tree = treeData['questions'] as List<dynamic>;
-    var treeSize = tree.length;
+    var tree = treeData['questions'] as List<dynamic>; //store the q's and answers
 
     return Scaffold(
       appBar: AppBar(
@@ -41,6 +42,7 @@ class DisplayTree extends StatelessWidget {
     );
   }
 
+  /// Builds the layout based on the number of questions in the tree.
   Widget buildTreeLayout(BuildContext context, List<dynamic> tree) {
     int treeSize = tree.length;
 
@@ -53,12 +55,14 @@ class DisplayTree extends StatelessWidget {
     }
   }
 
+  /// Builds the layout for a single question.
   Widget buildSingleQuestion(BuildContext context, dynamic singleQuestion) {
     return Center(
       child: buildQuestionCard(context, singleQuestion),
     );
   }
 
+  /// Builds the layout for 2 questions.
   Widget buildTwoQuestions(BuildContext context, List<dynamic> tree) {
     return Center(
       child: Column(
@@ -71,6 +75,7 @@ class DisplayTree extends StatelessWidget {
     );
   }
 
+  /// Builds the layout for three questions.
   Widget buildThreeQuestions(BuildContext context, List<dynamic> tree) {
     return Center(
       child: Column(
@@ -84,10 +89,11 @@ class DisplayTree extends StatelessWidget {
     );
   }
 
+  /// Builds a card for a single question.
+  /// Displays the question and its answers in a grid layout.
   Widget buildQuestionCard(BuildContext context, dynamic singleQuestion) {
     var questionText = singleQuestion['question'];
     var answers = singleQuestion['answers'] as List<dynamic>;
-    print('the 2 answers from the map $answers');
 
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -137,6 +143,7 @@ class DisplayTree extends StatelessWidget {
     );
   }
 
+  /// Queries Firestore to get a specific message card by its ID.
   Future<DocumentSnapshot> _getTheMessageCard(String messageCardId) async {
     FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
 
