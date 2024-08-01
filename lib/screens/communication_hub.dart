@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:your_choice/models/message_card.dart';
-import 'package:your_choice/widgets/long_press_button.dart';
 import 'package:your_choice/widgets/message_card_item.dart';
 import 'package:your_choice/services/message_card_service.dart';
 import '../widgets/category_row.dart';
+import '../widgets/long_press_button.dart';
 import '../widgets/message_card_grid.dart';
 import 'manage_trees.dart';
 
@@ -63,8 +63,26 @@ class _CommunicationHubState extends State<CommunicationHub> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Communication Hub'),
         backgroundColor: Theme.of(context).colorScheme.primary,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: 50,
+              height: 50,
+              child: Image.asset('assets/images/logo_2.png'), // Replace with your logo asset
+            ),
+            const SizedBox(width: 10),
+            const Text(
+              'Your Choice',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
         //remove the default arrow provided by flutter in the app bar
         automaticallyImplyLeading: false,
         leading: //button to navigate profile to saved decision trees

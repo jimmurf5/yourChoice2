@@ -61,15 +61,21 @@ class _AuthScreenState extends State<AuthScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                margin: const EdgeInsets.only(
-                  top: 30,
-                  bottom: 20,
-                  left: 20,
-                  right: 20,
-                ),
-                width: 200,
-                // child: Image.asset('assets/images/chat.png'),
+                margin: const EdgeInsets.only(top: 30, bottom: 20),
+                width: 100,
+                height: 100,
+                child: Image.asset('assets/images/logo_2.png'), // Replace with your logo asset
               ),
+              // Add your app name here
+              const Text(
+                'Your Choice',
+                style: TextStyle(
+                  fontSize: 38,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 20),
               Card(
                 margin: const EdgeInsets.all(20),
                 child: SingleChildScrollView(
