@@ -50,4 +50,8 @@ class AuthRepository {
     return _firebaseAuth.signOut();
   }
 
+  /// Stream to listen to authentication state changes
+  Stream<User?> authStateChange() {
+    return _firebaseAuth.authStateChanges();
+  }
 }

@@ -9,6 +9,17 @@ import 'dart:io';
 //define an enum to represent the source of the image
 enum ImageSourceOption { camera, gallery }
 
+/// The ManageCards screen allows users to manage their message cards by
+/// providing functionalities to curate existing cards or create new ones.
+///
+/// This screen includes:
+/// - A button to navigate to the CurateCards screen for curating existing cards.
+/// - A text field to input the title for a new card.
+/// - An image picker to select an image from the camera or gallery.
+/// - A button to upload the selected image and save the card data to Firestore.
+///
+/// The screen uses the ImageUploadService to handle image uploads and
+/// saving data to Firestore.
 class ManageCards extends StatefulWidget {
   final String profileId;
 
@@ -36,12 +47,22 @@ class _ManageCardsState extends State<ManageCards> {
     super.dispose();
   }
 
+  /// Uploads the selected image and saves the card data to Firestore.
+  ///
+  /// This method performs the following steps:
+  /// 1. Validates that both an image and a title are provided.
+  /// 2. Ensures that the title is not longer than 13 characters.
+  /// 3. Attempts to upload the image and save the card data using the
+  ///    ImageUploadService.
+  /// 4. Displays a success message upon successful upload and data saving.
+  /// 5. Clears the selected image and title from the state after saving.
+  /// 6. Navigates back to the previous screen upon successful completion.
+  ///
+  /// If any validation fails or an error occurs during the upload or saving
+  /// process, appropriate error messages are displayed using a SnackBar.
   Future<void> _uploadImage() async {
-    print('Upload Image method called');
-
     // Make sure that image and title are provided
     if (_takenImage == null || _titleController.text.isEmpty) {
-      print('Image or title is missing');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Title and Image are required.'),
@@ -51,25 +72,22 @@ class _ManageCardsState extends State<ManageCards> {
     }
 
     // Make sure the title is not too long
-    if (_titleController.text.length > 10) {
-      print('Title is too long');
+    if (_titleController.text.length > 13) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Title must be 10 characters or less'),
+          content: Text('Title must be 13 characters or less'),
         ),
       );
       return;
     }
 
     try {
-      print('Attempting to upload image and save data');
       await _imageUploadService.upLoadImageAndSaveData(
         _takenImage!,
         _titleController.text,
         widget.profileId,
       );
 
-      print('Image and data saved successfully');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Image and message saved successfully!'),
@@ -83,10 +101,10 @@ class _ManageCardsState extends State<ManageCards> {
       });
       print('State cleared');
 
+      //pop back to customise profile screen if action successful
       Navigator.of(context).pop();
 
     } catch (error) {
-      print('Error occurred: $error');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Failed to save image and message!'),
@@ -95,8 +113,9 @@ class _ManageCardsState extends State<ManageCards> {
     }
   }
 
-  // Unified method to pick an image from camera or gallery
-  //takes an enum as a parameter
+  /// Unified method to pick an image from camera or gallery
+  /// /// [option] - an enum presenting the source of the
+  /// image (camera or gallery).
   Future<void> _pickImage(ImageSourceOption option) async {
     final picker = ImagePicker();
     //returns a image source of type camera or gallery
@@ -152,7 +171,6 @@ class _ManageCardsState extends State<ManageCards> {
             const SizedBox(height: 50),
             ImageInput(
               onPickedImage: (pickedImage) {
-                print('Image picked: ${pickedImage.path}');
                 setState(() {
                   _takenImage = pickedImage;
                 });
@@ -160,9 +178,8 @@ class _ManageCardsState extends State<ManageCards> {
             ),
             const SizedBox(height: 50),
             ElevatedButton.icon(
-              // Send image to file store and store the storage ref
+              // Send image to file storage and store the storage ref
               onPressed: () {
-                print('Create Card button pressed');
                 _uploadImage();
               },
               icon: const Icon(FontAwesomeIcons.plus),

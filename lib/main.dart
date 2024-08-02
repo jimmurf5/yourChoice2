@@ -1,6 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:your_choice/repositories/auth_repository.dart';
 import 'package:your_choice/screens/auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:your_choice/screens/splash_screen.dart';
@@ -10,16 +10,10 @@ import 'package:your_choice/screens/admin_home.dart';
 import 'package:your_choice/data/card_data.dart';
 import 'package:your_choice/notifiers/theme_notifier.dart';
 
-//set theme data
-/*final theme = ThemeData(
-  colorScheme: ColorScheme.fromSeed(
-    seedColor: const Color.fromARGB(255, 63, 17, 177),
-  ),
-  useMaterial3: true,
-);*/
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -32,37 +26,55 @@ void main() async {
     await firestoreService.seedData(availMessageCards, availableCategories);
   }
 
-  runApp(const ProviderScope(child: App())); //Wrap app with provider scope
+  // Initialize the AuthRepository
+  final AuthRepository authRepository = AuthRepository();
+
+  // Run the app and wrap it with ProviderScope for Riverpod state management
+  runApp(
+    // Initialize the AuthRepository
+    ProviderScope(
+      child: App(
+        authRepository: authRepository,
+      ),
+    ),
+  ); //Wrap app with provider scope
 }
 
 class App extends ConsumerWidget {
-  const App({super.key});
+  final AuthRepository authRepository;
+  const App({required this.authRepository, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Debug statement
+    print(authRepository);
+
     //watch the theme notifier provider for changes in colour
     final seedColour = ref.watch(themeNotifierProvider);
 
+    // Define the theme based on the watched color
     final theme = ThemeData(
-      colorScheme: ColorScheme.fromSeed(
-          seedColor: seedColour
-      ),
+      colorScheme: ColorScheme.fromSeed(seedColor: seedColour),
       useMaterial3: true,
     );
     return MaterialApp(
       debugShowCheckedModeBanner: false, // Remove the debug banner
       theme: theme,
       home: StreamBuilder(
-          stream: FirebaseAuth.instance.authStateChanges(),
+        // Use authRepository to listen for authentication state changes
+          stream: authRepository.authStateChange(),
           builder: (ctx, snapshot) {
+            // Show a splash screen while waiting for the authentication state
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const SplashScreen();
             }
 
+            // If the user is authenticated, navigate to the AdminHome screen
             if (snapshot.hasData) {
               return const AdminHome();
             }
 
+            // If the user is not authenticated, navigate to the AuthScreen
             return const AuthScreen();
           }),
     );
