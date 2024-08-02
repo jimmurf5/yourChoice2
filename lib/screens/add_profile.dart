@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import '../repositories/firestore_repository.dart';
 import '../services/firestore_service.dart';
 
 class AddProfile extends StatefulWidget {
@@ -22,12 +23,15 @@ class _AddProfileState extends State<AddProfile> {
   /* Create a GlobalKey to uniquely identify the Form widget
   and allow validation and state management*/
   final _form = GlobalKey<FormState>();
+  // Initialize the FirestoreRepository
+  final FirestoreRepository _repository = FirestoreRepository();
 
   //vars to store the user data
   var _enteredForename = '';
   var _enteredSurname = '';
 
-  /// Validates and submits the form data to create a new profile.
+  /// Validates and submits the form data by calling the
+  /// firestore repository to create a new profile.
   void _submit() async {
     final isValid = _form.currentState!.validate();
 
@@ -46,14 +50,16 @@ class _AddProfileState extends State<AddProfile> {
       }
       final myUid = auth.currentUser!.uid;
 
-      //add the profile to firestore and get the doc ref
-      DocumentReference profileRef =
-          await FirebaseFirestore.instance.collection('profiles').add({
+      // Create a map for the new profile data
+      final profileData = {
         'forename': _enteredForename,
         'surname': _enteredSurname,
         'colour':Theme.of(context).colorScheme.primary.value, // store color initially as the users seed colour
         'createdBy': myUid, // Adding the createdBy field
-      });
+      };
+
+      // Add the profile to Firestore using the repository and get the document reference
+      DocumentReference profileRef = await _repository.createProfile(profileData);
 
       //get the profile id from the document reference
       String profileId = profileRef.id;
