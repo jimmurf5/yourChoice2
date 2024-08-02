@@ -6,6 +6,8 @@ import 'package:your_choice/providers/profile_colour_manager.dart';
 import 'package:your_choice/screens/add_profile.dart';
 import 'package:your_choice/screens/customise_profile.dart';
 
+import '../repositories/firestore_repository.dart';
+
 class AdminHome extends ConsumerStatefulWidget {
   const AdminHome({super.key});
 
@@ -13,8 +15,17 @@ class AdminHome extends ConsumerStatefulWidget {
   ConsumerState<AdminHome> createState() => _AdminHomeState();
 }
 
+/// AdminHome is a StatefulWidget that represents the admin dashboard screen.
+/// This screen allows the admin user to view, add, and manage user profiles.
+/// It displays the current user's email in the appBar,
+/// a button to add new profiles, and a list of existing profiles.
+/// The profiles can be selected for customization or deleted with an option to undo.
 class _AdminHomeState extends ConsumerState<AdminHome> {
   String userEmail = '';
+  // Initialize the FirestoreRepository
+  final FirestoreRepository _repository = FirestoreRepository();
+  // Initialize the FirebaseAuth instance to handle authentication tasks
+  final FirebaseAuth auth = FirebaseAuth.instance;
 
   @override
   void initState() {
@@ -23,8 +34,9 @@ class _AdminHomeState extends ConsumerState<AdminHome> {
     fetchUserEmail();
   }
 
+  /// Fetches the current user's email and sets the userEmail state variable.
   void fetchUserEmail() async {
-    User? user = FirebaseAuth.instance.currentUser;
+    User? user = auth.currentUser;
     if (user != null) {
       setState(() {
         userEmail = user.email ?? 'No Email'; // Handling null case
@@ -66,9 +78,12 @@ class _AdminHomeState extends ConsumerState<AdminHome> {
             const SizedBox(height: 20),
             ElevatedButton.icon(
               onPressed: () {
+                //navigate to add profile screen
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const AddProfile()),
+                  MaterialPageRoute(
+                      builder: (context) => const AddProfile()
+                  ),
                 );
               },
               icon: const Icon(Icons.add),
@@ -82,11 +97,9 @@ class _AdminHomeState extends ConsumerState<AdminHome> {
             const SizedBox(height: 20),
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection('profiles')
-                    .where('createdBy',
-                        isEqualTo: FirebaseAuth.instance.currentUser?.uid)
-                    .snapshots(),
+                /* Use the repository method, pass the userId to the method
+                * after retrieving with Firebase auth */
+                stream: _repository.fetchProfiles(auth.currentUser?.uid ?? ''),
                 builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const CircularProgressIndicator();
@@ -149,36 +162,27 @@ class _AdminHomeState extends ConsumerState<AdminHome> {
                               final deletedProfile = profile.data() as Map<String, dynamic>;
                               final profileId = profile.id;
 
-                              //delete profile
-                              await FirebaseFirestore.instance
-                                  .collection('profiles')
-                                  .doc(profile.id)
-                                  .delete()
-                                  .then((_) {
+                              /* Delete profile using the repository and passing
+                              * the profileId */
+                              await _repository.deleteProfile(profileId).then((_) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                   SnackBar(
-                                      duration:
-                                          const Duration(seconds: 10),
-                                      content:
-                                          const Text('Profile deleted successfully'),
+                                  SnackBar(
+                                    duration: const Duration(seconds: 10),
+                                    content: const Text('Profile deleted successfully'),
                                     action: SnackBarAction(
-                                        label: 'UNDO',
-                                        onPressed: ()  {
-                                          // Restore the deleted profile
-                                          FirebaseFirestore.instance
-                                              .collection('profiles')
-                                              .doc(profileId)
-                                              .set(deletedProfile);
-                                        }
+                                      label: 'UNDO',
+                                      onPressed: () {
+                                        /* Restore the deleted profile using
+                                        the stored deletedProfile data
+                                        repository */
+                                        _repository.restoreProfile(profileId, deletedProfile);
+                                      },
                                     ),
                                   ),
                                 );
                               }).catchError((error) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content:
-                                          Text('Failed to delete profile')
-                                  ),
+                                  const SnackBar(content: Text('Failed to delete profile')),
                                 );
                               });
                             },
