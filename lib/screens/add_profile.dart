@@ -13,12 +13,21 @@ class AddProfile extends StatefulWidget {
   }
 }
 
+/// A StatefulWidget that provides a form for adding a new profile.
+/// This widget handles user input, validates the form,
+/// and submits the data to Firestore.
 class _AddProfileState extends State<AddProfile> {
+  // Initialize the FirebaseAuth instance to handle authentication tasks
+  final FirebaseAuth auth = FirebaseAuth.instance;
+  /* Create a GlobalKey to uniquely identify the Form widget
+  and allow validation and state management*/
   final _form = GlobalKey<FormState>();
 
+  //vars to store the user data
   var _enteredForename = '';
   var _enteredSurname = '';
 
+  /// Validates and submits the form data to create a new profile.
   void _submit() async {
     final isValid = _form.currentState!.validate();
 
@@ -30,8 +39,8 @@ class _AddProfileState extends State<AddProfile> {
 
     // Save data to Firestore
     try {
-      //get the uid
-      final FirebaseAuth auth = FirebaseAuth.instance;
+      // Get the current user's UID
+
       if (auth.currentUser == null) {
         return;
       }
@@ -77,7 +86,7 @@ class _AddProfileState extends State<AddProfile> {
       appBar: AppBar(
         title: const Text('Add Profile'),
       ),
-      backgroundColor: Theme.of(context).colorScheme.surface,
+      backgroundColor: Theme.of(context).colorScheme.primary,
       body: Center(
         child: SingleChildScrollView(
           child: Padding(
