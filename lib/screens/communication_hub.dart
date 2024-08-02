@@ -9,6 +9,13 @@ import '../widgets/long_press_button.dart';
 import '../widgets/message_card_grid.dart';
 import 'manage_trees.dart';
 
+/// CommunicationHub is a StatefulWidget that serves as the main
+/// communication interface for profile.
+/// This widget provides a UI for selecting and displaying message cards,
+/// reading them out loud using text-to-speech (TTS),
+/// and managing selected cards by allowing up to 3 of them to be displayed in a panel.
+/// It includes functionalities for navigating to the ManageTrees screen,
+/// displaying selected message cards, and choosing categories of message cards.
 class CommunicationHub extends StatefulWidget {
   final String profileId;
 

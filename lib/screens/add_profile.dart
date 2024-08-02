@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import '../repositories/firestore_repository.dart';
+import '../repositories/auth_repository.dart';
+import '../repositories/profile_repository.dart';
 import '../services/firestore_service.dart';
 
 class AddProfile extends StatefulWidget {
@@ -17,13 +17,13 @@ class AddProfile extends StatefulWidget {
 /// This widget handles user input, validates the form,
 /// and submits the data to Firestore.
 class _AddProfileState extends State<AddProfile> {
-  // Initialize the FirebaseAuth instance to handle authentication tasks
-  final FirebaseAuth auth = FirebaseAuth.instance;
   /* Create a GlobalKey to uniquely identify the Form widget
   and allow validation and state management*/
   final _form = GlobalKey<FormState>();
-  // Initialize the FirestoreRepository
-  final FirestoreRepository _repository = FirestoreRepository();
+  // Initialize the ProfileRepository
+  final ProfileRepository _repository = ProfileRepository();
+  // Initialize the AuthRepository
+  final AuthRepository _authRepository = AuthRepository();
 
   //vars to store the user data
   var _enteredForename = '';
@@ -43,11 +43,11 @@ class _AddProfileState extends State<AddProfile> {
     // Save data to Firestore
     try {
       // Get the current user's UID
-
-      if (auth.currentUser == null) {
+      final currentUser = _authRepository.getCurrentUser();
+      if (currentUser == null) {
         return;
       }
-      final myUid = auth.currentUser!.uid;
+      final myUid = currentUser.uid;
 
       // Create a map for the new profile data
       final profileData = {
@@ -58,7 +58,8 @@ class _AddProfileState extends State<AddProfile> {
       };
 
       // Add the profile to Firestore using the repository and get the document reference
-      DocumentReference profileRef = await _repository.createProfile(profileData);
+      DocumentReference profileRef = await _repository
+          .createProfile(profileData: profileData);
 
       //get the profile id from the document reference
       String profileId = profileRef.id;

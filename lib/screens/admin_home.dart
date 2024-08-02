@@ -5,8 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:your_choice/providers/profile_colour_manager.dart';
 import 'package:your_choice/screens/add_profile.dart';
 import 'package:your_choice/screens/customise_profile.dart';
-
-import '../repositories/firestore_repository.dart';
+import '../repositories/auth_repository.dart';
+import '../repositories/profile_repository.dart';
 
 class AdminHome extends ConsumerStatefulWidget {
   const AdminHome({super.key});
@@ -23,9 +23,10 @@ class AdminHome extends ConsumerStatefulWidget {
 class _AdminHomeState extends ConsumerState<AdminHome> {
   String userEmail = '';
   // Initialize the FirestoreRepository
-  final FirestoreRepository _repository = FirestoreRepository();
-  // Initialize the FirebaseAuth instance to handle authentication tasks
-  final FirebaseAuth auth = FirebaseAuth.instance;
+  final ProfileRepository _repository = ProfileRepository();
+  // Initialize the AuthRepository
+  final AuthRepository _authRepository = AuthRepository();
+
 
   @override
   void initState() {
@@ -36,7 +37,7 @@ class _AdminHomeState extends ConsumerState<AdminHome> {
 
   /// Fetches the current user's email and sets the userEmail state variable.
   void fetchUserEmail() async {
-    User? user = auth.currentUser;
+    User? user = _authRepository.getCurrentUser();
     if (user != null) {
       setState(() {
         userEmail = user.email ?? 'No Email'; // Handling null case
@@ -99,7 +100,9 @@ class _AdminHomeState extends ConsumerState<AdminHome> {
               child: StreamBuilder<QuerySnapshot>(
                 /* Use the repository method, pass the userId to the method
                 * after retrieving with Firebase auth */
-                stream: _repository.fetchProfiles(auth.currentUser?.uid ?? ''),
+                stream: _repository.fetchProfiles(
+                    userId: _authRepository.getCurrentUser()?.uid ?? '',
+                ),
                 builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const CircularProgressIndicator();
@@ -164,7 +167,10 @@ class _AdminHomeState extends ConsumerState<AdminHome> {
 
                               /* Delete profile using the repository and passing
                               * the profileId */
-                              await _repository.deleteProfile(profileId).then((_) {
+                              await _repository.deleteProfile(
+                                  profileId: profileId
+                              )
+                                  .then((_) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     duration: const Duration(seconds: 10),
@@ -175,7 +181,11 @@ class _AdminHomeState extends ConsumerState<AdminHome> {
                                         /* Restore the deleted profile using
                                         the stored deletedProfile data
                                         repository */
-                                        _repository.restoreProfile(profileId, deletedProfile);
+                                        _repository
+                                            .restoreProfile(
+                                            profileId: profileId,
+                                            profileData: deletedProfile
+                                        );
                                       },
                                     ),
                                   ),

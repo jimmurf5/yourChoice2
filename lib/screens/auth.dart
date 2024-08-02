@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../repositories/auth_repository.dart';
 
-final _firebase = FirebaseAuth.instance;
-
+/// AuthScreen is a StatefulWidget that provides a form for user authentication.
+/// This screen allows users to either sign in or create a new account.
+/// It uses an AuthRepository to handle Firebase Authentication operations.
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
 
@@ -13,12 +15,19 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
+  /* Create a GlobalKey to uniquely identify the Form widget
+  and allow validation and state management*/
   final _form = GlobalKey<FormState>();
+  // Initialize the AuthRepository
+  final AuthRepository _authRepository = AuthRepository();
 
+  //variables to hold the users information for submission
   var _isLogin = true;
   var _enteredEmail = '';
   var _enteredPassword = '';
 
+  /// Validates and submits the form data by calling the
+  /// AuthRepository to either sign in or create a new user account.
   void _submit() async {
     final isValid = _form.currentState!.validate();
 
@@ -28,13 +37,22 @@ class _AuthScreenState extends State<AuthScreen> {
 
     _form.currentState!.save();
 
+    /*call auth repo depending on weather bool _isLogin is true or false
+    * dictated by ternary expression in controlled by onPressed of
+    * elevated button at bottom of the class*/
     try {
       if (_isLogin) {
-        final userCredentials = await _firebase.signInWithEmailAndPassword(
-            email: _enteredEmail, password: _enteredPassword);
+          await _authRepository
+            .signInWithEmailAndPassword(
+            email: _enteredEmail,
+            password: _enteredPassword
+        );
       } else {
-        final userCredentials = await _firebase.createUserWithEmailAndPassword(
-            email: _enteredEmail, password: _enteredPassword);
+          await _authRepository
+            .createUserWithEmailAndPassword(
+            email: _enteredEmail,
+            password: _enteredPassword
+        );
       }
     } on FirebaseAuthException catch (error) {
       if (error.code == "email-already-in-use") {
@@ -96,7 +114,6 @@ class _AuthScreenState extends State<AuthScreen> {
                                   !value.contains('@')) {
                                 return 'Please enter a valid email address';
                               }
-
                               return null; // if pass the validation
                             },
                             onSaved: (value) {
@@ -108,10 +125,11 @@ class _AuthScreenState extends State<AuthScreen> {
                                 const InputDecoration(labelText: 'Password'),
                             obscureText: true,
                             validator: (value) {
-                              if (value == null || value.trim().length < 6) {
-                                return 'Please enter a password of at least 6 characters long.';
+                              // Regular expression to validate the password
+                              final regex = RegExp(r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_]).{8,}$');
+                              if (value == null || !regex.hasMatch(value)) {
+                                return 'Password must be at least 8 characters long, include an uppercase letter, a lowercase letter, a number, and a special character.';
                               }
-
                               return null; // if pass the validation
                             },
                             onSaved: (value) {
