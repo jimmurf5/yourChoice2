@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:your_choice/models/message_card.dart';
 import 'package:your_choice/widgets/message_card_item.dart';

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:your_choice/repositories/message_card_repository.dart';
 
 import '../models/category.dart';
 import 'category_item.dart';
@@ -13,7 +14,10 @@ import 'category_item.dart';
 class CategoryRow extends StatelessWidget {
   final FlutterTts flutterTts;
   final Function(int) onCategorySelected;
-  const CategoryRow(
+  //initialise an instance of the message card repo
+  final MessageCardRepository _messageCardRepository = MessageCardRepository();
+
+  CategoryRow(
       {super.key, required this.flutterTts, required this.onCategorySelected});
 
   @override
@@ -24,7 +28,9 @@ class CategoryRow extends StatelessWidget {
         height: 120.0,
         child: StreamBuilder<QuerySnapshot>(
           stream:
-              FirebaseFirestore.instance.collection('categories').snapshots(),
+              /*fetch all the categories using the fetch categories method from
+              * the message Card Repo class*/
+              _messageCardRepository.fetchCategories(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
               //check to make sure snapshot has data and is not null

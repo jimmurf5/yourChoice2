@@ -2,6 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:your_choice/models/message_card.dart';
 
+/// A widget that represents a single message card item.
+///
+/// The `MessageCardItem` widget displays a message card with an image and a title.
+/// The image can be either an SVG or a standard image format (e.g., JPG, PNG).
+/// The widget handles both types of images using a ternary operator to check the file extension.
+/// If the image is loading, a `CircularProgressIndicator` is displayed.
+/// The title is displayed below the image, centered and styled with a bold font.
+///
 class MessageCardItem extends StatelessWidget {
   final MessageCard messageCard;
 

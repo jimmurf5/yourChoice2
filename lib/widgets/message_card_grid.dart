@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:your_choice/repositories/message_card_repository.dart';
 import 'package:your_choice/services/message_card_service.dart';
-
 import '../models/message_card.dart';
 import 'message_card_item.dart';
 
@@ -12,7 +12,6 @@ import 'message_card_item.dart';
 /// categories (e.g., history category vs. other categories).
 /// When in profile mode, it performs text-to-speech (TTS) for the card titles and
 /// updates the selection count for each card through the `messageCardService`.
-///
 class MessageCardGrid extends StatelessWidget {
   final int selectedCategory;
   final String profileId;
@@ -23,8 +22,11 @@ class MessageCardGrid extends StatelessWidget {
       onCardSelected; //required call back for card selection
   final bool isProfileMode; //flag to determine the mode (profile or user)
   final List<MessageCard> selectedCards; //a parameter to handle the list of selected cards
+  final MessageCardRepository _messageCardRepository;
 
-  const MessageCardGrid(
+  ///The constructor for messageCardGrid, it initialises messageCardRepository
+  ///within the constructor
+  MessageCardGrid(
       {super.key,
       required this.selectedCategory,
       required this.profileId,
@@ -32,7 +34,7 @@ class MessageCardGrid extends StatelessWidget {
       required this.messageCardService,
       required this.onCardSelected,
       required this.isProfileMode, required this.selectedCards
-      });
+      }) : _messageCardRepository = MessageCardRepository();
 
   @override
   Widget build(BuildContext context) {
@@ -54,13 +56,11 @@ class MessageCardGrid extends StatelessWidget {
             },
           )
         : StreamBuilder<QuerySnapshot>(
-            //get the message Card data from firebase only for our selected profile matching the chosen category
-            stream: FirebaseFirestore.instance
-                .collection('profiles')
-                .doc(profileId)
-                .collection('messageCards')
-                .where('categoryId', isEqualTo: selectedCategory)
-                .snapshots(),
+            /*get the message Card data from firebase only for our selected
+            profile matching the chosen category, call the messageCardRepo
+            to fetch from firebase*/
+            stream: _messageCardRepository
+                .fetchMessageCards(profileId: profileId, categoryId: selectedCategory),
             builder: (context, snapshot) {
               // Check for any errors
               if (snapshot.hasError) {
