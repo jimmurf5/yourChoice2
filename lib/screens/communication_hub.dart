@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:your_choice/models/message_card.dart';
 import 'package:your_choice/widgets/message_card_item.dart';
 import 'package:your_choice/services/message_card_service.dart';
+import '../services/tts_service.dart';
 import '../widgets/category_row.dart';
 import '../widgets/long_press_button.dart';
 import '../widgets/message_card_grid.dart';
@@ -19,6 +20,7 @@ import 'manage_trees.dart';
 class CommunicationHub extends StatefulWidget {
   final String profileId;
 
+
   const CommunicationHub({super.key, required this.profileId});
 
   @override
@@ -28,7 +30,7 @@ class CommunicationHub extends StatefulWidget {
 }
 
 class _CommunicationHubState extends State<CommunicationHub> {
-  FlutterTts flutterTts = FlutterTts(); //initialize flutter tts
+  final TTSService ttsService = TTSService(); // Instantiate TTSService
   int selectedCategory = 3; //default the selected category to category 3
   List<MessageCard> selectedCards = []; //declare a list to hold selected messageCards
   late MessageCardService messageCardService; //declare the service which manages card history
@@ -39,14 +41,6 @@ class _CommunicationHubState extends State<CommunicationHub> {
     // Initialize the service
     messageCardService = MessageCardService(profileId: widget.profileId);
     print('messageCardService initialized with profileId: ${widget.profileId}');
-    initializeTts(); //initialise tts
-  }
-
-  void initializeTts() {
-    flutterTts.setLanguage("en-UK");
-    flutterTts.setSpeechRate(0.5);
-    flutterTts.setVolume(1.0);
-    flutterTts.setPitch(1.0);
   }
 
   //method to set the state, to update the UI when card selected
@@ -153,7 +147,7 @@ class _CommunicationHubState extends State<CommunicationHub> {
                     setState(() {
                       selectedCards.clear();
                     });
-                    await flutterTts.speak('Clear!');
+                    await ttsService.flutterTts.speak('Clear!');
                   },
                   icon: const Icon(FontAwesomeIcons.trashCan),
                   iconSize:25,
@@ -165,8 +159,8 @@ class _CommunicationHubState extends State<CommunicationHub> {
                   //shown in the display panel
                   onPressed: () async {
                     for (var card in selectedCards) {
-                      await flutterTts.speak(card.title);
-                      await flutterTts.awaitSpeakCompletion(true);
+                      await ttsService.flutterTts.speak(card.title);
+                      await ttsService.flutterTts.awaitSpeakCompletion(true);
                     }
                   },
                   icon: const Icon(FontAwesomeIcons.play),
@@ -184,7 +178,7 @@ class _CommunicationHubState extends State<CommunicationHub> {
               child: MessageCardGrid(
                   selectedCategory: selectedCategory,
                   profileId: widget.profileId,
-                  flutterTts: flutterTts,
+                  flutterTts: ttsService.flutterTts,
                   messageCardService: messageCardService,
                   onCardSelected: _onCardSelected,
                   isProfileMode: true,
@@ -194,7 +188,7 @@ class _CommunicationHubState extends State<CommunicationHub> {
           //horizontally scrolling row for the categories
           //returned on calling CategoryRow
           CategoryRow(
-              flutterTts: flutterTts,
+              flutterTts: ttsService.flutterTts,
               onCategorySelected: _onCategorySelected
           ),
         ],
