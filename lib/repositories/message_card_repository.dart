@@ -82,7 +82,15 @@ class MessageCardRepository {
     }
   }
 
-  ///method returns a single message card
+  /// Retrieves a single message card document from Firestore.
+  ///
+  /// It returns a `DocumentSnapshot` containing the data of the message card.
+  ///
+  /// [profileId] - The ID of the profile to which the message card belongs.
+  /// [docId] - The document ID of the message card in Firestore.
+  ///
+  /// Returns a `Future` that resolves to a `DocumentSnapshot` containing the
+  /// message card data.
   Future<DocumentSnapshot> fetchOneMessageCard(String profileId, String docId) {
     return _firestore
         .collection('profiles')

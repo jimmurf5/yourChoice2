@@ -125,7 +125,9 @@ class DisplayTree extends StatelessWidget {
               var answer = answers[index];
               var messageCardId = answer['messageCardId'];
 
-              // Use FutureBuilder to handle the asynchronous operation
+              /* Use FutureBuilder to handle the asynchronous operation of
+              *  fetching the messageCard by their messageCardId
+              *  Call the messageCardRepo to use method of that class*/
               return FutureBuilder<QuerySnapshot>(
                 future: _messageCardRepository.findMessageCardById(profileId, messageCardId),
                 builder: (context, snapshot) {
@@ -142,7 +144,9 @@ class DisplayTree extends StatelessWidget {
                   // Fetch the document ID from the query snapshot
                   var docId = snapshot.data!.docs.first.id;
 
-                  // Use another FutureBuilder to fetch the document using the doc ID
+                  /* Use another FutureBuilder (inside the first future builder)
+                     to fetch the document using the doc ID (obtained from the
+                     first future builder) */
                   return FutureBuilder<DocumentSnapshot>(
                     future: _messageCardRepository.fetchOneMessageCard(profileId, docId),
                     builder: (context, docSnapshot) {
