@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:your_choice/services/image_delete_service.dart';
 
 /// A repository class that handles Firestore operations related to
 /// message cards and categories.
@@ -7,9 +8,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 /// an internal API for the rest of the application to interact with
 /// the Firestore database.
 /// It includes methods for fetching message cards and categories from
-/// the Firestore database. Also saving messageCards
+/// the Firestore database. Also saving, deleting messageCards
 class MessageCardRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final ImageDeleteService imageDeleteService = ImageDeleteService();
 
   /// Fetches message cards for a given profile and category.
   ///
@@ -62,4 +64,52 @@ class MessageCardRepository {
       rethrow;
     }
   }
+
+  /// Finds a message card by its ID and the profileId
+  /// returns a querySnapShot limited to one card
+  Future<QuerySnapshot> findMessageCardById(String profileId, String messageCardId) async {
+    try {
+      return await _firestore
+          .collection('profiles')
+          .doc(profileId)
+          .collection('messageCards')
+          .where('messageCardId', isEqualTo: messageCardId)
+          .limit(1)
+          .get();
+    } catch (e) {
+      print('Failed to find message card $messageCardId for profile $profileId: $e');
+      rethrow;
+    }
+  }
+
+  /// Method to delete a message card by its document ID
+  /// and handles image deletion if needed
+  ///
+  /// Parameters:
+  /// [profileId]- ID of the profile to which the message card belongs
+  /// [docId]- the document ID of the messageCard in firestore
+  /// [categoryId]- the category the messageCard is associated with
+  /// [imageUrl]- the messageCard's image URL
+  Future<void> deleteMessageCard(String profileId, String docId, int categoryId, String imageUrl) async {
+    try {
+      await _firestore
+          .collection('profiles')
+          .doc(profileId)
+          .collection('messageCards')
+          .doc(docId)
+          .delete();
+
+      if(categoryId == 2) {
+        /*delete the image from firestore storage if its a unique image
+        of category 2, call imageDeleteService and pass the imageUrl
+         */
+        await imageDeleteService.deleteImageFromStorage(imageUrl);
+      }
+
+    } catch (e) {
+      print('Failed to delete message card with docId $docId for profile $profileId: $e');
+      rethrow;
+    }
+  }
+
 }

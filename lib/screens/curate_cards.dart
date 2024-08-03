@@ -1,6 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:your_choice/services/message_card_delete_service.dart';
+import 'package:your_choice/repositories/message_card_repository.dart';
 import '../models/message_card.dart';
 import '../services/message_card_service.dart';
 import '../services/tts_service.dart';
@@ -40,8 +41,8 @@ class _CurateCardsState extends State<CurateCards> {
       []; //declare a list to hold selected messageCards
   late MessageCardService
       messageCardService; //declare the service which manages card history
-  //initialise the deletion service
-  final MessageCardDeleteService deleteService = MessageCardDeleteService();
+  //initialise the messageCardRepo
+  final MessageCardRepository messageCardRepository = MessageCardRepository();
 
   @override
   void initState() {
@@ -107,22 +108,39 @@ class _CurateCardsState extends State<CurateCards> {
       int categoryId = cardForDelete.categoryId;
       String imageUrl = cardForDelete.imageUrl;
       print('curate cards- card id for deletion: $messageCardId');
-      //call the deletion service
-      deleteService.deleteMessageCard(
-          widget.profileId,
-          messageCardId,
-          categoryId,
-          imageUrl
-      );
-      //clear the selected card and set the state
-      setState(() {
-        selectedCards.clear();
-      });
-      //feedback for the user
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Card deleted successfully'),
-          ),
-      );
+
+      try {
+        // Find the document ID, call method in messageCardRepo
+        QuerySnapshot querySnapshot = await messageCardRepository
+            .findMessageCardById(widget.profileId, messageCardId);
+        if (querySnapshot.docs.isNotEmpty) {
+          String docId = querySnapshot.docs.first.id;
+
+          // Delete the document, call method in messageCardRepo
+          await messageCardRepository
+              .deleteMessageCard(widget.profileId, docId, categoryId, imageUrl);
+
+          // Clear the selected card and set the state
+          setState(() {
+            selectedCards.clear();
+          });
+
+          // Feedback for the user
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Card deleted successfully')),
+          );
+        } else {
+          print('Message card $messageCardId not found');
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Message card not found')),
+          );
+        }
+      } catch (error) {
+        print('Failed to delete message card $messageCardId: $error');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to delete message card')),
+        );
+      }
     }
   }
 
