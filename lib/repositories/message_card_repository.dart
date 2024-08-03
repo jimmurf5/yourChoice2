@@ -7,7 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 /// an internal API for the rest of the application to interact with
 /// the Firestore database.
 /// It includes methods for fetching message cards and categories from
-/// the Firestore database.
+/// the Firestore database. Also saving messageCards
 class MessageCardRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -33,4 +33,33 @@ class MessageCardRepository {
     return _firestore.collection('categories').snapshots();
   }
 
+  /// Method to save message card data to Firestore
+  /// Save to Firestore by creating a message card without using the
+  /// messageCard constructor from the messageCard class,
+  /// set count to zero and category to 2 (original)
+  ///
+  /// Parameters:
+  ///  [profileId]- ID of the profile to which the message card belongs
+  /// [title]- Title of the message card
+  /// [imageUrl]- URL of the uploaded image
+  /// [uniqueImageId]- Unique ID of the image associated with the message card
+  ///
+  Future<void> saveMessageCardData(
+      String profileId, String title, String imageUrl, String uniqueImageId) async {
+    try {
+      await _firestore
+          .collection('profiles')
+          .doc(profileId)
+          .collection('messageCards')
+          .add({
+        'title': title,
+        'selectionCount': 0,
+        'messageCardId': uniqueImageId,
+        'categoryId': 2,
+        'imageUrl': imageUrl
+      });
+    } catch (error) {
+      rethrow;
+    }
+  }
 }

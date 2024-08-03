@@ -1,15 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:your_choice/services/message_card_delete_service.dart';
-
 import '../models/message_card.dart';
 import '../services/message_card_service.dart';
+import '../services/tts_service.dart';
 import '../widgets/category_row.dart';
 import '../widgets/instruction_card.dart';
 import '../widgets/message_card_grid.dart';
 import '../widgets/message_card_item.dart';
 
+/// The CurateCards screen allows users to manage their message cards by
+/// selecting, viewing, and deleting existing cards.
+///
+/// This screen includes:
+/// - A panel to display the currently selected message card.
+/// - Buttons to clear the selected card or delete it from the system.
+/// - A grid view to browse and select message cards based on the selected category.
+/// - A row of categories to filter the message cards.
+///
+/// The `CurateCards` screen follows these key user interactions:
+/// - Selecting a message card displays it in the panel.
+/// - Clicking the trash icon prompts a confirmation dialog to delete the card.
+/// - Clicking the X icon clears the selected card from the panel.
 class CurateCards extends StatefulWidget {
   final String profileId;
 
@@ -22,7 +34,7 @@ class CurateCards extends StatefulWidget {
 }
 
 class _CurateCardsState extends State<CurateCards> {
-  FlutterTts flutterTts = FlutterTts(); //initialize flutter tts
+  final TTSService ttsService = TTSService(); // Instantiate TTSService
   int selectedCategory = 3; //default the selected category to category 3
   List<MessageCard> selectedCards =
       []; //declare a list to hold selected messageCards
@@ -36,15 +48,6 @@ class _CurateCardsState extends State<CurateCards> {
     super.initState();
     // Initialize the service
     messageCardService = MessageCardService(profileId: widget.profileId);
-    print('messageCardService initialized with profileId: ${widget.profileId}');
-    initializeTts(); //initialise tts
-  }
-
-  void initializeTts() {
-    flutterTts.setLanguage("en-UK");
-    flutterTts.setSpeechRate(0.5);
-    flutterTts.setVolume(1.0);
-    flutterTts.setPitch(1.0);
   }
 
   ///method to set the state, to update the UI when card selected
@@ -59,14 +62,14 @@ class _CurateCardsState extends State<CurateCards> {
     });
   }
 
-  //method to, set the state to update the UI when category selected
+  ///method to set the state to update the UI when category selected
   void _onCategorySelected(int categoryId) {
     setState(() {
       selectedCategory = categoryId;
     });
   }
 
-  //method to show confirmation dialogue before deletion
+  ///method to show confirmation dialogue before deletion
   Future<void> _confirmDeleteDialogue(BuildContext context) async {
     //show the dialogue and store user response as a bool
     final shouldDelete = await showDialog<bool>(
@@ -76,7 +79,7 @@ class _CurateCardsState extends State<CurateCards> {
             title: const Text('Delete Card'),
             content: const Text('This item will be permanently\ndeleted'
                 ' from memory and\nwill no longer be available for\n'
-                'selection or retrievable.'),
+                'selection or be retrievable.'),
             actions: <Widget>[
               TextButton(
                 onPressed: () {
@@ -161,8 +164,8 @@ class _CurateCardsState extends State<CurateCards> {
               ),
             ),
           ),
-          // row with play button and trash can to read the selected cards
-          // and clear them respectively
+          /* row with a trash and an X that can to delete the selected card
+           and clear the selected card from the row respectively */
           Container(
             color: Theme.of(context).colorScheme.onSecondaryContainer,
             child: Row(
@@ -173,7 +176,7 @@ class _CurateCardsState extends State<CurateCards> {
                     setState(() {
                       selectedCards.clear();
                     });
-                    await flutterTts.speak('Clear!');
+                    await ttsService.flutterTts.speak('Clear!');
                   },
                   icon: const Icon(FontAwesomeIcons.x),
                   iconSize: 25,
@@ -199,21 +202,21 @@ class _CurateCardsState extends State<CurateCards> {
           ),
           //vertically scrolling column with message cards
           Expanded(
-            //call the messageCardGrid to show message cards
-            //and return gridview.builder
+            /*call the messageCardGrid to show message cards
+            and return gridview.builder*/
             child: MessageCardGrid(
                 selectedCategory: selectedCategory,
                 profileId: widget.profileId,
-                flutterTts: flutterTts,
+                flutterTts: ttsService.flutterTts,
                 messageCardService: messageCardService,
                 onCardSelected: _onCardSelected,
                 isProfileMode: false,
                 selectedCards: selectedCards),
           ),
-          //horizontally scrolling row for the categories
-          //returned on calling CategoryRow
+          /*horizontally scrolling row for the categories
+          returned on calling CategoryRow*/
           CategoryRow(
-              flutterTts: flutterTts, onCategorySelected: _onCategorySelected),
+              flutterTts: ttsService.flutterTts, onCategorySelected: _onCategorySelected),
         ],
       ),
     );

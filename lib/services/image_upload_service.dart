@@ -1,57 +1,46 @@
 import 'dart:io';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:uuid/uuid.dart';
+import '../repositories/message_card_repository.dart';
 
-/// Class to handle image uploads and save data to Firestore
+/// Class to handle image uploads and call method to save data to firestore
 class ImageUploadService {
-  // Declare vars to communicate with Firebase
+  // Declare var to communicate with Firebase
   final FirebaseStorage _storage = FirebaseStorage.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  // Repository to handle Firestore operations initialised
+  final MessageCardRepository _messageCardRepository = MessageCardRepository();
   // Instantiate UUID to make unique IDs
   final uuid = const Uuid();
 
   /// Method to upload an image and save associated data to Firestore
-  Future<void> upLoadImageAndSaveData(
-      File image, String title, String profileId) async {
+  /// This method uploads an image to Firebase Storage,retrieves the URL
+  /// of the uploaded image, and then calls a method
+  /// to save the image URL and other associated data to Firestore.
+  ///
+  /// /// Parameters:
+  ///  [image] File object representing the image to be uploaded
+  ///  [title] Title of the message card
+  ///  [profileId] ID of the profile to which the message card belongs
+  Future<void> upLoadImageAndSaveData(File image, String title, String profileId) async {
     try {
       // Generate a unique ID for the image
       final String uniqueImageId = uuid.v4();
-      print('Generated uniqueImageId: $uniqueImageId');
 
       // Create a reference to the storage location in Firebase Storage
       final storageRef = _storage
           .ref()
           .child('profile_images')
           .child('${profileId}_$uniqueImageId.jpg');
-      print('Storage reference created: ${storageRef.fullPath}');
 
       // Upload the image to Firebase Storage
       await storageRef.putFile(image);
-      print('Image uploaded to Firebase Storage');
 
       // Get the image URL from Firebase Storage
       final imageUrl = await storageRef.getDownloadURL();
-      print('Image URL from Firebase Storage: $imageUrl');
 
-      // Save the image URL and other details to Firestore
-      // by creating a message card without using the messageCard
-      // constructor from the messageCard class
-      //set count to zero and category to 2 (original)
-      await _firestore
-          .collection('profiles')
-          .doc(profileId)
-          .collection('messageCards')
-          .add({
-        'title': title,
-        'selectionCount': 0,
-        'messageCardId': uniqueImageId,
-        'categoryId': 2,
-        'imageUrl': imageUrl
-      });
-      print('Data saved to Firestore under profileId: $profileId');
+      // Save the image URL and other details to Firestore using the repository
+      await _messageCardRepository.saveMessageCardData(profileId, title, imageUrl, uniqueImageId);
     } catch (error) {
-      print('Error occurred: $error');
       rethrow;
     }
   }
