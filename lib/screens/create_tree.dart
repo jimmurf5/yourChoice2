@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:your_choice/widgets/question_answer_section.dart';
-
 import '../models/message_card.dart';
 import '../services/tree_service.dart';
 
 /// This screen allows the user to create a decision tree with a title
-/// and a maximum of three questions.
+/// and a maximum of three questions, the user can create a tree with one or
+/// two questions.
 /// Each question can have two possible answers,
 /// which can be chosen from the database.
 /// The user can save the decision tree by pressing the 'Create Tree' button.
@@ -82,7 +82,7 @@ class _CreateTreeState extends State<CreateTree> {
     });
   }
 
-  /*validate the tree all- all trees must have at least a title and one
+  /*validate the tree- all trees must have at least a title and one
   * question. Each question must have 2 messageCards as possible answers*/
   bool _validateTree() {
     print('title: ${treeTitleController.text}');
@@ -118,8 +118,9 @@ class _CreateTreeState extends State<CreateTree> {
     bool valid = false;
 
     /*ensure at least one question is provide and that all provide questions
-    *have 2 MessageCard potential answers, sets valid to true
-    * if passes validation, set is provided flag to true if questions valid*/
+    *have 2 MessageCard answers.
+    * Sets valid to true if passes validation for being a viable decision tree,
+    * Sets the provided flag to true if the question is valid*/
     if (question1Controller.text.trim().isNotEmpty &&
         answer1 != null &&
         answer2 != null) {
@@ -128,8 +129,9 @@ class _CreateTreeState extends State<CreateTree> {
     }
 
     /*ensure at least one question is provide and that all provide questions
-    *have 2 MessageCard potential answers, sets valid to true
-    * if passes validation, set is provided flag to true if questions valid*/
+    *have 2 MessageCard answers.
+    * Sets valid to true if passes validation for being a viable decision tree,
+    * Sets the provided flag to true if the question is valid*/
     if (question2Controller.text.trim().isNotEmpty &&
         answer3 != null &&
         answer4 != null) {
@@ -138,8 +140,9 @@ class _CreateTreeState extends State<CreateTree> {
     }
 
     /*ensure at least one question is provide and that all provide questions
-    *have 2 MessageCard potential answers, sets valid to true
-    * if passes validation, set is provided flag to true if questions valid*/
+    *have 2 MessageCard answers.
+    * Sets valid to true if passes validation for being a viable decision tree,
+    * Sets the provided flag to true if the question is valid*/
     if (question3Controller.text.trim().isNotEmpty &&
         answer5 != null &&
         answer6 != null) {
@@ -212,7 +215,7 @@ class _CreateTreeState extends State<CreateTree> {
         }
 
         //save the tree data using the service
-        await _treeService.saveTree(
+        await _treeService.constructTree(
             widget.profileId, treeTitleController.text, tree);
 
         //show success message

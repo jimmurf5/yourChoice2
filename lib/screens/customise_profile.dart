@@ -5,6 +5,11 @@ import 'package:your_choice/screens/manage_cards.dart';
 import 'package:your_choice/screens/manage_trees.dart';
 import 'package:your_choice/widgets/colour_picker.dart';
 
+/// The CustomiseProfile screen allows users to customize their profile by:
+/// - Navigating to different management screens
+/// (Manage Trees, Manage Cards, and Communication Hub).
+/// - Changing the profile's color scheme using a modal bottom sheet.
+///
 class CustomiseProfile extends StatefulWidget {
   final String profileId;
   final String profileName;

@@ -1,8 +1,6 @@
 import 'package:firebase_storage/firebase_storage.dart';
 
-/// This service provides a method to delete a message card given its profileId
-///,messageCardId, categoryId and imageUrl.
-///It interacts with Firestore to perform the deletion operation.
+/// This service provides a method to delete an image from firestore storage
 class ImageDeleteService {
   //store an instance of the firebase storage
   final FirebaseStorage _storage = FirebaseStorage.instance;

@@ -82,6 +82,16 @@ class MessageCardRepository {
     }
   }
 
+  ///method returns a single message card
+  Future<DocumentSnapshot> fetchOneMessageCard(String profileId, String docId) {
+    return _firestore
+        .collection('profiles')
+        .doc(profileId)
+        .collection('messageCards')
+        .doc(docId)
+        .get();
+  }
+
   /// Method to delete a message card by its document ID
   /// and handles image deletion if needed
   ///

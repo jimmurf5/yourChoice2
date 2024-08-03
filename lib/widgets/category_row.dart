@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:your_choice/repositories/message_card_repository.dart';
-
 import '../models/category.dart';
 import 'category_item.dart';
 

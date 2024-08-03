@@ -1,14 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
 import '../models/message_card.dart';
 import '../services/message_card_service.dart';
+import '../services/tts_service.dart';
 import '../widgets/category_row.dart';
 import '../widgets/instruction_card.dart';
 import '../widgets/message_card_grid.dart';
 import '../widgets/message_card_item.dart';
 
+/// The SelectCard screen allows users to select a message card
+/// from a grid of cards, which are filtered by categories.
+///
+/// This screen is specifically used by the CreateTree screen to choose
+/// message card answers for the decision tree.
+///
+/// This screen includes:
+/// - A panel to display the currently selected message card.
+/// - Buttons to clear the selected card or select it for further action.
+/// - A grid view to browse and select message cards based on the selected category.
+/// - A row of categories to filter the message cards.
 class SelectCard extends StatefulWidget {
   final String profileId;
 
@@ -21,7 +31,7 @@ class SelectCard extends StatefulWidget {
 }
 
 class _SelectCardState extends State<SelectCard> {
-  FlutterTts flutterTts = FlutterTts(); //initialize flutter tts
+  final TTSService ttsService = TTSService(); // Instantiate TTSService
   int selectedCategory = 3; //default the selected category to category 3
   List<MessageCard> selectedCards =
   []; //declare a list to hold selected messageCards
@@ -34,14 +44,6 @@ class _SelectCardState extends State<SelectCard> {
     // Initialize the service
     messageCardService = MessageCardService(profileId: widget.profileId);
     print('messageCardService initialized with profileId: ${widget.profileId}');
-    initializeTts(); //initialise tts
-  }
-
-  void initializeTts() {
-    flutterTts.setLanguage("en-UK");
-    flutterTts.setSpeechRate(0.5);
-    flutterTts.setVolume(1.0);
-    flutterTts.setPitch(1.0);
   }
 
   ///method to set the state, to update the UI when card selected
@@ -113,7 +115,7 @@ class _SelectCardState extends State<SelectCard> {
                     setState(() {
                       selectedCards.clear();
                     });
-                    await flutterTts.speak('Clear!');
+                    await ttsService.flutterTts.speak('Clear!');
                   },
                   icon: const Icon(FontAwesomeIcons.x),
                   iconSize: 25,
@@ -145,7 +147,7 @@ class _SelectCardState extends State<SelectCard> {
             child: MessageCardGrid(
                 selectedCategory: selectedCategory,
                 profileId: widget.profileId,
-                flutterTts: flutterTts,
+                flutterTts: ttsService.flutterTts,
                 messageCardService: messageCardService,
                 onCardSelected: _onCardSelected,
                 isProfileMode: false,
@@ -154,7 +156,7 @@ class _SelectCardState extends State<SelectCard> {
           //horizontally scrolling row for the categories
           //returned on calling CategoryRow
           CategoryRow(
-              flutterTts: flutterTts, onCategorySelected: _onCategorySelected),
+              flutterTts: ttsService.flutterTts, onCategorySelected: _onCategorySelected),
         ],
       ),
     );

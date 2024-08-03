@@ -1,34 +1,78 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:your_choice/repositories/tree_repository.dart';
 import 'package:your_choice/screens/display_tree.dart';
 import 'create_tree.dart';
 
+/// The ManageTrees screen allows users to view, create, and manage decision trees
+/// associated with a specific profile.
+///
+/// This screen includes:
+/// - A button for creating new decision trees (available only in user mode).
+/// - A list of current decision trees, each with options to view or delete the tree.
+/// - The ability to restore deleted trees via an undo option.
+///
+/// The `ManageTrees` widget receives:
+/// - [profileId]: The ID of the profile for which the decision trees are being managed.
+/// - [isUserMode]: A boolean indicating whether the current mode is user mode (true)
+///   or profile mode (false). Certain functionalities like creating and deleting trees
+///   are available only in user mode.
+///
+/// The widget utilizes `TreeRepository` to handle all interactions with Firestore,
+/// ensuring a clean separation between UI logic and data access logic.
 class ManageTrees extends StatefulWidget {
   final String profileId;
   final bool isUserMode;
 
-  const ManageTrees(
-      {super.key, required this.profileId, required this.isUserMode});
+  const ManageTrees({super.key, required this.profileId, required this.isUserMode});
 
   @override
   State<ManageTrees> createState() {
-    return _ManageTrees();
+    return _ManageTreesState();
   }
 }
 
-//a method to return the decision trees from firebase for a profileId
-class _ManageTrees extends State<ManageTrees> {
-  //create an instance of firestore for use in class
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+class _ManageTreesState extends State<ManageTrees> {
+  final TreeRepository _treeRepository = TreeRepository(); // Initialize the tree repository
 
-  //method to fetch decision trees from firestore, returns a querySnapshot
-  Stream<QuerySnapshot> _fetchTrees() {
-    return _firestore
-        .collection('profiles')
-        .doc(widget.profileId)
-        .collection('trees')
-        .snapshots();
+  /// Handles the deletion of a tree and shows a SnackBar with an undo option.
+  ///
+  /// Parameters:
+  /// - [profileId] The ID of the profile to which the tree belongs.
+  /// - [treeId] The ID of the tree to be deleted.
+  /// - [deletedTree] A map containing the tree data for possible restoration.
+  Future<void> _handleTreeDeletion(String profileId, String treeId, Map<String, dynamic> deletedTree) async {
+    try {
+      await _treeRepository.deleteTree(profileId, treeId);
+
+      Future.microtask(() {
+        if (!mounted) return;
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            duration: const Duration(seconds: 10),
+            content: const Text('Tree deleted successfully'),
+            action: SnackBarAction(
+              label: 'UNDO',
+              onPressed: () {
+                // Restore the deleted tree using the tree repo to communicate with Firestore
+                // passing treeId, profileId and deleted data for restoration
+                _treeRepository.restoreTree(profileId, treeId, deletedTree);
+              },
+            ),
+          ),
+        );
+      });
+    } catch (error) {
+      Future.microtask(() {
+        if (!mounted) return;
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to delete tree')),
+        );
+      });
+    }
   }
 
   @override
@@ -36,22 +80,21 @@ class _ManageTrees extends State<ManageTrees> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
-        //dynamically display title in appBar depending if in user mode or not
+        // Dynamically display title in AppBar depending if in user mode or not
         title: Text(widget.isUserMode ? 'Manage Trees' : 'Decision Trees'),
       ),
       body: Center(
         child: Column(
           children: [
             const SizedBox(height: 20),
-            //only allow users to create trees, not profiles
+            // Only allow users to create trees, not profiles
             if (widget.isUserMode)
               ElevatedButton.icon(
                 onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>
-                          CreateTree(profileId: widget.profileId),
+                      builder: (context) => CreateTree(profileId: widget.profileId),
                     ),
                   );
                 },
@@ -66,111 +109,73 @@ class _ManageTrees extends State<ManageTrees> {
             const SizedBox(height: 20),
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
-                  stream: _fetchTrees(),
-                  builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const CircularProgressIndicator();
-                    }
-                    if (snapshot.hasError) {
-                      return const Text('Something went wrong');
-                    }
-                    if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                      return const Text('No trees found');
-                    }
-                    final trees = snapshot.data!.docs;
+                // Call the tree repository to get trees from Firebase
+                stream: _treeRepository.fetchTrees(widget.profileId),
+                builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator();
+                  }
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                    return const Text('No trees found');
+                  }
+                  final trees = snapshot.data!.docs;
 
-                    return ListView.builder(
-                        itemCount: trees.length,
-                        itemBuilder: (context, index) {
-                          //store each individual snapshot in a var
-                          DocumentSnapshot tree = trees[index];
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 4.0),
-                            child: ListTile(
-                              tileColor: Theme.of(context)
-                                  .highlightColor, // Background color for the tile
-                              title: Text('${tree['treeTitle']}'),
-                              subtitle: Column(
-                                children: [
-                                  TextButton(
-                                    onPressed: () async {
-                                      /*Navigate to displayTree and send the
-                                        treeSnapshot selected */
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => DisplayTree(
-                                            treeSnapshot: tree,
-                                            profileId: widget.profileId,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                    style: TextButton.styleFrom(
-                                      foregroundColor: Theme.of(context)
-                                          .colorScheme
-                                          .onTertiaryContainer, // Text color
-                                      backgroundColor: Theme.of(context)
-                                          .colorScheme
-                                          .inversePrimary, // Button background color
+                  return ListView.builder(
+                    itemCount: trees.length,
+                    itemBuilder: (context, index) {
+                      // Store each individual snapshot in a var
+                      DocumentSnapshot tree = trees[index];
+                      // Store the treeId
+                      String treeId = tree.id;
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4.0),
+                        child: ListTile(
+                          tileColor: Theme.of(context).highlightColor, // Background color for the tile
+                          title: Text('${tree['treeTitle']}'),
+                          subtitle: Column(
+                            children: [
+                              TextButton(
+                                onPressed: () async {
+                                  // Navigate to displayTree and send the treeSnapshot selected
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => DisplayTree(
+                                        treeSnapshot: tree,
+                                        profileId: widget.profileId,
+                                      ),
                                     ),
-                                    child: const Text('Select'),
-                                  ),
-                                ],
+                                  );
+                                },
+                                style: TextButton.styleFrom(
+                                  foregroundColor: Theme.of(context).colorScheme.onTertiaryContainer, // Text color
+                                  backgroundColor: Theme.of(context).colorScheme.inversePrimary, // Button background color
+                                ),
+                                child: const Text('Select'),
                               ),
-                              /*only allow the deletion option in user mode
-                                * controlled with bool check and ternary*/
-                              trailing: widget.isUserMode
-                                  ? IconButton(
-                                      onPressed: () async {
-                                        //store tree details for recall if desired
-                                        final deletedTree =
-                                            tree.data() as Map<String, dynamic>;
+                            ],
+                          ),
+                          // Only allow the deletion option in user mode controlled with bool check and ternary
+                          trailing: widget.isUserMode
+                              ? IconButton(
+                            onPressed: () async {
+                              // Store tree details for recall if desired
+                              final deletedTree = tree.data() as Map<String, dynamic>;
 
-                                        //delete tree
-                                        await _firestore
-                                            .collection('profiles')
-                                            .doc(widget.profileId)
-                                            .collection('trees')
-                                            .doc(tree.id)
-                                            .delete()
-                                            .then((_) {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                              duration:
-                                                  const Duration(seconds: 10),
-                                              content: const Text(
-                                                  'Tree deleted successfully'),
-                                              action: SnackBarAction(
-                                                  label: 'UNDO',
-                                                  onPressed: () {
-                                                    // Restore the deleted tree
-                                                    _firestore
-                                                        .collection('profiles')
-                                                        .doc(widget.profileId)
-                                                        .collection('trees')
-                                                        .doc(tree.id)
-                                                        .set(deletedTree);
-                                                  }),
-                                            ),
-                                          );
-                                        }).catchError((error) {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            const SnackBar(
-                                                content: Text(
-                                                    'Failed to delete profile')),
-                                          );
-                                        });
-                                      },
-                                      icon: const Icon(Icons.delete),
-                                    )
-                                  : null,  //delete will not display in profile mode
-                            ),
-                          );
-                        });
-                  }),
+                              await _handleTreeDeletion(widget.profileId, treeId, deletedTree);
+                            },
+                            icon: const Icon(Icons.delete),
+                          )
+                              : null, // Delete will not display in profile mode
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
             ),
           ],
         ),
