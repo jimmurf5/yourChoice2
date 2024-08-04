@@ -150,9 +150,10 @@ class _AddProfileState extends State<AddProfile> {
                         icon: const Icon(Icons.add),
                         label: const Text("Add Profile"),
                         style: TextButton.styleFrom(
-                          foregroundColor: Colors.white, // Text color
-                          backgroundColor:
-                              Colors.blue, // Button background color
+                            foregroundColor: Theme.of(context)
+                                .colorScheme.onTertiaryContainer, // Text color
+                            backgroundColor: Theme.of(context)
+                                .colorScheme.inversePrimary, // Button background color
                         ),
                       ),
                     ],

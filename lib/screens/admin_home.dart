@@ -175,7 +175,7 @@ class _AdminHomeState extends ConsumerState<AdminHome> {
 
                               /* Delete profile using the repository and passing
                               * the profileId */
-                              await _repository.deleteProfile(
+                              await _repository.deleteProfileAndChildren(
                                   profileId: profileId
                               )
                                   .then((_) {

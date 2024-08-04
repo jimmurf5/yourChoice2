@@ -37,14 +37,54 @@ class ProfileRepository {
   /// Deletes a profile for a given user in Firestore.
   ///
   /// This method removes the specified profile document from the profiles
-  /// collection.
+  /// collection and its associated children MessageCards
+  /// and Trees, if they exist.
   ///
   /// [profileId] - The ID of the profile to be deleted.
-  Future<void> deleteProfile({required String profileId}) {
-    return _firestore
+  Future<void> deleteProfileAndChildren({required String profileId}) async {
+    //perform the operation as a batch
+    WriteBatch batch = _firestore.batch();
+
+    //get all the child collections for the profile
+    var messageCardsCollection = _firestore
         .collection('profiles')
         .doc(profileId)
-        .delete();
+        .collection('messageCards');
+
+    var treeCollection = _firestore
+    .collection('profiles')
+    .doc(profileId)
+    .collection('tree');
+
+    /*get all documents in the messageCards collection and add
+      to the batch delete*/
+    var messageCardsSnapshot = await messageCardsCollection.get();
+    /*should never be empty in theory due to creation of messageCards on
+      profile creation ,unless profile has deleted all their messageCards*/
+    if(messageCardsSnapshot.docs.isNotEmpty) {
+      for(var doc in messageCardsSnapshot.docs) {
+        batch.delete(doc.reference);
+      }
+    }
+
+    //check if the trees collection exists and has documents
+    var treeSnapshot = await treeCollection.get();
+    if(treeSnapshot.docs.isNotEmpty) {
+      for(var doc in treeSnapshot.docs) {
+        batch.delete(doc.reference);
+      }
+    }
+
+    //delete the profile document also
+    batch
+        .delete(
+        _firestore
+            .collection('profiles')
+            .doc(profileId),
+    );
+
+    //commit the batch
+    await batch.commit();
   }
 
   /// Restores a deleted profile for a given user in Firestore.
