@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../models/message_card.dart';
 
 /// A repository class that handles Firestore operations related to user profiles.
 ///
@@ -58,5 +59,42 @@ class ProfileRepository {
         .collection('profiles')
         .doc(profileId)
         .set(profileData);
+  }
+
+  /// Method to duplicate seeded data from firestore which contains messageCards
+  ///
+  /// Duplicate data is associated with newly created profile allowing
+  /// future customisation
+  ///
+  /// [profileId] - The ID of the profile to which the new MessageCard
+  /// sub-collection will be added
+  Future<void> duplicateSeededDataForNewProfile(String profileId) async {
+    // Create reference to the 'templates' collection in Firestore
+    CollectionReference templatesCollection =
+    _firestore
+        .collection('templates');
+
+    // Create reference to the 'messageCards' sub-collection
+    // within the specified profile's document
+    CollectionReference profilesMessageCardsCollection =
+    _firestore
+        .collection('profiles')
+        .doc(profileId)
+        .collection('messageCards');
+
+    // Fetch all documents from the 'templates' collection
+    QuerySnapshot templatesSnapshot = await templatesCollection.get();
+
+    // Iterate over each document in the 'templates' collection
+    for (QueryDocumentSnapshot<Object?> templateDoc in templatesSnapshot.docs) {
+      Map<String, dynamic> templateData = templateDoc.data() as Map<String, dynamic>;
+
+      //create messageCard object from the map, preserving the messageCardId
+      MessageCard messageCard = MessageCard.fromMap(templateData);
+
+      // Add the MessageCard object to the profile's 'messageCards' sub-collection
+      await profilesMessageCardsCollection.add(messageCard.toMap());
+    }
+    print('Seeded data has been duplicated for the new profile.');
   }
 }

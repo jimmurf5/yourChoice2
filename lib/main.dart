@@ -4,7 +4,7 @@ import 'package:your_choice/repositories/auth_repository.dart';
 import 'package:your_choice/screens/auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:your_choice/screens/splash_screen.dart';
-import 'package:your_choice/services/firestore_service.dart';
+import 'package:your_choice/services/template_and_cat_seeder_service.dart';
 import 'firebase_options.dart';
 import 'package:your_choice/screens/admin_home.dart';
 import 'package:your_choice/data/card_data.dart';
@@ -22,8 +22,8 @@ void main() async {
   const bool shouldSeedData = false;
 
   if (shouldSeedData) {
-    final FirestoreService firestoreService = FirestoreService();
-    await firestoreService.seedData(availMessageCards, availableCategories);
+    final TemplateAndCatSeederService seederService = TemplateAndCatSeederService();
+    await seederService.seedData(availMessageCards, availableCategories);
   }
 
   // Initialize the AuthRepository

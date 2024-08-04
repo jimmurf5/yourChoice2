@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../repositories/auth_repository.dart';
 import '../repositories/profile_repository.dart';
-import '../services/firestore_service.dart';
 
 class AddProfile extends StatefulWidget {
   const AddProfile({super.key});
@@ -21,7 +20,7 @@ class _AddProfileState extends State<AddProfile> {
   and allow validation and state management*/
   final _form = GlobalKey<FormState>();
   // Initialize the ProfileRepository
-  final ProfileRepository _repository = ProfileRepository();
+  final ProfileRepository _profileRepository = ProfileRepository();
   // Initialize the AuthRepository
   final AuthRepository _authRepository = AuthRepository();
 
@@ -58,15 +57,15 @@ class _AddProfileState extends State<AddProfile> {
       };
 
       // Add the profile to Firestore using the repository and get the document reference
-      DocumentReference profileRef = await _repository
+      DocumentReference profileRef = await _profileRepository
           .createProfile(profileData: profileData);
 
       //get the profile id from the document reference
       String profileId = profileRef.id;
 
-      // Call your method to duplicate seeded data for the new profile
-      FirestoreService firestoreService = FirestoreService();
-      await firestoreService.duplicateSeededDataForNewProfile(profileId);
+      /* Call your to duplicate seeded data for the new profile
+      * from the profile Repository*/
+      await _profileRepository.duplicateSeededDataForNewProfile(profileId);
 
       // Show a success message or navigate to another screen
       ScaffoldMessenger.of(context).showSnackBar(

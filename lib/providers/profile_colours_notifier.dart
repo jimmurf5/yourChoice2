@@ -37,8 +37,8 @@ class ProfileColoursNotifier extends StateNotifier<Color> {
   }
 
   //public method to load the colour and return it
-Future<Color> fetchProfileColour() async {
+  Future<Color> fetchProfileColour() async {
     await _loadProfileColour();
     return state;
-}
+  }
 }
