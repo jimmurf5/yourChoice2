@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// A service class that handles Firestore operations related to profile colours,
 /// specifically for getting and updating profile colors.
-class ProfileFirestoreService {
+class ColourService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
   /// Fetches the profile colour from Firestore for the given profile ID.

@@ -1,10 +1,10 @@
-import 'package:your_choice/services/profile_firestore_service.dart';
+import 'package:your_choice/services/colour_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 //provider to access the profileFirestoreService
-final profileFireStoreServiceProvider = Provider<ProfileFirestoreService>((ref) {
-  return ProfileFirestoreService();
+final profileFireStoreServiceProvider = Provider<ColourService>((ref) {
+  return ColourService();
 });
 
 //StateNotifierProvider to manage the colour state for a specific profile
@@ -16,7 +16,7 @@ final profileColoursProvider = StateNotifierProvider.family<ProfileColoursNotifi
 
 //stateNotifier class to manage profile colours
 class ProfileColoursNotifier extends StateNotifier<Color> {
-  final ProfileFirestoreService firestoreService;
+  final ColourService firestoreService;
   final String profileId;
 
   // Constructor to initialize the state with a default color and load the color from Firestore
