@@ -71,7 +71,13 @@ class _CommunicationHubState extends State<CommunicationHub> {
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.primary,
-          title: const LogoTitleRow(logoWidth: 50, logoHeight: 50, textSize: 24, spacerWidth: 10),
+          title: const LogoTitleRow(
+              logoWidth: 50,
+              logoHeight: 50,
+              titleText: 'Your Choice',
+              textSize: 24,
+              spacerWidth: 10
+          ),
           //remove the default arrow provided by flutter in the app bar
           automaticallyImplyLeading: false,
           leading: //button to navigate profile to saved decision trees

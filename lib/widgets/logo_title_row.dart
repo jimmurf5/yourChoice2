@@ -5,11 +5,13 @@ import 'package:flutter/material.dart';
 ///
 /// [logoWidth]- width of sized box enclosing the logo
 /// [logoHeight]- height of sized box enclosing the logo
-/// [textSize]- of the app title
+/// [titleText]- the text to be place beside the logo
+/// [textSize]- of the text place beside the logo
 /// [spacerWidth]- of the sized box between the logo and title
 class LogoTitleRow extends StatelessWidget {
   final double logoWidth;
   final double logoHeight;
+  final String titleText;
   final double textSize;
   final double spacerWidth;
 
@@ -17,6 +19,7 @@ class LogoTitleRow extends StatelessWidget {
     super.key,
     required this.logoWidth,
     required this.logoHeight,
+    required this.titleText,
     required this.textSize,
     required this.spacerWidth,
   });
@@ -33,7 +36,7 @@ class LogoTitleRow extends StatelessWidget {
         ),
         SizedBox(width: spacerWidth),
         Text(
-          'Your Choice', // Hardcoded title
+          titleText, // Hardcoded title
           style: TextStyle(
             fontSize: textSize,
             fontWeight: FontWeight.bold,

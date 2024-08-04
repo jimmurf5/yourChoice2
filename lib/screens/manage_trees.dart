@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:your_choice/repositories/tree_repository.dart';
 import 'package:your_choice/screens/display_tree.dart';
+import 'package:your_choice/widgets/logo_title_row.dart';
 import 'create_tree.dart';
 
 /// The ManageTrees screen allows users to view, create, and manage decision trees
@@ -81,7 +82,13 @@ class _ManageTreesState extends State<ManageTrees> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
         // Dynamically display title in AppBar depending if in user mode or not
-        title: Text(widget.isUserMode ? 'Manage Trees' : 'Decision Trees'),
+        title: LogoTitleRow(
+            logoWidth: 40,
+            logoHeight: 40,
+            titleText: widget.isUserMode ? 'Manage Trees' : 'Decision Trees',
+            textSize: 30,
+            spacerWidth: 10
+        ),
       ),
       body: Center(
         child: Column(

@@ -7,6 +7,7 @@ import '../services/message_card_click_count_service.dart';
 import '../services/tts_service.dart';
 import '../widgets/category_row.dart';
 import '../widgets/instruction_card.dart';
+import '../widgets/logo_title_row.dart';
 import '../widgets/message_card_grid.dart';
 import '../widgets/message_card_item.dart';
 
@@ -148,7 +149,13 @@ class _CurateCardsState extends State<CurateCards> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Curate Cards'),
+        title: const LogoTitleRow(
+            logoWidth: 35,
+            logoHeight: 35,
+            titleText: 'Curate Cards',
+            textSize: 30,
+            spacerWidth: 10
+        ),
         backgroundColor: Theme.of(context).colorScheme.primary,
       ),
       backgroundColor: Theme.of(context).colorScheme.primary,

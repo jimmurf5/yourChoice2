@@ -94,8 +94,10 @@ class _AddProfileState extends State<AddProfile> {
         title: const LogoTitleRow(
             logoWidth: 50,
             logoHeight: 50,
+            titleText: 'Your Choice',
             textSize: 24,
-            spacerWidth: 10),
+            spacerWidth: 10
+        ),
       ),
       //backgroundColor: Theme.of(context).colorScheme.secondary,
       body: Center(

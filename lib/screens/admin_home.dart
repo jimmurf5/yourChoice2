@@ -56,16 +56,17 @@ class _AdminHomeState extends ConsumerState<AdminHome> {
             const LogoTitleRow(
             logoWidth: 30,
             logoHeight: 30,
-            textSize: 18,
+            titleText: 'Your Choice',
+            textSize: 15,
             spacerWidth: 10),
-            const SizedBox(height: 5,),
+            const SizedBox(height: 4,),
             Text(
               userEmail,
               style: const TextStyle(
                 fontSize: 15.0, color: Colors.white
               ),
             ),
-            const SizedBox(height: 6,)
+            const SizedBox(height: 5,)
           ],
         ),
         actions: [

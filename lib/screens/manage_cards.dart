@@ -6,6 +6,8 @@ import 'package:your_choice/services/image_upload_service.dart';
 import 'package:your_choice/widgets/image_input.dart';
 import 'dart:io';
 
+import '../widgets/logo_title_row.dart';
+
 //define an enum to represent the source of the image
 enum ImageSourceOption { camera, gallery }
 
@@ -139,7 +141,13 @@ class _ManageCardsState extends State<ManageCards> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
-        title: const Text('Manage Cards'),
+        title: const LogoTitleRow(
+          logoWidth: 35,
+          logoHeight: 35,
+          titleText: 'Manage Cards',
+          textSize: 30,
+          spacerWidth: 10
+      ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(12),

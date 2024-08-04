@@ -5,6 +5,8 @@ import 'package:your_choice/screens/manage_cards.dart';
 import 'package:your_choice/screens/manage_trees.dart';
 import 'package:your_choice/widgets/colour_picker.dart';
 
+import '../widgets/logo_title_row.dart';
+
 /// The CustomiseProfile screen allows users to customize their profile by:
 /// - Navigating to different management screens
 /// (Manage Trees, Manage Cards, and Communication Hub).
@@ -41,11 +43,17 @@ class _CustomiseProfileState extends State<CustomiseProfile> {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Text('Customise Profile'),
+            const LogoTitleRow(
+            logoWidth: 30,
+            logoHeight: 30,
+            titleText: 'Customise Profile',
+            textSize: 18,
+            spacerWidth: 10
+        ),
             Text(
               'Profile name: ${widget.profileName}',
               style: const TextStyle(
-                fontSize: 12.0,
+                  fontSize: 15.0, color: Colors.white
               ),
             ),
           ],

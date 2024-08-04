@@ -3,6 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:your_choice/widgets/question_answer_section.dart';
 import '../models/message_card.dart';
 import '../services/tree_service.dart';
+import '../widgets/logo_title_row.dart';
 
 /// This screen allows the user to create a decision tree with a title
 /// and a maximum of three questions, the user can create a tree with one or
@@ -267,7 +268,13 @@ class _CreateTreeState extends State<CreateTree> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
-        title: const Text('Create Tree'),
+        title: const LogoTitleRow(
+            logoWidth: 35,
+            logoHeight: 35,
+            titleText: 'Create Tree',
+            textSize: 30,
+            spacerWidth: 10
+        ),
       ),
       body: SingleChildScrollView(
         child: Padding(
