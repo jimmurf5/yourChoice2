@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 //provider to access the profileFirestoreService
-final profileFireStoreServiceProvider = Provider<ColourService>((ref) {
+final colourProvider = Provider<ColourService>((ref) {
   return ColourService();
 });
 
 //StateNotifierProvider to manage the colour state for a specific profile
 //returns a profile notifier instance
 final profileColoursProvider = StateNotifierProvider.family<ProfileColoursNotifier, Color, String>((ref, profileId){
-  final firestoreService = ref.watch(profileFireStoreServiceProvider);
+  final firestoreService = ref.watch(colourProvider);
   return ProfileColoursNotifier(firestoreService, profileId);
 });
 

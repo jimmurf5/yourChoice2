@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:your_choice/repositories/message_card_repository.dart';
-import 'package:your_choice/services/message_card_service.dart';
+import 'package:your_choice/services/message_card_click_count_service.dart';
 import '../models/message_card.dart';
 import 'message_card_item.dart';
 
@@ -16,7 +16,7 @@ class MessageCardGrid extends StatelessWidget {
   final int selectedCategory;
   final String profileId;
   final FlutterTts flutterTts;
-  final MessageCardService
+  final MessageCardClickCountService
       messageCardService; //optional only needed for profile presses
   final Function(MessageCard)
       onCardSelected; //required call back for card selection
@@ -41,8 +41,10 @@ class MessageCardGrid extends StatelessWidget {
     //ternary to deal with category being = 1 (history)
     return selectedCategory == 1
         ? FutureBuilder<List<MessageCard>>(
-            //call updateHistoryCategory and get the top cards
-            future: messageCardService.updateHistoryCategory(),
+              /*get the top selected cards from firebase for our selected
+                profile, call the messageCardRepo to fetch from firebase*/
+            future: _messageCardRepository
+                .getTopSelectedCards(profileId),
             builder: (context, snapshot) {
               if (snapshot.hasError) {
                 return Center(child: Text('Error: ${snapshot.error}'));

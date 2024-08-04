@@ -1,14 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:your_choice/services/image_delete_service.dart';
 
+import '../models/message_card.dart';
+
 /// A repository class that handles Firestore operations related to
 /// message cards and categories.
 ///
 /// This class abstracts away the details of Firestore interactions and provides
 /// an internal API for the rest of the application to interact with
 /// the Firestore database.
-/// It includes methods for fetching message cards and categories from
-/// the Firestore database. Also saving, deleting messageCards
+/// It includes methods for fetching message
+/// cards (by category, singly or the top selected) and categories from
+/// the Firestore database. Also saving and deleting messageCards.
 class MessageCardRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final ImageDeleteService imageDeleteService = ImageDeleteService();
@@ -128,6 +131,31 @@ class MessageCardRepository {
       print('Failed to delete message card with docId $docId for profile $profileId: $e');
       rethrow;
     }
+  }
+
+  /// Retrieves the top 12 selected MessageCards
+  ///
+  /// This method queries Firestore for the top 12 MessageCards with the
+  /// highest selection count and returns them as a list of MessageCard objects.
+  ///
+  /// Returns a list of the top 12 selected MessageCard objects.
+  /// [profileId]- ID of the profile currently in use
+  Future<List<MessageCard>> getTopSelectedCards(String profileId) async {
+    //query the db for the top 12 selected message cards
+    QuerySnapshot querySnapshot = await _firestore
+        .collection('profiles')
+        .doc(profileId)
+        .collection('messageCards')
+        .orderBy('selectionCount', descending: true)
+        .limit(12)
+        .get();
+
+    //map each doc in the query snapshot to a message card
+    List<MessageCard> topCards = querySnapshot.docs
+        .map((doc) => MessageCard.fromMap(doc.data() as Map<String, dynamic>))
+        .toList();
+
+    return topCards;
   }
 
 }

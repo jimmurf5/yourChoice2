@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../models/message_card.dart';
-import '../services/message_card_service.dart';
+import '../services/message_card_click_count_service.dart';
 import '../services/tts_service.dart';
 import '../widgets/category_row.dart';
 import '../widgets/instruction_card.dart';
@@ -35,14 +35,14 @@ class _SelectCardState extends State<SelectCard> {
   int selectedCategory = 3; //default the selected category to category 3
   List<MessageCard> selectedCards =
   []; //declare a list to hold selected messageCards
-  late MessageCardService
+  late MessageCardClickCountService
   messageCardService; //declare the service which manages card history
 
   @override
   void initState() {
     super.initState();
     // Initialize the service
-    messageCardService = MessageCardService(profileId: widget.profileId);
+    messageCardService = MessageCardClickCountService(profileId: widget.profileId);
     print('messageCardService initialized with profileId: ${widget.profileId}');
   }
 
