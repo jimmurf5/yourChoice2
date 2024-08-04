@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:your_choice/widgets/logo_title_row.dart';
 import '../repositories/auth_repository.dart';
 import '../repositories/profile_repository.dart';
 
@@ -89,9 +90,14 @@ class _AddProfileState extends State<AddProfile> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Profile'),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        title: const LogoTitleRow(
+            logoWidth: 50,
+            logoHeight: 50,
+            textSize: 24,
+            spacerWidth: 10),
       ),
-      backgroundColor: Theme.of(context).colorScheme.primary,
+      //backgroundColor: Theme.of(context).colorScheme.secondary,
       body: Center(
         child: SingleChildScrollView(
           child: Padding(

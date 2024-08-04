@@ -7,6 +7,7 @@ import 'package:your_choice/screens/add_profile.dart';
 import 'package:your_choice/screens/customise_profile.dart';
 import '../repositories/auth_repository.dart';
 import '../repositories/profile_repository.dart';
+import '../widgets/logo_title_row.dart';
 
 class AdminHome extends ConsumerStatefulWidget {
   const AdminHome({super.key});
@@ -52,13 +53,19 @@ class _AdminHomeState extends ConsumerState<AdminHome> {
         backgroundColor: Theme.of(context).colorScheme.primary,
         title: Column(
           children: [
-            const Text('Admin Home'),
+            const LogoTitleRow(
+            logoWidth: 30,
+            logoHeight: 30,
+            textSize: 18,
+            spacerWidth: 10),
+            const SizedBox(height: 5,),
             Text(
               userEmail,
               style: const TextStyle(
-                fontSize: 12.0,
+                fontSize: 15.0, color: Colors.white
               ),
             ),
+            const SizedBox(height: 6,)
           ],
         ),
         actions: [
