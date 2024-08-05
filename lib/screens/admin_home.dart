@@ -3,10 +3,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:your_choice/providers/profile_colour_manager.dart';
+import 'package:your_choice/repositories/message_card_repository.dart';
 import 'package:your_choice/screens/add_profile.dart';
 import 'package:your_choice/screens/customise_profile.dart';
 import '../repositories/auth_repository.dart';
 import '../repositories/profile_repository.dart';
+import '../repositories/tree_repository.dart';
 import '../widgets/logo_title_row.dart';
 
 class AdminHome extends ConsumerStatefulWidget {
@@ -23,10 +25,14 @@ class AdminHome extends ConsumerStatefulWidget {
 /// The profiles can be selected for customization or deleted with an option to undo.
 class _AdminHomeState extends ConsumerState<AdminHome> {
   String userEmail = '';
-  // Initialize the FirestoreRepository
+  // Initialize the ProfileRepository
   final ProfileRepository _repository = ProfileRepository();
   // Initialize the AuthRepository
   final AuthRepository _authRepository = AuthRepository();
+  // Initialize the MessageCardRepository
+  final MessageCardRepository _messageCardRepository = MessageCardRepository();
+  // Initialize the TreeRepository
+  final TreeRepository _treeRepository = TreeRepository();
 
 
   @override
@@ -173,8 +179,15 @@ class _AdminHomeState extends ConsumerState<AdminHome> {
                               final deletedProfile = profile.data() as Map<String, dynamic>;
                               final profileId = profile.id;
 
-                              /* Delete profile using the repository and passing
-                              * the profileId */
+                              /*fetch the messageCards and trees -
+                                store before deletion */
+                              final messageCardData = await _messageCardRepository
+                                  .fetchAllMessageCards(profileId);
+                              final treesData = await _treeRepository
+                                  .fetchTreesAsList(profileId);
+
+                              /* Delete profile and its children using the
+                                 repository and passing the profileId */
                               await _repository.deleteProfileAndChildren(
                                   profileId: profileId
                               )
@@ -186,14 +199,15 @@ class _AdminHomeState extends ConsumerState<AdminHome> {
                                     action: SnackBarAction(
                                       label: 'UNDO',
                                       onPressed: () {
-                                        /* Restore the deleted profile using
-                                        the stored deletedProfile data
-                                        repository */
+                                        /* Restore the deleted profile pass the
+                                        * profiles data and children
+                                        * collections data */
                                         _repository
-                                            .restoreProfile(
+                                            .restoreProfileWithChildren(
                                             profileId: profileId,
-                                            profileData: deletedProfile
-                                        );
+                                            profileData: deletedProfile,
+                                            messageCardData: messageCardData,
+                                            treeData: treesData);
                                       },
                                     ),
                                   ),

@@ -54,7 +54,7 @@ class ProfileRepository {
     var treeCollection = _firestore
     .collection('profiles')
     .doc(profileId)
-    .collection('tree');
+    .collection('trees');
 
     /*get all documents in the messageCards collection and add
       to the batch delete*/
@@ -87,18 +87,59 @@ class ProfileRepository {
     await batch.commit();
   }
 
-  /// Restores a deleted profile for a given user in Firestore.
+  /// Restores a deleted profile for a given user in Firestore
+  /// and the profiles deleted children MessageCard and Tree collections
+  /// if they existed.
   ///
   /// This method adds the specified profile document back
   /// to the profiles collection.
   ///
   /// [profileId] - The ID of the profile to be restored.
   /// [profileData] - A map containing the data for the profile to be restored.
-  Future<void> restoreProfile({required String profileId, required Map<String, dynamic> profileData}) {
-    return _firestore
+  Future<void> restoreProfileWithChildren({
+    required String profileId,
+    required Map<String, dynamic> profileData,
+    required List<Map<String, dynamic>> messageCardData,
+    required List<Map<String, dynamic>> treeData
+  }) async {
+    WriteBatch batch = _firestore.batch();
+
+    //restore the profile document
+    batch.set(_firestore
         .collection('profiles')
-        .doc(profileId)
-        .set(profileData);
+        .doc(profileId),
+        profileData
+    );
+
+    if(messageCardData.isNotEmpty) {
+      /*restore each document in the messageCards collection, only after
+        ensuring the data exists */
+      for(var messageCard in messageCardData) {
+        var newDoc = _firestore
+            .collection('profiles')
+            .doc(profileId)
+            .collection('messageCards')
+            .doc();
+        batch.set(newDoc, messageCard);
+      }
+    }
+
+    if(treeData.isNotEmpty) {
+      /*restore each document in the trees collection, only after
+        ensuring the data exists */
+      for(var tree in treeData) {
+        var newDoc = _firestore
+            .collection('profiles')
+            .doc(profileId)
+            .collection('trees')
+            .doc();
+        batch.set(newDoc, tree);
+      }
+    }
+
+    //commit the batch
+    await batch.commit();
+
   }
 
   /// Method to duplicate seeded data from firestore which contains messageCards

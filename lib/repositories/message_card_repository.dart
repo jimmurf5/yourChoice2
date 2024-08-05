@@ -31,6 +31,23 @@ class MessageCardRepository {
         .snapshots();
   }
 
+  /// Fetches all message cards for a given profile and  across all categories.
+  ///
+  /// [profileId] - The ID of the profile to fetch message cards for.
+  /// Returns a list of maps containing the messageCards.
+  Future<List<Map<String, dynamic>>> fetchAllMessageCards(String profileId) async {
+    //create a reference to the messageCard collection for our profileId
+    var messageCardCollection = _firestore
+        .collection('profiles')
+        .doc(profileId)
+        .collection('messageCards');
+
+    //get all documents for the messageCard collection
+    var messageCardSnapshot = await messageCardCollection.get();
+    //return as a list after mapping each document to its data
+    return messageCardSnapshot.docs.map((doc) => doc.data()).toList();
+  }
+
   ///Fetches all categories form firestore
   ///
   /// Returns a stream of category snapshots containing the categories.

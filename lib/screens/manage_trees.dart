@@ -117,7 +117,7 @@ class _ManageTreesState extends State<ManageTrees> {
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
                 // Call the tree repository to get trees from Firebase
-                stream: _treeRepository.fetchTrees(widget.profileId),
+                stream: _treeRepository.fetchTreesAsQueryStream(widget.profileId),
                 builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const CircularProgressIndicator();
