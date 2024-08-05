@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:your_choice/repositories/auth_repository.dart';
 import 'package:your_choice/screens/auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -10,6 +11,8 @@ import 'package:your_choice/screens/admin_home.dart';
 import 'package:your_choice/data/card_data.dart';
 import 'package:your_choice/notifiers/theme_notifier.dart';
 
+import 'models/message_card.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -17,6 +20,13 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  // initialise hive
+  await Hive.initFlutter();
+  //register the adapter for the messageCard class
+  Hive.registerAdapter(MessageCardAdapter());
+  //open a hive box named 'messageCard' to store MessageCards
+  await Hive.openBox<MessageCard>('messageCards');
 
   // Temporary flag to trigger data seeding
   const bool shouldSeedData = false;
