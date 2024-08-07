@@ -9,22 +9,29 @@ import '../repositories/message_card_repository.dart';
 /// A widget that displays a tree of questions and their answers using data
 /// from Firestore.
 /// Each question can have 2 answers, displayed as MessageCards in a grid layout.
-class DisplayTree extends StatelessWidget {
+class DisplayTree extends StatefulWidget {
   final DocumentSnapshot treeSnapshot;
   final String profileId;
-  final TTSService ttsService = TTSService(); // Instantiate TTSService
-  final MessageCardRepository _messageCardRepository = MessageCardRepository(); // Instantiate MessageCardRepository
 
-
-  DisplayTree({
+  const DisplayTree({
     super.key,
     required this.treeSnapshot,
     required this.profileId,
   });
 
   @override
+  State<DisplayTree> createState() => _DisplayTreeState();
+}
+
+class _DisplayTreeState extends State<DisplayTree> {
+  final TTSService ttsService = TTSService();
+ // Instantiate TTSService
+  final MessageCardRepository _messageCardRepository = MessageCardRepository();
+  Map<String, dynamic> clickedState = {}; //store the clicked state for each messageCard
+
+  @override
   Widget build(BuildContext context) {
-    var treeData = treeSnapshot.data() as Map<String, dynamic>;
+    var treeData = widget.treeSnapshot.data() as Map<String, dynamic>;
     var treeTitle = '${treeData['treeTitle']}'; // Store the tree title
     var tree = treeData['questions'] as List<dynamic>; //store the q's and answers
 
@@ -129,7 +136,7 @@ class DisplayTree extends StatelessWidget {
               *  fetching the messageCard by their messageCardId
               *  Call the messageCardRepo to use method of that class*/
               return FutureBuilder<QuerySnapshot>(
-                future: _messageCardRepository.findMessageCardById(profileId, messageCardId),
+                future: _messageCardRepository.findMessageCardById(widget.profileId, messageCardId),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const CircularProgressIndicator();
@@ -148,7 +155,7 @@ class DisplayTree extends StatelessWidget {
                      to fetch the document using the doc ID (obtained from the
                      first future builder) */
                   return FutureBuilder<DocumentSnapshot>(
-                    future: _messageCardRepository.fetchOneMessageCard(profileId, docId),
+                    future: _messageCardRepository.fetchOneMessageCard(widget.profileId, docId),
                     builder: (context, docSnapshot) {
                       if (docSnapshot.connectionState == ConnectionState.waiting) {
                         return const CircularProgressIndicator();
@@ -162,12 +169,22 @@ class DisplayTree extends StatelessWidget {
 
                       // Convert to a message card
                       var messageCard = MessageCard.fromMap(docSnapshot.data!.data() as Map<String, dynamic>);
-                      // Return messageCard wrapped in a gesture detector to speak title
+                      // Check the clicked state of the current message card; default to false if not found
+                      var isClicked = clickedState[messageCard.messageCardId] ?? false;
+                      /* Return gesture detector wrapped around a container
+                      // to handle colour change and to speak title */
                       return GestureDetector(
                         onTap: () async {
+                          // Toggle the clicked state for the current message card and update the state
+                          setState(() {
+                            clickedState[messageCard.messageCardId] = !isClicked;
+                          });
                           await ttsService.flutterTts.speak(messageCard.title);
                         },
-                        child: MessageCardItem(messageCard: messageCard),
+                        child: Container(
+                          color: isClicked ? Colors.green : Colors.white,
+                          child: MessageCardItem(messageCard: messageCard),
+                        )
                       );
                     },
                   );

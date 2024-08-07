@@ -1,8 +1,13 @@
 import 'package:hive/hive.dart';
 import 'package:your_choice/models/message_card.dart';
 
+import '../message_card_click_count_service.dart';
+
 class MessageCardCacheService {
   final Box<MessageCard> _box = Hive.box<MessageCard>('messageCards');
+  final MessageCardClickCountService _clickCountService;
+
+  MessageCardCacheService(this._clickCountService);
 
   ///method to save a messageCard to the local cache
   Future<void> saveMessageCard(MessageCard messageCard) async {
@@ -30,6 +35,18 @@ class MessageCardCacheService {
   ///method to clear the local cache
   Future<void> clearCache() async {
     await _box.clear();
+  }
+
+  ///method to update the selection count of a MessageCard
+  Future<void> updateSelectionCount(String messageCardId, int newCount, String profileId) async {
+    var card = getMessageCard(messageCardId);
+    if(card != null) {
+      card.selectionCount = newCount;
+      //update count in cache
+      await saveMessageCard(card);
+      //update count on firestore
+      await _clickCountService.selectCard(card);
+    }
   }
 
 }
