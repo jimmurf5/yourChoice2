@@ -7,13 +7,14 @@ import '../message_card_click_count_service.dart';
 class MessageCardCacheService {
   final Box<MessageCard> _box = Hive.box<MessageCard>('messageCards');
   final MessageCardClickCountService _clickCountService;
-  final MessageCardRepository _messageCardRepository;
 
 
-  MessageCardCacheService(this._clickCountService, this._messageCardRepository);
+
+  MessageCardCacheService(this._clickCountService);
 
   ///method to save a messageCard to the local cache
   Future<void> saveMessageCard(MessageCard messageCard) async {
+    print('saving messageCard to the cache');
     await _box.put(messageCard.messageCardId, messageCard);
   }
 
@@ -24,6 +25,7 @@ class MessageCardCacheService {
 
   ///method to retrieve messageCards by categoryId from the local cache
   List<MessageCard> getMessageCardsByCategory(int categoryId) {
+    print('getting from cache by category');
     return _box.values
         .where(
             (card) => card.categoryId == categoryId

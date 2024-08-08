@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:your_choice/services/hive/message_card_cache_service.dart';
 import 'package:your_choice/services/image_delete_service.dart';
+import 'package:your_choice/services/message_card_click_count_service.dart';
 
 import '../models/message_card.dart';
 
@@ -15,6 +17,7 @@ import '../models/message_card.dart';
 class MessageCardRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final ImageDeleteService imageDeleteService = ImageDeleteService();
+
 
   /// Fetches message cards for a given profile and category.
   ///

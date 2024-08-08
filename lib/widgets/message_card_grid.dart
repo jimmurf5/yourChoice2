@@ -4,6 +4,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:your_choice/repositories/message_card_repository.dart';
 import 'package:your_choice/services/message_card_click_count_service.dart';
 import '../models/message_card.dart';
+import '../services/hive/message_card_cache_service.dart';
 import 'message_card_item.dart';
 
 /// A widget that displays a grid of message cards based on the selected category.
@@ -16,74 +17,75 @@ class MessageCardGrid extends StatelessWidget {
   final int selectedCategory;
   final String profileId;
   final FlutterTts flutterTts;
-  final MessageCardClickCountService
-      messageCardService; //optional only needed for profile presses
-  final Function(MessageCard)
-      onCardSelected; //required call back for card selection
-  final bool isProfileMode; //flag to determine the mode (profile or user)
-  final List<MessageCard> selectedCards; //a parameter to handle the list of selected cards
+  final MessageCardClickCountService messageCardService; // Optional only needed for profile presses
+  final Function(MessageCard) onCardSelected; // Required callback for card selection
+  final bool isProfileMode; // Flag to determine the mode (profile or user)
+  final List<MessageCard> selectedCards; // Parameter to handle the list of selected cards
+  final MessageCardCacheService _messageCardCacheService;
   final MessageCardRepository _messageCardRepository;
 
-  ///The constructor for messageCardGrid, it initialises messageCardRepository
-  ///within the constructor
-  MessageCardGrid(
-      {super.key,
-      required this.selectedCategory,
-      required this.profileId,
-      required this.flutterTts,
-      required this.messageCardService,
-      required this.onCardSelected,
-      required this.isProfileMode, required this.selectedCards
-      }) : _messageCardRepository = MessageCardRepository();
+  /// Constructor for MessageCardGrid, initializes MessageCardRepository
+  /// and MessageCardCacheService within the constructor
+  MessageCardGrid({
+    super.key,
+    required this.selectedCategory,
+    required this.profileId,
+    required this.flutterTts,
+    required this.messageCardService,
+    required this.onCardSelected,
+    required this.isProfileMode,
+    required this.selectedCards,
+  })  : _messageCardRepository = MessageCardRepository(),
+        _messageCardCacheService = MessageCardCacheService(MessageCardClickCountService(profileId: profileId));
 
   @override
   Widget build(BuildContext context) {
-    //ternary to deal with category being = 1 (history)
-    return selectedCategory == 1
-        ? FutureBuilder<List<MessageCard>>(
-              /*get the top selected cards from firebase for our selected
-                profile, call the messageCardRepo to fetch from firebase*/
-            future: _messageCardRepository
-                .getTopSelectedCards(profileId),
-            builder: (context, snapshot) {
-              if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
-              }
-              if (!snapshot.hasData) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              //store the cards in card deck and call buildGridView to display
-              final cardDeck = snapshot.data!;
-              return _buildGridView(cardDeck);
-            },
-          )
-        : StreamBuilder<QuerySnapshot>(
-            /*get the message Card data from firebase only for our selected
-            profile matching the chosen category, call the messageCardRepo
-            to fetch from firebase*/
-            stream: _messageCardRepository
-                .fetchMessageCards(profileId: profileId, categoryId: selectedCategory),
-            builder: (context, snapshot) {
-              // Check for any errors
-              if (snapshot.hasError) {
-                //print("Error fetching data: ${snapshot.error}");
-                return Center(
-                    child: Text('Error fetching data: ${snapshot.error}'));
-              }
-              if (!snapshot.hasData) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              final cardDeck = snapshot.data!.docs.map((doc) {
-                //print("MessageCard Data: ${doc.data()}");
-                return MessageCard.fromMap(doc.data() as Map<String, dynamic>);
-              }).toList();
-              //build the grid view using the deck of cards return by firestore
-              return _buildGridView(cardDeck);
-            },
-          );
+    if (selectedCategory == 1) {
+      return FutureBuilder<List<MessageCard>>(
+        future: _messageCardRepository.getTopSelectedCards(profileId),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          final cardDeck = snapshot.data!;
+          return _buildGridView(cardDeck);
+        },
+      );
+    } else {
+      var cachedCards = _messageCardCacheService.getMessageCardsByCategory(selectedCategory);
+      if (cachedCards.isNotEmpty) {
+        return _buildGridView(cachedCards);
+      } else {
+        return StreamBuilder<QuerySnapshot>(
+          stream: _messageCardRepository.fetchMessageCards(profileId: profileId, categoryId: selectedCategory),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return Center(child: Text('Error fetching data: ${snapshot.error}'));
+            }
+            if (!snapshot.hasData) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            final cardDeck = snapshot.data!.docs.map((doc) {
+              return MessageCard.fromMap(doc.data() as Map<String, dynamic>);
+            }).toList();
+            _cacheMessageCards(cardDeck);
+            return _buildGridView(cardDeck);
+          },
+        );
+      }
+    }
   }
 
-// Private method to build the grid view
+  //private method to cache fetched messageCards
+  Future<void> _cacheMessageCards(List<MessageCard> cardDeck) async {
+    for (var card in cardDeck) {
+      await _messageCardCacheService.saveMessageCard(card);
+    }
+  }
+
   Widget _buildGridView(List<MessageCard> cardDeck) {
     return GridView.builder(
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -97,19 +99,17 @@ class MessageCardGrid extends StatelessWidget {
         final card = cardDeck[index];
         return GestureDetector(
           onTap: () async {
-            // Always speak the card title
             await flutterTts.speak(card.title);
-            //only enter this block if in profile mode
-            //always allow onCardSelected to be called and let the calling
-            //method handle the follow on logic
             onCardSelected(card);
             if (isProfileMode) {
-              //call messageCardService.selectCard only in profile mode
-              // to update selection count for card
+              // Update selection count in cache and Firestore
+              await _messageCardCacheService.updateSelectionCount(
+                  card.messageCardId,
+                  profileId
+              );
               await messageCardService.selectCard(card);
             }
           },
-          //call message card item to show the message card
           child: MessageCardItem(messageCard: card),
         );
       },
