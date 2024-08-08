@@ -9,9 +9,12 @@ import '../message_card_click_count_service.dart';
 
 class MessageCardCacheService {
   final Box<MessageCard> _box = Hive.box<MessageCard>('messageCards');
-  final MessageCardClickCountService _clickCountService;
+  final MessageCardClickCountService? _clickCountService;
 
   MessageCardCacheService(this._clickCountService);
+
+  //parameterless constructor for clearing the cache of all profiles
+  MessageCardCacheService.forClearCacheAll() : _clickCountService = null;
 
   ///method to save a messageCard to the local cache
   Future<void> saveMessageCard(MessageCard messageCard, String profileId) async {
@@ -44,12 +47,30 @@ class MessageCardCacheService {
   }
 
   ///method to clear the local cache for the specified profile
-  Future<void> clearCache(String profileId) async {
+  Future<void> clearCacheOfProfile(String profileId) async {
     var keysToDelete = _box
         .keys
         .where((key) => key.startsWith(profileId))
         .toList();
     await _box.deleteAll(keysToDelete);
+  }
+
+  ///method to clear the local cache for all profiles
+  ///and delete associated image files
+  Future<void> clearCacheAll() async {
+    //iterate through all cached message cards
+    for (var card in _box.values) {
+      //check if the card has a localImagePath
+      if(card.localImagePath != null) {
+        final imageFile = File(card.localImagePath!);
+        if (await imageFile.exists()) {
+          //delete the image path if it exists
+          await imageFile.delete();
+        }
+      }
+    }
+    //now clear the box box of all data
+    await _box.clear();
   }
 
   ///method to update the selection count of a MessageCard
@@ -60,7 +81,7 @@ class MessageCardCacheService {
       //update count in cache
       await saveMessageCard(card, profileId);
       //update count on firestore
-      await _clickCountService.selectCard(card);
+      await _clickCountService?.selectCard(card);
     }
   }
 

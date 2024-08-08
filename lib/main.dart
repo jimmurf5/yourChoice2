@@ -5,6 +5,8 @@ import 'package:your_choice/repositories/auth_repository.dart';
 import 'package:your_choice/screens/auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:your_choice/screens/splash_screen.dart';
+import 'package:your_choice/services/hive/message_card_cache_service.dart';
+import 'package:your_choice/services/message_card_click_count_service.dart';
 import 'package:your_choice/services/template_and_cat_seeder_service.dart';
 import 'firebase_options.dart';
 import 'package:your_choice/screens/admin_home.dart';
@@ -27,6 +29,12 @@ void main() async {
   Hive.registerAdapter(MessageCardAdapter());
   //open a hive box named 'messageCard' to store MessageCards
   await Hive.openBox<MessageCard>('messageCards');
+
+  /*clear the cache on each restart during this testing and dev phase
+  * create an instance of messageCardService to clear the cache*/
+  final messageCardCacheService = MessageCardCacheService.forClearCacheAll();
+  print('Clearing the cache and associated images');
+  await messageCardCacheService.clearCacheAll();
 
   // Temporary flag to trigger data seeding
   const bool shouldSeedData = false;
