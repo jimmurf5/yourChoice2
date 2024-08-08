@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -82,7 +84,7 @@ class MessageCardGrid extends StatelessWidget {
   //private method to cache fetched messageCards
   Future<void> _cacheMessageCards(List<MessageCard> cardDeck) async {
     for (var card in cardDeck) {
-      await _messageCardCacheService.saveMessageCard(card, profileId);
+      await _messageCardCacheService.saveImageFileLocally(card, profileId, card.imageUrl);
     }
   }
 

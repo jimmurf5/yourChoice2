@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:http/http.dart' as http;
+
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:your_choice/models/message_card.dart';
@@ -8,8 +10,6 @@ import '../message_card_click_count_service.dart';
 class MessageCardCacheService {
   final Box<MessageCard> _box = Hive.box<MessageCard>('messageCards');
   final MessageCardClickCountService _clickCountService;
-
-
 
   MessageCardCacheService(this._clickCountService);
 
@@ -76,18 +76,29 @@ class MessageCardCacheService {
 
   ///method to save the profile locally and update the messageCard
   ///with local file path
-  Future<void> saveImageFileLocally(MessageCard messageCard, String profileId, File imageFile) async {
+  /// [messageCard] - The MessageCard object to be updated.
+  /// [profileId] - The ID of the profile to associate with the image.
+  /// [imageUrl] - The URL of the image to be downloaded and saved locally.
+  Future<void> saveImageFileLocally(MessageCard messageCard, String profileId, String imageUrl) async {
     //get the local application documents directory
     final appDir = await getApplicationDocumentsDirectory();
     //create a unique name for the image using the profile and messageCardId
     final fileName = '${profileId}_${messageCard.messageCardId}.png';
-    //save the image file to the local directory
-    final savedImage = await imageFile.copy('${appDir.path}/$fileName');
+    //download the image file from the provided url
+    final response = await http.get(Uri.parse(imageUrl));
 
-    //update the messageCard object with the local image path
-    messageCard.localImagePath = savedImage.path;
+    if(response.statusCode == 200) {
+      // Save the downloaded image file to the local directory. only id status 200
+      final savedImage = File('${appDir.path}/$fileName');
+      await savedImage.writeAsBytes(response.bodyBytes);
 
-    //save the updated messageCard to the cache
-    await saveMessageCard(messageCard, profileId);
+      //update the messageCard object with the local image path
+      messageCard.localImagePath = savedImage.path;
+      //save the updated messageCard to the cache
+      await saveMessageCard(messageCard, profileId);
+    }else {
+      print('failed to download the image from $imageUrl');
+    }
+
   }
 }
