@@ -18,6 +18,10 @@ class MessageCard {
   final String messageCardId;
   @HiveField(4)
   int selectionCount;
+  @HiveField(5)
+  String? profileId; // Optional profileId
+  @HiveField(6)
+  String? localImagePath; // optional field for local image file path
 
 
   //constructor generates a new id or uses the one provided
@@ -26,7 +30,9 @@ class MessageCard {
     required this.title,
     required this.imageUrl,
     required this.categoryId,
-    this.selectionCount = 0   // initialise the selection count to zero
+    this.selectionCount = 0,  // initialise the selection count to zero
+    this.profileId, //optional profileId
+    this.localImagePath,
   }): messageCardId = messageCardId ?? uuid.v4();
 
   // Method to convert MessageCard object to a Map
@@ -37,6 +43,8 @@ class MessageCard {
       'categoryId': categoryId,
       'messageCardId' : messageCardId,
       'selectionCount' : selectionCount,
+      if (profileId != null) 'profileId': profileId, // Include profileId if it's not null
+      if (localImagePath != null) 'localImagePath': localImagePath, // Include localImagePath if it's not null
     };
   }
 
@@ -48,6 +56,9 @@ class MessageCard {
       categoryId: map['categoryId'],
       messageCardId: map['messageCardId'],
       selectionCount: map['selectionCount'] ?? 0,
+      profileId: map['profileId'], // Extract profileId if it exists
+      localImagePath: map['localImagePath'], // Extract localImagePath if it exists
+
     );
   }
 

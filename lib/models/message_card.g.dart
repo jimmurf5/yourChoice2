@@ -22,13 +22,15 @@ class MessageCardAdapter extends TypeAdapter<MessageCard> {
       imageUrl: fields[1] as String,
       categoryId: fields[2] as int,
       selectionCount: fields[4] as int,
+      profileId: fields[5] as String?,
+      localImagePath: fields[6] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, MessageCard obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.title)
       ..writeByte(1)
@@ -38,7 +40,11 @@ class MessageCardAdapter extends TypeAdapter<MessageCard> {
       ..writeByte(3)
       ..write(obj.messageCardId)
       ..writeByte(4)
-      ..write(obj.selectionCount);
+      ..write(obj.selectionCount)
+      ..writeByte(5)
+      ..write(obj.profileId)
+      ..writeByte(6)
+      ..write(obj.localImagePath);
   }
 
   @override

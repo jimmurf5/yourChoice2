@@ -1,7 +1,8 @@
-import 'package:hive/hive.dart';
-import 'package:your_choice/models/message_card.dart';
+import 'dart:io';
 
-import '../../repositories/message_card_repository.dart';
+import 'package:hive/hive.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:your_choice/models/message_card.dart';
 import '../message_card_click_count_service.dart';
 
 class MessageCardCacheService {
@@ -13,52 +14,80 @@ class MessageCardCacheService {
   MessageCardCacheService(this._clickCountService);
 
   ///method to save a messageCard to the local cache
-  Future<void> saveMessageCard(MessageCard messageCard) async {
+  Future<void> saveMessageCard(MessageCard messageCard, String profileId) async {
     print('saving messageCard to the cache');
-    await _box.put(messageCard.messageCardId, messageCard);
+    //set the profile id for the messageCard so that it is unique in the cache
+    messageCard.profileId = profileId;
+    await _box.put('${profileId}_${messageCard.messageCardId}', messageCard);
   }
 
-  ///method to retrieve a messageCard from the local cache by its Id
-  MessageCard? getMessageCard(String messageCardId) {
-    return _box.get(messageCardId);
+  ///method to retrieve a messageCard from the local cache by its Id and profileId
+  MessageCard? getMessageCard(String messageCardId, String profileId) {
+    return _box.get('${profileId}_$messageCardId');
   }
 
-  ///method to retrieve messageCards by categoryId from the local cache
-  List<MessageCard> getMessageCardsByCategory(int categoryId) {
+  ///method to retrieve messageCards by categoryId
+  /// and profileId from the local cache
+  List<MessageCard> getMessageCardsByCategory(int categoryId, String profileId) {
     print('getting from cache by category');
     return _box.values
         .where(
-            (card) => card.categoryId == categoryId
+            (card) => card.categoryId == categoryId && card.profileId == profileId
     ).toList();
   }
 
-  ///method to retrieve all messageCards from the local cache
-  List<MessageCard> getAllMessageCards() {
-    return _box.values.toList();
+  ///method to retrieve all messageCards from the local cache for a profileId
+  List<MessageCard> getAllMessageCards(String profileId) {
+    return _box.values.where(
+            (card) => card.profileId == profileId
+    ).toList();
   }
 
-  ///method to clear the local cache
-  Future<void> clearCache() async {
-    await _box.clear();
+  ///method to clear the local cache for the specified profile
+  Future<void> clearCache(String profileId) async {
+    var keysToDelete = _box
+        .keys
+        .where((key) => key.startsWith(profileId))
+        .toList();
+    await _box.deleteAll(keysToDelete);
   }
 
   ///method to update the selection count of a MessageCard
   Future<void> updateSelectionCount(String messageCardId, String profileId) async {
-    var card = getMessageCard(messageCardId);
+    var card = getMessageCard(messageCardId, profileId);
     if(card != null) {
       card.selectionCount += 1;
       //update count in cache
-      await saveMessageCard(card);
+      await saveMessageCard(card, profileId);
       //update count on firestore
       await _clickCountService.selectCard(card);
     }
   }
 
   ///get top selected MessageCards from the local cache
-  List<MessageCard> getTopSelectedCardsFromCache() {
-    var cards = _box.values.toList();
+  List<MessageCard> getTopSelectedCardsFromCache(String profileId) {
+    var cards = _box
+        .values
+        .where((card) => card.profileId == profileId)
+        .toList();
     cards.sort((a, b) => b.selectionCount.compareTo(a.selectionCount));
     return cards.take(12).toList();
   }
 
+  ///method to save the profile locally and update the messageCard
+  ///with local file path
+  Future<void> saveImageFileLocally(MessageCard messageCard, String profileId, File imageFile) async {
+    //get the local application documents directory
+    final appDir = await getApplicationDocumentsDirectory();
+    //create a unique name for the image using the profile and messageCardId
+    final fileName = '${profileId}_${messageCard.messageCardId}.png';
+    //save the image file to the local directory
+    final savedImage = await imageFile.copy('${appDir.path}/$fileName');
+
+    //update the messageCard object with the local image path
+    messageCard.localImagePath = savedImage.path;
+
+    //save the updated messageCard to the cache
+    await saveMessageCard(messageCard, profileId);
+  }
 }

@@ -55,7 +55,7 @@ class MessageCardGrid extends StatelessWidget {
         },
       );
     } else {
-      var cachedCards = _messageCardCacheService.getMessageCardsByCategory(selectedCategory);
+      var cachedCards = _messageCardCacheService.getMessageCardsByCategory(selectedCategory, profileId);
       if (cachedCards.isNotEmpty) {
         return _buildGridView(cachedCards);
       } else {
@@ -82,7 +82,7 @@ class MessageCardGrid extends StatelessWidget {
   //private method to cache fetched messageCards
   Future<void> _cacheMessageCards(List<MessageCard> cardDeck) async {
     for (var card in cardDeck) {
-      await _messageCardCacheService.saveMessageCard(card);
+      await _messageCardCacheService.saveMessageCard(card, profileId);
     }
   }
 
