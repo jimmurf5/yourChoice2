@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:your_choice/services/hive/message_card_cache_service.dart';
 import 'package:your_choice/services/image_delete_service.dart';
-import 'package:your_choice/services/message_card_click_count_service.dart';
 
 import '../models/message_card.dart';
 

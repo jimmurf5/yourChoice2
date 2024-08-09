@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:your_choice/models/category.dart';
 import 'package:your_choice/repositories/auth_repository.dart';
 import 'package:your_choice/screens/auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -25,10 +26,14 @@ void main() async {
 
   // initialise hive
   await Hive.initFlutter();
-  //register the adapter for the messageCard class
+  //register the adapter for the messageCard class and category
   Hive.registerAdapter(MessageCardAdapter());
-  //open a hive box named 'messageCard' to store MessageCards
+  Hive.registerAdapter(CategoryAdapter());
+
+  /*open a hive box named 'messageCard' to store MessageCards
+  * and one for the categories*/
   await Hive.openBox<MessageCard>('messageCards');
+  await Hive.openBox<Category>('categories');
 
   /*clear the cache on each restart during this testing and dev phase
   * create an instance of messageCardService to clear the cache*/

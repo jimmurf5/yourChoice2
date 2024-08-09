@@ -1,12 +1,27 @@
+import 'package:hive/hive.dart';
+
+part 'category.g.dart';
+
+@HiveType(typeId: 1)
 class Category {
+
+  @HiveField(0)
   final String title;
+
+  @HiveField(1)
   final String imageUrl;
+
+  @HiveField(2)
   final int categoryId;
 
-  const Category({
+  @HiveField(3)
+  String? localImagePath;
+
+  Category({
     required this.title,
     required this.imageUrl,
-    required this.categoryId
+    required this.categoryId,
+    this.localImagePath
   });
 
   //method to convert category object to a map
@@ -15,6 +30,7 @@ class Category {
       'title' : title,
       'imageUrl' : imageUrl,
       'categoryId' : categoryId,
+      if (localImagePath != null) 'localImagePath': localImagePath,
     };
   }
 
@@ -24,6 +40,7 @@ class Category {
       title: map['title'],
       imageUrl: map['imageUrl'],
       categoryId: map['categoryId'],
+      localImagePath: map['localImagePath'],
     );
   }
 }

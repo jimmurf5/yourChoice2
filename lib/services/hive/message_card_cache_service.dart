@@ -8,6 +8,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:your_choice/models/message_card.dart';
 import '../message_card_click_count_service.dart';
 
+/// A class hosting methods controlling all the logic regarding caching
+/// data to and deleting data from the hive 'messageCards' box
 class MessageCardCacheService {
   final Box<MessageCard> _box = Hive.box<MessageCard>('messageCards');
   final MessageCardClickCountService? _clickCountService;
@@ -122,7 +124,7 @@ class MessageCardCacheService {
     return cards.take(12).toList();
   }
 
-  ///method to save the profile locally and update the messageCard
+  ///method to save the messageCard locally and update the messageCard
   ///with local file path
   /// [messageCard] - The MessageCard object to be updated.
   /// [profileId] - The ID of the profile to associate with the image.

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:your_choice/repositories/message_card_repository.dart';
+import 'package:your_choice/services/hive/category_cache_service.dart';
 import '../models/category.dart';
 import 'category_item.dart';
 
@@ -15,50 +16,65 @@ class CategoryRow extends StatelessWidget {
   final Function(int) onCategorySelected;
   //initialise an instance of the message card repo
   final MessageCardRepository _messageCardRepository = MessageCardRepository();
+  final CategoryCacheService _categoryCacheService = CategoryCacheService();
 
   CategoryRow(
       {super.key, required this.flutterTts, required this.onCategorySelected});
 
+  /// Widget to build a list view of categories
+  /// Returns a list view of category items
+  ///
+  /// Parameter [categories] - takes a list of Category objects
+  Widget _buildCategoryListView(List<Category> categories) {
+    return ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: categories.length,
+        itemBuilder: (context, index) {
+          final category = categories[index];
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 5.0),
+            child: GestureDetector(
+              //set the category on tap of any of the scrollable categories
+              onTap: () async {
+                print("Selected Category ID: ${category.categoryId}");
+                onCategorySelected(category.categoryId);
+                //read out the category of the messageCard on tap
+                await flutterTts.speak(category.title);
+              },
+              child: CategoryItem(
+                  category: category), //use category item widget to display categories
+            ),
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
+    //store the cached categories
+    final cachedCategories = _categoryCacheService.getAllCategories();
     return Container(
       color: Theme.of(context).colorScheme.onSecondary,
       child: SizedBox(
         height: 120.0,
-        child: StreamBuilder<QuerySnapshot>(
-          stream:
-              /*fetch all the categories using the fetch categories method from
-              * the message Card Repo class*/
-              _messageCardRepository.fetchCategories(),
+        /*ternary on the cached cards (if empty or not)
+        * if empty query firestore*/
+        child: cachedCategories.isNotEmpty
+            ? _buildCategoryListView(cachedCategories)
+            : StreamBuilder<QuerySnapshot>(
+          stream: _messageCardRepository.fetchCategories(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
-              //check to make sure snapshot has data and is not null
               return const Center(child: CircularProgressIndicator());
             }
             final categories = snapshot.data!.docs.map((doc) {
               return Category.fromMap(doc.data() as Map<String, dynamic>);
             }).toList();
-            return ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: categories.length,
-                itemBuilder: (context, index) {
-                  final category = categories[index];
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                    child: GestureDetector(
-                      //set the category on tap of any of the scrollable categories
-                      onTap: () async {
-                        print("Selected Category ID: ${category.categoryId}");
-                        onCategorySelected(category.categoryId);
-                        //read out the category of the messageCard on tap
-                        await flutterTts.speak(category.title);
-                      },
-                      child: CategoryItem(
-                          category:
-                              category), //use category item widget to display categories
-                    ),
-                  );
-                });
+
+            for (var category in categories) {
+              _categoryCacheService.saveCategory(category);
+            }
+
+            return _buildCategoryListView(categories);
           },
         ),
       ),

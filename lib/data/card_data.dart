@@ -1,7 +1,7 @@
 import 'package:your_choice/models/category.dart';
 import 'package:your_choice/models/message_card.dart';
 
-const availableCategories = [
+final availableCategories = [
   Category(
       title: 'History',
       imageUrl: 'https://openmoji.org/data/color/svg/1F3DB.svg',
