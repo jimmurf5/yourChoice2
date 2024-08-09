@@ -72,17 +72,27 @@ class MessageCardRepository {
   Future<void> saveMessageCardData(
       String profileId, String title, String imageUrl, String uniqueImageId) async {
     try {
+
+      //create a new messageCard
+      MessageCard newMessageCard = MessageCard(
+          title: title,
+          selectionCount: 0,
+          messageCardId: uniqueImageId,
+          categoryId: 2,
+          imageUrl: imageUrl,
+      );
+
       await _firestore
           .collection('profiles')
           .doc(profileId)
           .collection('messageCards')
-          .add({
-        'title': title,
-        'selectionCount': 0,
-        'messageCardId': uniqueImageId,
-        'categoryId': 2,
-        'imageUrl': imageUrl
-      });
+          .add(
+        newMessageCard.toMap()
+      );
+
+      /* Call the messageCardCache service and cache the new messageCard
+           locally, to ensure cache is always in sync with firestore */
+      await _cacheService.saveImageFileLocally(newMessageCard, profileId, imageUrl);
     } catch (error) {
       rethrow;
     }

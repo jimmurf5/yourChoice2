@@ -222,6 +222,20 @@ class _CurateCardsState extends State<CurateCards> {
                   alignment: Alignment.center,
                   color: Theme.of(context).colorScheme.inversePrimary,
                 ),
+                IconButton(
+                  //on pressed tts to read out the message card
+                  // held in the selected cards list
+                  //shown in the display panel
+                  onPressed: selectedCards.isNotEmpty && selectedCards.first.categoryId == 2
+                      ? () async {
+                    //await _showCategorySelectionDialog(context);
+                  }
+                      : null,
+                  icon: const Icon(FontAwesomeIcons.shuffle),
+                  iconSize: 45,
+                  alignment: Alignment.center,
+                  color: Theme.of(context).colorScheme.inversePrimary,
+                ),
               ],
             ),
           ),
