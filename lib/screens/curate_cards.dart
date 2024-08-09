@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:your_choice/repositories/message_card_repository.dart';
+import 'package:your_choice/services/hive/category_cache_service.dart';
 import '../models/message_card.dart';
 import '../services/message_card_click_count_service.dart';
 import '../services/tts_service.dart';
@@ -44,6 +45,7 @@ class _CurateCardsState extends State<CurateCards> {
       messageCardService; //declare the service which manages card history
   //initialise the messageCardRepo
   final MessageCardRepository messageCardRepository = MessageCardRepository();
+  final CategoryCacheService _categoryCacheService = CategoryCacheService();
 
   @override
   void initState() {
@@ -145,6 +147,39 @@ class _CurateCardsState extends State<CurateCards> {
     }
   }
 
+  Future<void> _showCategorySelectionDialog(BuildContext context) async {
+    // Fetch categories (you could fetch from cache or Firestore)
+    final categories = _categoryCacheService.getAllCategories();
+
+    final selectedCategoryId = await showDialog<int>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Select New Category'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: categories.map((category) {
+                return ListTile(
+                  title: Text(category.title),
+                  onTap: () {
+                    Navigator.pop(context, category.categoryId);
+                  },
+                );
+              }).toList(),
+            ),
+          ),
+        );
+      },
+    );
+
+    if (selectedCategoryId != null) {
+      // Update the selected card's category
+      //await _changeCategoryOfSelectedCard(selectedCategoryId);
+    }
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -183,8 +218,10 @@ class _CurateCardsState extends State<CurateCards> {
                   const SizedBox(
                     width: 10,
                   ),
-                  if (selectedCards.isNotEmpty)
-                    const InstructionCard('X\nCLEARS\nTHE\nPANEL'),
+                  if (selectedCards.isNotEmpty && selectedCards.first.categoryId == 2)
+                    const InstructionCard('X CLEARS.\nARROW\nSWAPS\nCATEGORY')
+                  else if (selectedCards.isNotEmpty)
+                    const InstructionCard('X\nCLEARS\nTHE\nPANEL')
                 ],
               ),
             ),
@@ -228,7 +265,7 @@ class _CurateCardsState extends State<CurateCards> {
                   //shown in the display panel
                   onPressed: selectedCards.isNotEmpty && selectedCards.first.categoryId == 2
                       ? () async {
-                    //await _showCategorySelectionDialog(context);
+                    await _showCategorySelectionDialog(context);
                   }
                       : null,
                   icon: const Icon(FontAwesomeIcons.shuffle),
