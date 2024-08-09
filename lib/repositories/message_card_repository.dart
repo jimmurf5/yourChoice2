@@ -16,6 +16,7 @@ import '../models/message_card.dart';
 /// the Firestore database. Also saving and deleting messageCards.
 class MessageCardRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final MessageCardCacheService _cacheService = MessageCardCacheService();
   final ImageDeleteService imageDeleteService = ImageDeleteService();
 
 
@@ -131,7 +132,7 @@ class MessageCardRepository {
   /// [docId]- the document ID of the messageCard in firestore
   /// [categoryId]- the category the messageCard is associated with
   /// [imageUrl]- the messageCard's image URL
-  Future<void> deleteMessageCard(String profileId, String docId, int categoryId, String imageUrl) async {
+  Future<void> deleteMessageCard(String profileId, String messageCardId, String docId, int categoryId, String imageUrl) async {
     try {
       await _firestore
           .collection('profiles')
@@ -139,6 +140,9 @@ class MessageCardRepository {
           .collection('messageCards')
           .doc(docId)
           .delete();
+
+      //delete the messageCard from the cache also
+      await _cacheService.deleteMessageCard(messageCardId, profileId);
 
       if(categoryId == 2) {
         /*delete the image from firestore storage if its a unique image

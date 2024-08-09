@@ -12,7 +12,7 @@ class MessageCardCacheService {
   final Box<MessageCard> _box = Hive.box<MessageCard>('messageCards');
   final MessageCardClickCountService? _clickCountService;
 
-  MessageCardCacheService(this._clickCountService);
+  MessageCardCacheService([this._clickCountService]);
 
   //parameterless constructor for clearing the cache of all profiles
   MessageCardCacheService.forClearCacheAll() : _clickCountService = null;
@@ -73,6 +73,32 @@ class MessageCardCacheService {
     //now clear the box box of all data
     await _box.clear();
   }
+
+  ///method to delete a messageCard from the cache and its associated image from
+  ///device memory
+  Future<void> deleteMessageCard(String messageCardId, String profileId) async {
+    //make the key using the messageCard and profileId
+    String cacheKey = '${profileId}_$messageCardId';
+    //get the messageCard from the cache
+    MessageCard? card = _box.get(cacheKey);
+
+    if(card != null) {
+      //remove the associated image file if it exists
+      if( card.localImagePath != null && card.localImagePath!.isNotEmpty) {
+        final imageFile = File(card.localImagePath!);
+        if(imageFile.existsSync()) {
+          await imageFile.delete();
+          print("deleted image file: ${card.localImagePath}");
+        }
+      }
+      //remove the messageCard from the hive box
+      await _box.delete(cacheKey);
+      print("deleted message card from cache: $cacheKey");
+    }else {
+      print("message card not found in cache with key: $cacheKey");
+    }
+  }
+
 
   ///method to update the selection count of a MessageCard
   Future<void> updateSelectionCount(String messageCardId, String profileId) async {

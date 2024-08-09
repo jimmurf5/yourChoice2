@@ -119,7 +119,7 @@ class _CurateCardsState extends State<CurateCards> {
 
           // Delete the document, call method in messageCardRepo
           await messageCardRepository
-              .deleteMessageCard(widget.profileId, docId, categoryId, imageUrl);
+              .deleteMessageCard(widget.profileId, messageCardId, docId, categoryId, imageUrl);
 
           // Clear the selected card and set the state
           setState(() {
