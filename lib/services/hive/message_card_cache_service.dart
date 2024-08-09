@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
+import 'package:path/path.dart' as path;
 
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
@@ -103,8 +104,11 @@ class MessageCardCacheService {
   Future<void> saveImageFileLocally(MessageCard messageCard, String profileId, String imageUrl) async {
     //get the local application documents directory
     final appDir = await getApplicationDocumentsDirectory();
+    
+    //determine the file extension from the url
+    String extension = path.extension(imageUrl).replaceAll('.', '');
     //create a unique name for the image using the profile and messageCardId
-    final fileName = '${profileId}_${messageCard.messageCardId}.png';
+    final fileName = '${profileId}_${messageCard.messageCardId}.$extension';
     //download the image file from the provided url
     final response = await http.get(Uri.parse(imageUrl));
 

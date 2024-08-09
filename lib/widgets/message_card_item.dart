@@ -16,18 +16,17 @@ class MessageCardItem extends StatelessWidget {
 
   const MessageCardItem({
     required this.messageCard,
-    super.key
+    super.key,
   });
 
   @override
   Widget build(BuildContext context) {
-    bool useLocalPath = messageCard.localImagePath != null && messageCard.localImagePath!.isNotEmpty;
+    bool useLocalPath =
+        messageCard.localImagePath != null && messageCard.localImagePath!.isNotEmpty;
 
-    if (useLocalPath && File(messageCard.localImagePath!).existsSync()) {
-      print("Using local image path: ${messageCard.localImagePath}");
-    } else {
-      print("Local image file not found, using URL: ${messageCard.imageUrl}");
-      useLocalPath = false;  // Fall back to using the URL if the file doesn't exist
+    if (useLocalPath && !File(messageCard.localImagePath!).existsSync()) {
+      // If the local image file doesn't exist, fall back to using the URL
+      useLocalPath = false;
     }
 
     return Card(
@@ -35,49 +34,12 @@ class MessageCardItem extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Check if local image path is available and use it if so
             if (useLocalPath)
-              Image.file(
-                File(messageCard.localImagePath!),
-                height: 80,
-                width: 80,
-                fit: BoxFit.cover,
-                errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
-                  return Container(
-                    padding: const EdgeInsets.all(20.0),
-                    child: const Icon(Icons.error),
-                  );
-                },
-              )
+            // Local image path exists and is valid
+              _buildImageFromFile(messageCard.localImagePath!)
             else
-              //local path not available, use url
-              (messageCard.imageUrl.endsWith('svg'))
-                  ? SvgPicture.network(
-                messageCard.imageUrl,
-                height: 80,
-                width: 80,
-                fit: BoxFit.cover,
-                placeholderBuilder: (BuildContext context) => Container(
-                  padding: const EdgeInsets.all(20.0),
-                  child: const CircularProgressIndicator(),
-                ),
-              )
-                  : Image.network(
-                messageCard.imageUrl,
-                height: 80,
-                width: 80,
-                fit: BoxFit.cover,
-                loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                  if (loadingProgress == null) {
-                    return child;
-                  } else {
-                    return Container(
-                      padding: const EdgeInsets.all(20.0),
-                      child: const CircularProgressIndicator(),
-                    );
-                  }
-                },
-              ),
+            // Fallback to image URL
+              _buildImageFromNetwork(messageCard.imageUrl),
             const SizedBox(height: 8),
             Text(
               messageCard.title,
@@ -93,5 +55,65 @@ class MessageCardItem extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget _buildImageFromFile(String localImagePath) {
+    if (localImagePath.endsWith('svg')) {
+      return SvgPicture.file(
+        File(localImagePath),
+        height: 80,
+        width: 80,
+        fit: BoxFit.cover,
+        placeholderBuilder: (BuildContext context) => Container(
+          padding: const EdgeInsets.all(20.0),
+          child: const CircularProgressIndicator(),
+        ),
+      );
+    } else {
+      return Image.file(
+        File(localImagePath),
+        height: 80,
+        width: 80,
+        fit: BoxFit.cover,
+        errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+          return Container(
+            padding: const EdgeInsets.all(20.0),
+            child: const Icon(Icons.error),
+          );
+        },
+      );
+    }
+  }
+
+  Widget _buildImageFromNetwork(String imageUrl) {
+    if (imageUrl.endsWith('svg')) {
+      return SvgPicture.network(
+        imageUrl,
+        height: 80,
+        width: 80,
+        fit: BoxFit.cover,
+        placeholderBuilder: (BuildContext context) => Container(
+          padding: const EdgeInsets.all(20.0),
+          child: const CircularProgressIndicator(),
+        ),
+      );
+    } else {
+      return Image.network(
+        imageUrl,
+        height: 80,
+        width: 80,
+        fit: BoxFit.cover,
+        loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+          if (loadingProgress == null) {
+            return child;
+          } else {
+            return Container(
+              padding: const EdgeInsets.all(20.0),
+              child: const CircularProgressIndicator(),
+            );
+          }
+        },
+      );
+    }
   }
 }
