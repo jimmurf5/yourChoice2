@@ -148,8 +148,14 @@ class _CurateCardsState extends State<CurateCards> {
   }
 
   Future<void> _showCategorySelectionDialog(BuildContext context) async {
-    // Fetch categories (you could fetch from cache or Firestore)
-    final categories = _categoryCacheService.getAllCategories();
+    // Fetch categories (you could fetch from cache or Firestore getting from
+    // cache as they must be in the cache if categories has been selected)
+    final categories = _categoryCacheService.getAllCategories()
+    /*exclude categories 1 and 2, user shouldn't be allowed to choose
+      original or history as categories
+     */
+    .where((category) => category.categoryId != 1 && category.categoryId != 2)
+    .toList();
 
     final selectedCategoryId = await showDialog<int>(
       context: context,
@@ -174,7 +180,38 @@ class _CurateCardsState extends State<CurateCards> {
 
     if (selectedCategoryId != null) {
       // Update the selected card's category
-      //await _changeCategoryOfSelectedCard(selectedCategoryId);
+      await _changeCategoryOfSelectedCard(selectedCategoryId);
+    }
+  }
+
+  Future _changeCategoryOfSelectedCard(int newCategoryId) async {
+    try {
+      if(selectedCards.isNotEmpty) {
+        MessageCard card = selectedCards.first;
+
+        //update firestore
+        await messageCardRepository
+            .changeCategory(card.messageCardId, widget.profileId, newCategoryId);
+
+        //update the card object locally
+        card.categoryId = newCategoryId;
+
+        //clear the selection and refresh the UI
+        setState(() {
+          selectedCards.clear();
+          selectedCategory = newCategoryId; // change to new cat to show card has changed
+        });
+
+        //provide the user feedback
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Category changed successfully')),
+        );
+      }
+    } catch (error) {
+      print('Failed to change category: $error');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to change the category')),
+      );
     }
   }
 
@@ -234,6 +271,8 @@ class _CurateCardsState extends State<CurateCards> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 IconButton(
+                  /* On the messageCard in the display panel is clear and the
+                  * system speaks the word "Clear!" */
                   onPressed: () async {
                     setState(() {
                       selectedCards.clear();
@@ -245,9 +284,8 @@ class _CurateCardsState extends State<CurateCards> {
                   color: Theme.of(context).colorScheme.inversePrimary,
                 ),
                 IconButton(
-                  //on pressed tts to read out the message card
-                  // held in the selected cards list
-                  //shown in the display panel
+                  /* On pressed the delete operation begins, user is shown
+                  * dialogue message and given delete option */
                   onPressed: () async {
                     if (selectedCards.isNotEmpty) {
                       //show confirmation dialogue before deleting
@@ -260,10 +298,11 @@ class _CurateCardsState extends State<CurateCards> {
                   color: Theme.of(context).colorScheme.inversePrimary,
                 ),
                 IconButton(
-                  //on pressed tts to read out the message card
-                  // held in the selected cards list
-                  //shown in the display panel
-                  onPressed: selectedCards.isNotEmpty && selectedCards.first.categoryId == 2
+                  /* On pressed the swap button allows the user to change a
+                  * messageCard's category, but the button is conditional.
+                  * Only an original messageCard may be re- categorised and
+                  * the button is rendered conditionally */
+                  onPressed: selectedCards.isNotEmpty && selectedCards.first.imageUrl.contains('firebasestorage')
                       ? () async {
                     await _showCategorySelectionDialog(context);
                   }

@@ -13,7 +13,7 @@ class MessageCard {
   @HiveField(1)
   final String imageUrl;
   @HiveField(2)
-  final int categoryId;
+  int categoryId;
   @HiveField(3)
   final String messageCardId;
   @HiveField(4)

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
 
@@ -153,5 +154,24 @@ class MessageCardCacheService {
       print('failed to download the image from $imageUrl');
     }
 
+  }
+
+  // Method to refresh category cache from Firestore snapshot
+  Future<void> updateCategoryCacheFromSnapshot(QuerySnapshot snapshot, String profileId) async {
+    // Cache each message card
+    for (var doc in snapshot.docs) {
+      MessageCard card = MessageCard.fromMap(doc.data() as Map<String, dynamic>);
+
+      /* Check if the card already exists in the cache, search the cache
+      * for card with matching Id to the one in the single doc of the docs snapshot */
+      MessageCard? cachedCard = getMessageCard(card.messageCardId, profileId);
+
+      if (cachedCard == null) {
+        // If the card doesn't exist in the cache, save it
+        await saveMessageCard(card, profileId);
+      } else {
+        print('This card, $card.messageCardId is already in the cache.');
+      }
+    }
   }
 }

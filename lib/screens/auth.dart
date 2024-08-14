@@ -128,7 +128,7 @@ class _AuthScreenState extends State<AuthScreen> {
                               // Regular expression to validate the password
                               final regex = RegExp(r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_]).{8,}$');
                               if (value == null || !regex.hasMatch(value)) {
-                                return 'Password must be at least 8 characters long, include an uppercase letter, a lowercase letter, a number, and a special character.';
+                                return 'Min 8 characters, must contain one uppercase letter,\none lower, a number, and a special character.';
                               }
                               return null; // if pass the validation
                             },

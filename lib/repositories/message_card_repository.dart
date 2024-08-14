@@ -153,9 +153,10 @@ class MessageCardRepository {
       //delete the messageCard from the cache also
       await _cacheService.deleteMessageCard(messageCardId, profileId);
 
-      if(categoryId == 2) {
+      if(imageUrl.contains('firebasestorage')) {
         /*delete the image from firestore storage if its a unique image
-        of category 2, call imageDeleteService and pass the imageUrl
+        it may have been re categorised so search for the above phrase in
+        the imageUrl, call imageDeleteService and pass the imageUrl
          */
         await imageDeleteService.deleteImageFromStorage(imageUrl);
       }
@@ -189,6 +190,52 @@ class MessageCardRepository {
         .toList();
 
     return topCards;
+  }
+
+  Future<void> changeCategory(String messageCardId, String profileId, int newCategoryId) async {
+    try {
+      //find the document id for the message card
+      QuerySnapshot querySnapshot = await findMessageCardById(profileId, messageCardId);
+      
+      if(querySnapshot.docs.isNotEmpty) {
+        //get the doc Id
+        String docId = querySnapshot.docs.first.id;
+
+        //delete the card from the old category cache
+        await _cacheService.deleteMessageCard(messageCardId, profileId);
+        
+        //update the categoryId field of the messageCard in firestore
+        await _firestore
+        .collection('profiles')
+        .doc(profileId)
+        .collection('messageCards')
+        .doc(docId)
+        .update({'categoryId': newCategoryId});
+
+        //refresh the cache for the category to ensure its up to date
+        await refreshCategoryCallCache(newCategoryId, profileId);
+
+        print('Category changed successfully for card $messageCardId');
+
+      } else {
+        print('Message Card with Id $messageCardId not found in the profile $profileId');
+      }
+    } catch (error) {
+      print('Failed to change category for message card $messageCardId');
+    }
+  }
+
+  Future<void> refreshCategoryCallCache(int categoryId, String profileId) async {
+    // Fetch all message cards from Firestore for this category
+    QuerySnapshot snapshot = await _firestore
+        .collection('profiles')
+        .doc(profileId)
+        .collection('messageCards')
+        .where('categoryId', isEqualTo: categoryId)
+        .get();
+
+    // Pass the snapshot to the cache service for processing
+    await _cacheService.updateCategoryCacheFromSnapshot(snapshot, profileId);
   }
 
 }
