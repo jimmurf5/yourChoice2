@@ -19,13 +19,32 @@ class LongPressButton extends StatefulWidget {
   LongPressButtonState createState() => LongPressButtonState();
 }
 
-class LongPressButtonState extends State<LongPressButton> {
+class LongPressButtonState extends State<LongPressButton> with SingleTickerProviderStateMixin {
   Timer? _timer;
   bool _isLongPressing = false;
+  late AnimationController _animationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: Duration(seconds: widget.pressTime),
+    );
+
+    _animationController.addListener(() {
+      setState(() {
+
+      });
+    });
+  }
 
   /// Starts the long press timer. If the user continues to press the button
   void _startLongPress() {
     _isLongPressing = true;
+
+    _animationController.forward(from: 0.0); //start the progress animation
+
     _timer = Timer(Duration(seconds: widget.pressTime), () {
       /* If the user continues to press for the duration specified
       by [widget.pressTime], the [widget.onLongPressCompleted]
@@ -38,8 +57,18 @@ class LongPressButtonState extends State<LongPressButton> {
 
   /// Stops the long press timer. This method is called when the user releases
   void _stopLongPress() {
-    _isLongPressing = false;
+    setState(() {
+      _isLongPressing = false;
+    });
     _timer?.cancel();
+    _animationController.stop(); //stop the progress animation
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    _timer?.cancel();
+    super.dispose();
   }
 
   @override
@@ -47,10 +76,29 @@ class LongPressButtonState extends State<LongPressButton> {
     return GestureDetector(
       onLongPressStart: (_) => _startLongPress(),
       onLongPressEnd: (_) => _stopLongPress(),
-      child: IconButton(
-        onPressed: () {},
-        icon: const Icon(FontAwesomeIcons.bars),
-        color: Theme.of(context).colorScheme.inversePrimary,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          // Display the IconButton
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(FontAwesomeIcons.bars),
+            color: Theme.of(context).colorScheme.inversePrimary,
+          ),
+          // Display the progress indicator as an overlay
+          if (_isLongPressing)
+            SizedBox(
+              width: 100,
+              height: 100,
+              child: CircularProgressIndicator(
+                value: _animationController.value,
+                backgroundColor: Colors.transparent,
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  Theme.of(context).colorScheme.onInverseSurface,
+                ),
+              ),
+            )
+        ],
       ),
     );
   }
