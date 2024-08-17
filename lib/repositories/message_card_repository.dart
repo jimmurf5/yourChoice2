@@ -14,9 +14,19 @@ import '../models/message_card.dart';
 /// cards (by category, singly or the top selected) and categories from
 /// the Firestore database. Also saving and deleting messageCards.
 class MessageCardRepository {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final MessageCardCacheService _cacheService = MessageCardCacheService();
-  final ImageDeleteService imageDeleteService = ImageDeleteService();
+  final FirebaseFirestore _firestore;
+  final MessageCardCacheService _cacheService;
+  final ImageDeleteService imageDeleteService;
+
+  /// Constructor that allows dependency injection with optional parameters.
+  /// If parameters are not provided, it will default to the instances.
+  MessageCardRepository({
+    FirebaseFirestore? firestore,
+    MessageCardCacheService? cacheService,
+    ImageDeleteService? imageDeleteService,
+  })  : _firestore = firestore ?? FirebaseFirestore.instance,
+        _cacheService = cacheService ?? MessageCardCacheService(),
+        imageDeleteService = imageDeleteService ?? ImageDeleteService();
 
 
   /// Fetches message cards for a given profile and category.

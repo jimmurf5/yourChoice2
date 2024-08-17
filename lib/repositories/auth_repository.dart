@@ -5,7 +5,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 /// and provides an interface for the rest of the application to interact
 /// with the authentication service.
 class AuthRepository {
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final FirebaseAuth _firebaseAuth;
+
+  /*constructor with dependency injection- defaults to FirebaseAuth.instance
+  * if no Firebase instance is provided*/
+  AuthRepository({FirebaseAuth? firebaseAuth})
+      : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
 
   /// Signs in a user with an email and password.
   ///
