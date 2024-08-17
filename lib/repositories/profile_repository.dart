@@ -4,7 +4,7 @@ import '../models/message_card.dart';
 /// A repository class that handles Firestore operations related to user profiles.
 ///
 /// This class abstracts away the details of Firestore interactions and provides
-/// a internal API for the rest of the application to interact with
+/// an interface for the rest of the application to interact with
 /// the Firestore database.
 /// It includes methods for fetching, creating, deleting, and restoring
 /// profiles in the Firestore database.

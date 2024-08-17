@@ -8,7 +8,7 @@ import '../models/message_card.dart';
 /// message cards and categories.
 ///
 /// This class abstracts away the details of Firestore interactions and provides
-/// an internal API for the rest of the application to interact with
+/// an internal for the rest of the application to interact with
 /// the Firestore database.
 /// It includes methods for fetching message
 /// cards (by category, singly or the top selected) and categories from

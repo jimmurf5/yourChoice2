@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// TreeRepository handles all Firestore interactions related to decision trees.
+///This class abstracts away the details of Firestore interactions and provides
+/// an interface for the rest of the application to interact with
+/// the Firestore database.
 ///
 /// This repository provides methods to fetch, delete, and restore decision trees
 /// associated with a specific profile.

@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 /// A repository class that handles Firebase Authentication operations.
 /// This class abstracts the details of Firebase Authentication interactions
-/// and provides a internal API for the rest of the application to interact
+/// and provides an interface for the rest of the application to interact
 /// with the authentication service.
 class AuthRepository {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
