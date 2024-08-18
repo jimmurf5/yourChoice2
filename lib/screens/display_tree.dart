@@ -74,7 +74,7 @@ class _DisplayTreeState extends State<DisplayTree> {
   /// Builds the layout for a single question.
   Widget buildSingleQuestion(BuildContext context, dynamic singleQuestion) {
     return Center(
-      child: buildQuestionCard(context, singleQuestion),
+      child: buildQuestionCard(context, singleQuestion, 0),
     );
   }
 
@@ -84,8 +84,8 @@ class _DisplayTreeState extends State<DisplayTree> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          buildQuestionCard(context, tree[0]),
-          buildQuestionCard(context, tree[1]),
+          buildQuestionCard(context, tree[0], 0),
+          buildQuestionCard(context, tree[1], 1),
         ],
       ),
     );
@@ -97,9 +97,9 @@ class _DisplayTreeState extends State<DisplayTree> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          buildQuestionCard(context, tree[0]),
-          buildQuestionCard(context, tree[1]),
-          buildQuestionCard(context, tree[2]),
+          buildQuestionCard(context, tree[0], 0),
+          buildQuestionCard(context, tree[1], 1),
+          buildQuestionCard(context, tree[2], 2),
         ],
       ),
     );
@@ -107,7 +107,7 @@ class _DisplayTreeState extends State<DisplayTree> {
 
   /// Builds a card for a single question.
   /// Displays the question and its answers in a grid layout.
-  Widget buildQuestionCard(BuildContext context, dynamic singleQuestion) {
+  Widget buildQuestionCard(BuildContext context, dynamic singleQuestion, int questionIndex) {
     var questionText = singleQuestion['question'];
     var answers = singleQuestion['answers'] as List<dynamic>;
 
@@ -140,12 +140,16 @@ class _DisplayTreeState extends State<DisplayTree> {
                 var answer = answers[index];
                 var messageCardId = answer['messageCardId'];
 
+                // Generate a unique key by combining the questionIndex messageCardId and index
+                var uniqueKey = '${questionIndex}_${messageCardId}_$index';
+
                 //first lets check if the messageCard is in the cache
                 var cachedCard = _cacheService.getMessageCard(
                     messageCardId, widget.profileId);
                 //if in the cache, use the cache
                 if (cachedCard != null) {
-                  return _buildMessageCardItem(cachedCard);
+                  //pass the unique key
+                  return _buildMessageCardItem(cachedCard, uniqueKey);
                 } else {
                   /* Use FutureBuilder to handle the asynchronous operation of
               *  fetching the messageCard by their messageCardId
@@ -191,7 +195,8 @@ class _DisplayTreeState extends State<DisplayTree> {
                               docSnapshot.data!.data() as Map<String, dynamic>);
                           //cache the fetched card
                           _cacheService.saveImageFileLocally(messageCard, widget.profileId, messageCard.imageUrl);
-                          return _buildMessageCardItem(messageCard);
+                          //pass the unique key
+                          return _buildMessageCardItem(messageCard, uniqueKey);
                         },
                       );
                     },
@@ -208,16 +213,17 @@ class _DisplayTreeState extends State<DisplayTree> {
   ///wrapped in a gesture detector
   ///speaks the title with tts and affect colour change on tap
   ///parameter [messageCard] - the messageCard to be displayed
-  Widget _buildMessageCardItem(MessageCard messageCard) {
+  ///[uniqueKey] - a concatenation of the messageCardId and the cards index
+  Widget _buildMessageCardItem(MessageCard messageCard, String uniqueKey) {
     // Check the clicked state of the current message card; default to false if not found
-    var isClicked = clickedState[messageCard.messageCardId] ?? false;
+    var isClicked = clickedState[uniqueKey] ?? false;
     /* Return gesture detector wrapped around a container
                       // to handle colour change and to speak title */
     return GestureDetector(
         onTap: () async {
           // Toggle the clicked state for the current message card and update the state
           setState(() {
-            clickedState[messageCard.messageCardId] = !isClicked;
+            clickedState[uniqueKey] = !isClicked;
           });
           await ttsService.flutterTts.speak(messageCard.title);
         },
