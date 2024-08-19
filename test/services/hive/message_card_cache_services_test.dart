@@ -13,33 +13,30 @@ import 'message_card_cache_services_test.mocks.dart';
 void main() {
   late MessageCardCacheService cacheService;
   late MockBox<MessageCard> mockBox;
-  
-  setUp(() {
-    // Initialize Hive and open the box for testing
-    Hive.init('test');
-    mockBox = MockBox<MessageCard>();
-    cacheService = MessageCardCacheService();
-    
-    //override hive and return the mock box
-    when(Hive.box<MessageCard>('messageCards')).thenReturn(mockBox);
 
-    cacheService = MessageCardCacheService();
+  setUp(() {
+    // Initialize Hive for testing
+    Hive.init('test');
+
+    // Create a mock box
+    mockBox = MockBox<MessageCard>();
+
+    // Initialize the cacheService with the mock box
+    cacheService = MessageCardCacheService(null, mockBox);
 
     // Mock behavior for methods used in tests
     when(mockBox.put(any, any)).thenAnswer((_) async {});
   });
-  
-  test('saveMessageCard saves  a message card to the box', () async {
-    // arrange
+
+  test('saveMessageCard saves a message card to the box', () async {
+    // Arrange
     final messageCard = MessageCard(title: 'fakeTitle', imageUrl: 'fakeUrl', categoryId: 1);
     const profileId = 'profileId';
-    
-    //act
+
+    // Act
     await cacheService.saveMessageCard(messageCard, profileId);
-    
-    //assert
-    verify(
-        mockBox.put('${profileId}_${messageCard.messageCardId}', messageCard)).called(1);
+
+    // Assert
+    verify(mockBox.put('${profileId}_${messageCard.messageCardId}', messageCard)).called(1);
   });
-  
 }

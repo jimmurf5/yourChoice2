@@ -12,13 +12,18 @@ import '../message_card_click_count_service.dart';
 /// A class hosting methods controlling all the logic regarding caching
 /// data to and deleting data from the hive 'messageCards' box
 class MessageCardCacheService {
-  final Box<MessageCard> _box = Hive.box<MessageCard>('messageCards');
+  final Box<MessageCard> _box ;
   final MessageCardClickCountService? _clickCountService;
 
-  MessageCardCacheService([this._clickCountService]);
+  // Constructor with optional box parameter
+  MessageCardCacheService([MessageCardClickCountService? clickCountService, Box<MessageCard>? box])
+      : _box = box ?? Hive.box<MessageCard>('messageCards'),
+        _clickCountService = clickCountService;
 
-  //parameterless constructor for clearing the cache of all profiles
-  MessageCardCacheService.forClearCacheAll() : _clickCountService = null;
+  // Parameterless constructor for clearing the cache of all profiles
+  MessageCardCacheService.forClearCacheAll()
+      : _box = Hive.box<MessageCard>('messageCards'),
+        _clickCountService = null;
 
   ///method to save a messageCard to the local cache
   Future<void> saveMessageCard(MessageCard messageCard, String profileId) async {
