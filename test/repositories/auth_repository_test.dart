@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:your_choice/repositories/auth_repository.dart';
@@ -29,21 +31,21 @@ void main() {
     test('signInWithEmailAndPassword returns UserCredential on success', () async {
       //arrange
       when(mockFirebaseAuth.signInWithEmailAndPassword(
-          email: anyNamed('email'),
-          password: anyNamed('password'),
+        email: anyNamed('email'),
+        password: anyNamed('password'),
       )).thenAnswer((_) async => mockUserCredential);
 
       //act
       final result = await authRepository.signInWithEmailAndPassword(
-          email: 'jimTest@online.com',
-          password: 'Jpassword123?',
+        email: 'jimTest@online.com',
+        password: 'Jpassword123?',
       );
 
       //assert
       expect(result, isA<UserCredential>());
       verify(mockFirebaseAuth.signInWithEmailAndPassword(
-          email: 'jimTest@online.com',
-          password: 'Jpassword123?',
+        email: 'jimTest@online.com',
+        password: 'Jpassword123?',
       )).called(1);
     });
 
@@ -51,21 +53,21 @@ void main() {
     test('createUserWithEmailAndPassword returns UserCredentials on success', () async {
       //arrange
       when(mockFirebaseAuth.createUserWithEmailAndPassword(
-          email: anyNamed('email'),
-          password: anyNamed('password'),
+        email: anyNamed('email'),
+        password: anyNamed('password'),
       )).thenAnswer((_) async => mockUserCredential);
 
       //act
       final result = await authRepository.createUserWithEmailAndPassword(
-          email: 'jimTest@online.com',
-          password: 'Jpassword123?',
+        email: 'jimTest@online.com',
+        password: 'Jpassword123?',
       );
 
       //assert
       expect(result, isA<UserCredential>());
       verify(mockFirebaseAuth.createUserWithEmailAndPassword(
-          email: 'jimTest@online.com',
-          password: 'Jpassword123?',
+        email: 'jimTest@online.com',
+        password: 'Jpassword123?',
       )).called(1);
     });
 
@@ -110,4 +112,3 @@ void main() {
   });
 
 }
-

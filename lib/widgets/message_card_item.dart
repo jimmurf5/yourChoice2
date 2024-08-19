@@ -14,9 +14,11 @@ import 'package:your_choice/models/message_card.dart';
 class MessageCardItem extends StatelessWidget {
   final MessageCard messageCard;
 
+
   const MessageCardItem({
     required this.messageCard,
     super.key,
+
   });
 
   @override

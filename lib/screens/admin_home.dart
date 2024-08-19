@@ -125,7 +125,7 @@ class _AdminHomeState extends ConsumerState<AdminHome> {
                     return const Text('Something went wrong');
                   }
                   if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                    return const Text('No profiles found');
+                    return const Text('No profiles found.\nCreate a profile to customise\nand use the application.');
                   }
 
                   final profiles = snapshot.data!.docs;

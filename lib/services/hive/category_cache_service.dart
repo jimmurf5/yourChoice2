@@ -8,7 +8,10 @@ import 'package:your_choice/models/category.dart';
 /// A class hosting methods controlling all the logic regarding caching
 /// data to the hive 'categories' box
 class CategoryCacheService {
-  final Box<Category> _box = Hive.box<Category>('categories');
+  final Box<Category> _box;
+
+  // Constructor with optional box parameter
+  CategoryCacheService([Box<Category>? box]) : _box = box ?? Hive.box<Category>('categories');
 
   ///method to retrieve all categories from the cache
   List<Category> getAllCategories() {

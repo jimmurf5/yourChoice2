@@ -5,7 +5,14 @@ import '../repositories/auth_repository.dart';
 import '../repositories/profile_repository.dart';
 
 class AddProfile extends StatefulWidget {
-  const AddProfile({super.key});
+  // Optional constructor parameters
+  final ProfileRepository? profileRepository;
+  final AuthRepository? authRepository;
+
+  const AddProfile({
+    super.key,
+    this.profileRepository,
+    this.authRepository});
 
   @override
   State<AddProfile> createState() {
