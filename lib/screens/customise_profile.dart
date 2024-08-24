@@ -86,7 +86,7 @@ class _CustomiseProfileState extends State<CustomiseProfile> {
                   );
                 },
                 icon: const Icon(FontAwesomeIcons.tree),
-                label: const Text("Manages Trees"),
+                label: const Text("Manage Trees"),
               ),
             ),
             const SizedBox(height: 40),
