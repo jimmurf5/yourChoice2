@@ -9,7 +9,7 @@ import 'package:your_choice/repositories/auth_repository.dart';
 import 'package:your_choice/repositories/profile_repository.dart';
 import 'add_profile_test.mocks.dart';
 
-/* NOTE: The following test is currently not working due to issues with Firebase initialization
+/* NOTE: The following test is currently not working due to issues with Firebase initialisation
 // in the test environment. The test fails with a FirebaseException indicating
 // that no Firebase App has been created. Configuration or initialisation prob?.
 //

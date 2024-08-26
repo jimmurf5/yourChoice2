@@ -125,7 +125,20 @@ class _AdminHomeState extends ConsumerState<AdminHome> {
                     return const Text('Something went wrong');
                   }
                   if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                    return const Text('No profiles found.\nCreate a profile to customise\nand use the application.');
+                    return const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: Text(
+                          'No profiles found.\nCreate a profile to use\nand customise the application.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 18.0, // Increase font size
+                            fontWeight: FontWeight.bold, // Make the text bold
+                            color: Colors.black, // Use theme color
+                          ),
+                        ),
+                      ),
+                    );
                   }
 
                   final profiles = snapshot.data!.docs;

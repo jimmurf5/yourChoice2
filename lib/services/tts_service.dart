@@ -14,7 +14,7 @@ class TTSService {
     flutterTts.setLanguage("en-UK");
     flutterTts.setSpeechRate(0.5);
     flutterTts.setVolume(1.0);
-    flutterTts.setPitch(1.0);
+    flutterTts.setPitch(0.8);
   }
 
 }
