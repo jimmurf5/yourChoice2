@@ -55,13 +55,29 @@ including those recovering from stroke or living with dementia.
 **Basic Overview**
 
 Communication Hub (CommHub): The central hub where users can see all communication cards and navigate through the app.
+
+
 ![CommHub Screen](screenshots/commHub.png)
+
+
 Customization Options: Customize your profile and communication cards to better fit the user's needs.
+
+
 ![Customise Profile Screen](screenshots/customiseProfile.png)
+
+
 Display Tree: Visual representation of decision trees that guide the user through communication options.
-<img alt="Display Tree Screen" src="screenshots/displayTree.png"/>
+
+
+![Display Tree Screen](screenshots/displayTree.png).
+
+
 Sign Up: Initial sign-up screen where users create an account to access personalized features.
+
+
 ![Sign Up Screen](screenshots/signup.png)
+
+
 For detailed **step-by-step** instructions on how to use each feature, 
 including screenshots of each page, please refer to the [App Manual](documentation/yourChoiceAppManual.pdf).
 
