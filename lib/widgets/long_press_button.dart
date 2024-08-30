@@ -3,7 +3,11 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'dart:async';
 
 /// A customizable button that detects long press gestures and triggers a callback
-/// after a specified duration of continuous press.
+/// after a specified duration of continuous press. Displays a progress animation on long press
+///
+/// [pressTime] - the duration for which a user must hold to trigger the callback
+/// [onLongPressCompleted] - callback executed on completion of pressTime
+///
 class LongPressButton extends StatefulWidget {
   //the callback function that gets triggered after the long press duration is completed
   final VoidCallback onLongPressCompleted;

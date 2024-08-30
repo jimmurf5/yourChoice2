@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
-///return a an instruction card
-///instruction carried on card is passed to the method as a String
+/// A widget that displays a given text as an instructional message on a styled card.
+///
+/// The text content is passed as a [String] to the widget and is displayed with bold styling
+/// and a font size of 20. The card background and text colour are based on the current theme.
 class InstructionCard extends StatelessWidget {
   final String text;
 

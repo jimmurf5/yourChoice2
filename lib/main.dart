@@ -7,17 +7,24 @@ import 'package:your_choice/screens/auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:your_choice/screens/splash_screen.dart';
 import 'package:your_choice/services/hive/message_card_cache_service.dart';
-import 'package:your_choice/services/message_card_click_count_service.dart';
 import 'package:your_choice/services/template_and_cat_seeder_service.dart';
 import 'firebase_options.dart';
 import 'package:your_choice/screens/admin_home.dart';
 import 'package:your_choice/data/card_data.dart';
 import 'package:your_choice/notifiers/theme_notifier.dart';
+import 'package:flutter/services.dart';
+
 
 import 'models/message_card.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Lock the orientation to portrait mode
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
 
   // Initialize Firebase
   await Firebase.initializeApp(

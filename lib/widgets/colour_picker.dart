@@ -4,6 +4,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../notifiers/theme_notifier.dart';
 import '../providers/profile_colours_notifier.dart';
 
+
+/// widget provides a colour picker interface where users can choose from a curated set
+/// of predefined colors. It updates the selected profile's color using a provider and also
+/// synchronizes the global theme color based on the user's selection. The colour is initialised
+/// from the provider associated with the given profile ID.
+///
+/// The widget uses the [ConsumerStatefulWidget] from Riverpod to maintain state and reactively
+/// manage updates to the colour selection.
+///
 class ColourPicker extends ConsumerStatefulWidget {
   final String profileId;
 

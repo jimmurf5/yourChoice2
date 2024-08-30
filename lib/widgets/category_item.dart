@@ -15,7 +15,7 @@ class CategoryItem extends StatelessWidget {
   /// If the image is loading, a `CircularProgressIndicator` is displayed.
   /// The title is displayed below the image, centered and styled with a bold font.
   ///
-  /// This widget is intended to be used as a child in a scrollable list or grid
+  /// This widget is intended to be used as a child in a scrollable list
   /// to allow users to select and view different categories.
   const CategoryItem({required this.category, super.key});
 
