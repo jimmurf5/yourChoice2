@@ -123,7 +123,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
     - **`state_notifier`**: Utilized to manage and notify state changes effectively.
     - **`path_provider`**: Used to find commonly used locations on the filesystem.
     - **`cupertino_icons`**: Included for iOS style icons.
-    - **OpenMoji**: Icons sourced from [OpenMoji](https://openmoji.org/) for use in the app.
+    - **OpenMoji**: Icons sourced from OpenMoji, licensed under CC BY-SA 4.0 for use in the app.
 
 - **Mentors**: Special thanks to [Moira Watson] for providing guidance and feedback throughout the project.
 - **Testers**: I appreciate the feedback from [Matthew McGrath] and [Adam Murphy], who tested the app and provided valuable insights for improvements.
