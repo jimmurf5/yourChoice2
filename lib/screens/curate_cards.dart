@@ -25,6 +25,8 @@ import '../widgets/message_card_item.dart';
 /// - Selecting a message card displays it in the panel.
 /// - Clicking the trash icon prompts a confirmation dialog to delete the card.
 /// - Clicking the X icon clears the selected card from the panel.
+/// - Clicking the shuffle icon (icon only appears for custom cards) allows the user
+/// to change the selected card to a new category
 class CurateCards extends StatefulWidget {
   final String profileId;
 
@@ -147,6 +149,7 @@ class _CurateCardsState extends State<CurateCards> {
     }
   }
 
+  /// Displays a dialog for the user to select a new category, excluding "original" and "history".
   Future<void> _showCategorySelectionDialog(BuildContext context) async {
     // Fetch categories (you could fetch from cache or Firestore getting from
     // cache as they must be in the cache if categories has been selected)
@@ -184,6 +187,7 @@ class _CurateCardsState extends State<CurateCards> {
     }
   }
 
+  /// Updates the selected message card's category in Firestore and the local state.
   Future _changeCategoryOfSelectedCard(int newCategoryId) async {
     try {
       if(selectedCards.isNotEmpty) {

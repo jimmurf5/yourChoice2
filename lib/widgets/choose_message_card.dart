@@ -5,7 +5,8 @@ import 'package:your_choice/screens/select_card.dart';
 import 'package:your_choice/widgets/message_card_item.dart';
 
 /// A widget that allows the user to select a message card.
-/// If no card is selected, it displays a button to select a card.
+/// Utilised by the QuestionAnswerSection widget to allow users to build a decision tree
+/// If no card is selected, it displays a button (with the label [textInButton]) to select a card.
 /// If a card is selected, it displays the selected card and allows re-selection.
 /// The widget returns a container that either shows the button to select a card
 /// or the selected message card.

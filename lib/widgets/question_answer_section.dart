@@ -7,6 +7,7 @@ import 'package:your_choice/widgets/choose_message_card.dart';
 /// Each answer can be selected by the user and displays a message card.
 /// The widget returns a column containing a text field for the question
 /// and two buttons (or selected cards) for the answers.
+/// Utilises the ChooseMessageCard widget to display button and allow card selection
 class QuestionAnswerSection extends StatefulWidget {
   final String questionLabel;
   final TextEditingController questionController;

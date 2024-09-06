@@ -22,7 +22,7 @@ class AdminHome extends ConsumerStatefulWidget {
 /// This screen allows the admin user to view, add, and manage user profiles.
 /// It displays the current user's email in the appBar,
 /// a button to add new profiles, and a list of existing profiles.
-/// The profiles can be selected for customization or deleted with an option to undo.
+/// The profiles can be selected for customisation or deleted with an option to undo.
 class _AdminHomeState extends ConsumerState<AdminHome> {
   String userEmail = '';
   // Initialize the ProfileRepository

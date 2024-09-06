@@ -5,7 +5,10 @@ part 'message_card.g.dart';
 
 const uuid = Uuid();
 
-
+///  A model class representing a message card in the system.
+///  This class is used to store information about a message card.
+///  Also provided methods to convert a message card object to a map and to
+///  create a message card object from a map
 @HiveType(typeId: 0)
 class MessageCard {
   @HiveField(0)

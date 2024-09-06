@@ -2,6 +2,10 @@ import 'package:hive/hive.dart';
 
 part 'category.g.dart';
 
+///  A model class representing a category in the system.
+///  This class is used to store information about a category.
+///  Also provided methods to convert a category object to a map and to
+///  create a category object from a map
 @HiveType(typeId: 1)
 class Category {
 

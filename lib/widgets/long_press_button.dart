@@ -76,6 +76,7 @@ class LongPressButtonState extends State<LongPressButton> with SingleTickerProvi
   }
 
   @override
+  // This widget build the button with a progress indicator overlay
   Widget build(BuildContext context) {
     return GestureDetector(
       onLongPressStart: (_) => _startLongPress(),

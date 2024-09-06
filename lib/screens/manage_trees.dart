@@ -15,13 +15,13 @@ import 'create_tree.dart';
 /// - The ability to restore deleted trees via an undo option.
 ///
 /// The `ManageTrees` widget receives:
-/// - [profileId]: The ID of the profile for which the decision trees are being managed.
+///  - [profileId]: The ID of the profile for which the decision trees are being managed.
 /// - [isUserMode]: A boolean indicating whether the current mode is user mode (true)
 ///   or profile mode (false). Certain functionalities like creating and deleting trees
 ///   are available only in user mode.
 ///
 /// The widget utilizes `TreeRepository` to handle all interactions with Firestore,
-/// ensuring a clean separation between UI logic and data access logic.
+/// separating UI logic and data access logic.
 class ManageTrees extends StatefulWidget {
   final String profileId;
   final bool isUserMode;

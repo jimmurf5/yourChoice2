@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 /// A widget that allows users to pick an image from the camera or gallery.
-/// The picked image is displayed in the widget and can be retaken if desired.
+/// The [pickedImage] is displayed in the widget and can be retaken if desired.
 /// The widget returns a container that either shows buttons for selecting an image
 /// or the selected image itself.
 class ImageInput extends StatefulWidget {

@@ -1,6 +1,7 @@
 import 'package:your_choice/models/category.dart';
 import 'package:your_choice/models/message_card.dart';
 
+/// a list of predefined categories used to seed the database
 final availableCategories = [
   Category(
       title: 'History',
@@ -49,6 +50,7 @@ final availableCategories = [
   ),
 ];
 
+/// a list of predefined message cards, used to seed the database
 final availMessageCards = [
   MessageCard(
     title: 'Yes',
