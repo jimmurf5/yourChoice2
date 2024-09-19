@@ -195,8 +195,10 @@ class MessageCardRepository {
         .get();
 
     //map each doc in the query snapshot to a message card
+    //only show messageCards that have at least one click
     List<MessageCard> topCards = querySnapshot.docs
         .map((doc) => MessageCard.fromMap(doc.data() as Map<String, dynamic>))
+        .where((card) => card.selectionCount > 0)
         .toList();
 
     return topCards;

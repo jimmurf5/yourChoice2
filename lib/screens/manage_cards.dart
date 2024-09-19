@@ -77,7 +77,7 @@ class _ManageCardsState extends State<ManageCards> {
     if (_titleController.text.length > 11) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Title must be 13 characters or less'),
+          content: Text('Title must be 11 characters or less'),
         ),
       );
       return;
